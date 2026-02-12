@@ -11,15 +11,15 @@ const { allowRoles } = require("../../../middlewares/role.middleware");
 router.post(
   "/global-settings",
   auth,
-  allowRoles("SUPER_ADMIN"), 
+  allowRoles("COMPANY_ADMIN"),
   controller.createOrUpdateGlobal
 );
 
 // Get global settings
 router.get(
-  "/global-settings",
+  "/global-settings-get",
   auth,
-  allowRoles("SUPER_ADMIN", "COMPANY_ADMIN", "EMPLOYEE"),
+   allowRoles("COMPANY_ADMIN"),
   controller.getGlobalSettings
 );
 

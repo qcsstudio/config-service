@@ -1,15 +1,29 @@
 const IncorporationModel = require("./incorporation.model");
 
-// Create a new incorporation
+
 const createIncorporation = async (req, res) => {
   try {
-    const { companyId, companyLegalName, incorporationDate, companyType, cin, gstin, pan, tan } = req.body;
+    // ✅ Get companyAdminId from token
+    const companyAdminId = req.user?._id;
 
-    if (!companyId) {
-      return res.status(400).json({ message: "companyId is required" });
+    if (!companyAdminId) {
+      return res.status(401).json({ message: "Unauthorized. Admin not found." });
     }
 
-    const payload = { companyId, companyLegalName };
+    const {
+      companyLegalName,
+      incorporationDate,
+      companyType,
+      cin,
+      gstin,
+      pan,
+      tan
+    } = req.body;
+
+    const payload = {
+      companyAdminId,
+      companyLegalName
+    };
 
     if (incorporationDate) payload.incorporationDate = incorporationDate;
     if (companyType) payload.companyType = companyType;
@@ -24,12 +38,13 @@ const createIncorporation = async (req, res) => {
       message: "Incorporation created",
       incorporation,
     });
+
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 };
 
-// Get a single incorporation by ID
+
 const getIncorporationById = async (req, res) => {
   try {
     const incorporation = await IncorporationModel.findById(req.params.id);
@@ -39,6 +54,7 @@ const getIncorporationById = async (req, res) => {
     }
 
     res.status(200).json({ incorporation });
+
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

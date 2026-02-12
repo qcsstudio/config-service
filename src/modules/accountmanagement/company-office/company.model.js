@@ -2,11 +2,8 @@ const mongoose = require("mongoose");
 
 const CompanyOfficeSchema = new mongoose.Schema(
   {
-    companyId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Company",
-      required: true,
-    },
+    adminId: mongoose.Schema.Types.ObjectId,
+    
 
     locationName: {
       type: String,

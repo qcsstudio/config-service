@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const BrandingSchema = new mongoose.Schema(
   {
-    companyId: mongoose.Schema.Types.ObjectId,
+    adminId: mongoose.Schema.Types.ObjectId,
 
     brandLogo: {
       type: String,

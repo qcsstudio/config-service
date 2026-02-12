@@ -1,9 +1,12 @@
 const CompanyOfficeModel = require("./company.model");
 
-// Create a new company office
 const createCompanyOffice = async (req, res) => {
   try {
-    const companyId = req.user.companyId;
+    const companyAdminId = req.user?._id;
+
+    if (!companyAdminId) {
+      return res.status(401).json({ message: "Unauthorized. Admin not found." });
+    }
 
     const {
       locationName,
@@ -16,14 +19,27 @@ const createCompanyOffice = async (req, res) => {
       postalCode,
       timezone,
       ipAddress,
+      latitude,
+      longitude,
+      geoRadius,
     } = req.body;
 
-    if (!companyId || !locationName || !addressType || !addressLine1 || !country || !state || !city || !postalCode) {
+    if (
+      !locationName ||
+      !addressType ||
+      !addressLine1 ||
+      !country ||
+      !state ||
+      !city ||
+      !postalCode ||
+      latitude === undefined ||
+      longitude === undefined
+    ) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
     const office = await CompanyOfficeModel.create({
-      companyId, // from auth token
+      companyAdminId,
       locationName,
       addressType,
       address: {
@@ -33,7 +49,12 @@ const createCompanyOffice = async (req, res) => {
         state,
         city,
         postalCode,
+        location: {
+          type: "Point",
+          coordinates: [longitude, latitude],
+        },
       },
+      geoRadius: geoRadius || 10,
       timeZone: timezone || "Asia/Kolkata",
       ipAddress,
     });
@@ -42,15 +63,18 @@ const createCompanyOffice = async (req, res) => {
       message: "Company office created",
       office,
     });
+
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 };
 
-
-// Update a company office by ID
 const updateCompanyOffice = async (req, res) => {
   try {
+    const companyAdminId = req.user?._id;
+
+    const updateData = {};
+
     const {
       locationName,
       addressType,
@@ -62,65 +86,105 @@ const updateCompanyOffice = async (req, res) => {
       postalCode,
       timezone,
       ipAddress,
+      latitude,
+      longitude,
+      geoRadius,
     } = req.body;
 
-    const updateData = {};
     if (locationName) updateData.locationName = locationName;
     if (addressType) updateData.addressType = addressType;
     if (timezone) updateData.timeZone = timezone;
     if (ipAddress) updateData.ipAddress = ipAddress;
+    if (geoRadius) updateData.geoRadius = geoRadius;
 
-    if (addressLine1 || addressLine2 || country || state || city || postalCode) {
-      updateData.address = {};
-      if (addressLine1) updateData.address.addressLine1 = addressLine1;
-      if (addressLine2) updateData.address.addressLine2 = addressLine2;
-      if (country) updateData.address.country = country;
-      if (state) updateData.address.state = state;
-      if (city) updateData.address.city = city;
-      if (postalCode) updateData.address.postalCode = postalCode;
+    if (addressLine1) updateData["address.addressLine1"] = addressLine1;
+    if (addressLine2) updateData["address.addressLine2"] = addressLine2;
+    if (country) updateData["address.country"] = country;
+    if (state) updateData["address.state"] = state;
+    if (city) updateData["address.city"] = city;
+    if (postalCode) updateData["address.postalCode"] = postalCode;
+
+    if (latitude !== undefined && longitude !== undefined) {
+      updateData["address.location"] = {
+        type: "Point",
+        coordinates: [longitude, latitude],
+      };
     }
 
-    const office = await CompanyOfficeModel.findByIdAndUpdate(req.params.id, updateData, { new: true });
+    const office = await CompanyOfficeModel.findOneAndUpdate(
+      { _id: req.params.id, companyAdminId },
+      { $set: updateData },
+      { new: true }
+    );
 
-    if (!office) return res.status(404).json({ message: "Office not found" });
+    if (!office) {
+      return res.status(404).json({ message: "Office not found" });
+    }
 
-    res.status(200).json({ message: "Company office updated", office });
+    res.status(200).json({
+      message: "Company office updated successfully",
+      office,
+    });
+
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 };
 
-// Get a single company office by ID
 const getCompanyOffice = async (req, res) => {
   try {
-    const office = await CompanyOfficeModel.findById(req.params.id);
-    if (!office) return res.status(404).json({ message: "Office not found" });
+    const companyAdminId = req.user?._id;
+
+    const office = await CompanyOfficeModel.findOne({
+      _id: req.params.id,
+      companyAdminId,
+    });
+
+    if (!office) {
+      return res.status(404).json({ message: "Office not found" });
+    }
+
     res.status(200).json({ office });
+
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 };
 
-// Get all company offices for a company
 const getAllCompanyOffices = async (req, res) => {
   try {
-    const { companyId } = req.query;
-    if (!companyId) return res.status(400).json({ message: "companyId is required" });
+    const companyAdminId = req.user?._id;
 
-    const offices = await CompanyOfficeModel.find({ companyId }).sort({ createdAt: -1 });
+    if (!companyAdminId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const offices = await CompanyOfficeModel
+      .find({ companyAdminId })
+      .sort({ createdAt: -1 });
+
     res.status(200).json({ offices });
+
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 };
 
-// Delete a company office by ID
 const deleteCompanyOffice = async (req, res) => {
   try {
-    const office = await CompanyOfficeModel.findByIdAndDelete(req.params.id);
-    if (!office) return res.status(404).json({ message: "Office not found" });
+    const companyAdminId = req.user?._id;
+
+    const office = await CompanyOfficeModel.findOneAndDelete({
+      _id: req.params.id,
+      companyAdminId,
+    });
+
+    if (!office) {
+      return res.status(404).json({ message: "Office not found" });
+    }
 
     res.status(200).json({ message: "Company office deleted" });
+
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

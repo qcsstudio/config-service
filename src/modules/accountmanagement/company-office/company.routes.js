@@ -7,43 +7,39 @@ const { allowRoles } = require("../../../middlewares/role.middleware");
    COMPANY OFFICES
 ================================ */
 
-// Create a new company office
+// 🔐 Create
 router.post(
   "/company-office",
   auth,
-  allowRoles("SUPER_ADMIN", "COMPANY_ADMIN"),
+   allowRoles("COMPANY_ADMIN"),
   controller.createCompanyOffice
 );
 
-// Update an existing company office
+// 🔐 Update
 router.put(
-  "/company-office/:id",
+  "/company-office-edit/:id",
   auth,
-  allowRoles("SUPER_ADMIN", "COMPANY_ADMIN"),
+  allowRoles("COMPANY_ADMIN"),
   controller.updateCompanyOffice
 );
 
-// Get a single company office
+// 🔓 Get single office (NO AUTH)
 router.get(
-  "/company-office/:id",
-  auth,
-  allowRoles("SUPER_ADMIN", "COMPANY_ADMIN", "EMPLOYEE"),
+  "/company-office-get/:id",
   controller.getCompanyOffice
 );
 
-// Get all company offices
+// 🔓 Get all offices (NO AUTH)
 router.get(
-  "/company-offices",
-  auth,
-  allowRoles("SUPER_ADMIN", "COMPANY_ADMIN", "EMPLOYEE"),
+  "/company-offices-getAll",
   controller.getAllCompanyOffices
 );
 
-// Delete a company office
+// 🔐 Delete
 router.delete(
-  "/company-office/:id",
+  "/company-office-delete/:id",
   auth,
-  allowRoles("SUPER_ADMIN", "COMPANY_ADMIN"),
+  // allowRoles("SUPER_ADMIN", "COMPANY_ADMIN"),
   controller.deleteCompanyOffice
 );
 

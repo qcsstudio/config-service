@@ -7,15 +7,15 @@ const { allowRoles } = require("../../../middlewares/role.middleware");
 router.post(
   "/incorporation",
   auth,
-  allowRoles("SUPER_ADMIN", "COMPANY_ADMIN"),
+ allowRoles("COMPANY_ADMIN"),
   controller.createIncorporation
 );
 
 // Get a single incorporation by ID
 router.get(
-  "/incorporation/:id",
+  "/incorporation-get/:id",
   auth,
-  allowRoles("SUPER_ADMIN", "COMPANY_ADMIN", "EMPLOYEE"),
+ allowRoles("COMPANY_ADMIN"),
   controller.getIncorporationById
 );
 

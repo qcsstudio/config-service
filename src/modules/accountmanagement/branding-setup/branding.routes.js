@@ -7,7 +7,7 @@ const { allowRoles } = require("../../../middlewares/role.middleware");
 router.post(
   "/branding",
   auth,
-  allowRoles("SUPER_ADMIN", "COMPANY_ADMIN"),
+  allowRoles("COMPANY_ADMIN"),
   (req, res, next) => {
     controller.brandingUpload(req, res, (err) => {
       if (err) return res.status(400).json({ message: err.message });
@@ -19,9 +19,9 @@ router.post(
 
 // GET /branding => get branding info
 router.get(
-  "/branding",
+  "/branding-get",
   auth,
-  allowRoles("SUPER_ADMIN", "COMPANY_ADMIN", "EMPLOYEE"),
+   allowRoles("COMPANY_ADMIN"),
   controller.getBranding
 );
 
