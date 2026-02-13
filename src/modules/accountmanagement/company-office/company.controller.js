@@ -2,10 +2,15 @@ const CompanyOfficeModel = require("./company.model");
 
 const createCompanyOffice = async (req, res) => {
   try {
-    const companyAdminId = req.user?._id;
+    // ✅ Get admin id from normalized middleware payload
+    const adminId = req.user?.userId;
 
-    if (!companyAdminId) {
-      return res.status(401).json({ message: "Unauthorized. Admin not found." });
+    console.log("Company Admin ID from JWT:", adminId);
+
+    if (!adminId) {
+      return res.status(401).json({
+        message: "Unauthorized. Admin not found."
+      });
     }
 
     const {
@@ -24,6 +29,7 @@ const createCompanyOffice = async (req, res) => {
       geoRadius,
     } = req.body;
 
+    // ✅ Validation
     if (
       !locationName ||
       !addressType ||
@@ -35,13 +41,18 @@ const createCompanyOffice = async (req, res) => {
       latitude === undefined ||
       longitude === undefined
     ) {
-      return res.status(400).json({ message: "Missing required fields" });
+      return res.status(400).json({
+        message: "Missing required fields"
+      });
     }
 
+    // ✅ Correct field name (matches schema)
     const office = await CompanyOfficeModel.create({
-      companyAdminId,
+      adminId: adminId,
+
       locationName,
       addressType,
+
       address: {
         addressLine1,
         addressLine2,
@@ -51,23 +62,28 @@ const createCompanyOffice = async (req, res) => {
         postalCode,
         location: {
           type: "Point",
-          coordinates: [longitude, latitude],
+          coordinates: [Number(longitude), Number(latitude)],
         },
       },
+
       geoRadius: geoRadius || 10,
       timeZone: timezone || "Asia/Kolkata",
       ipAddress,
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       message: "Company office created",
       office,
     });
 
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    console.error(err);
+    return res.status(500).json({
+      message: err.message
+    });
   }
 };
+
 
 const updateCompanyOffice = async (req, res) => {
   try {
@@ -153,14 +169,14 @@ const getCompanyOffice = async (req, res) => {
 
 const getAllCompanyOffices = async (req, res) => {
   try {
-    const companyAdminId = req.user?._id;
+    const adminId = req.user?.userId;
 
-    if (!companyAdminId) {
+    if (!adminId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
     const offices = await CompanyOfficeModel
-      .find({ companyAdminId })
+      .find({ adminId })
       .sort({ createdAt: -1 });
 
     res.status(200).json({ offices });
@@ -169,6 +185,7 @@ const getAllCompanyOffices = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
+
 
 const deleteCompanyOffice = async (req, res) => {
   try {

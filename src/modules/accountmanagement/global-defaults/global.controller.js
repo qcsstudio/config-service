@@ -4,7 +4,7 @@ const GlobalModel = require("./global.model");
 const createOrUpdateGlobal = async (req, res) => {
   try {
     // ✅ Get companyAdminId from token
-    const companyAdminId = req.user?._id;
+const companyAdminId = req.user?.userId;
 
     if (!companyAdminId) {
       return res.status(401).json({ message: "Unauthorized. Admin not found." });
@@ -74,7 +74,7 @@ const createOrUpdateGlobal = async (req, res) => {
 // Get global settings (by logged-in admin)
 const getGlobalSettings = async (req, res) => {
   try {
-    const companyAdminId = req.user?._id;
+const companyAdminId = req.user?.userId;
 
     if (!companyAdminId) {
       return res.status(401).json({ message: "Unauthorized. Admin not found." });

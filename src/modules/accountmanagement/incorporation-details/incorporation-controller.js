@@ -1,13 +1,16 @@
 const IncorporationModel = require("./incorporation.model");
 
 
+// CREATE or UPDATE (UPSERT)
 const createIncorporation = async (req, res) => {
   try {
-    // ✅ Get companyAdminId from token
-    const companyAdminId = req.user?._id;
+    const companyId = req.user?.companyId;
+    const companyAdminId = req.user?.userId;
 
-    if (!companyAdminId) {
-      return res.status(401).json({ message: "Unauthorized. Admin not found." });
+    if (!companyId) {
+      return res.status(401).json({
+        message: "Unauthorized. Company not found.",
+      });
     }
 
     const {
@@ -17,25 +20,35 @@ const createIncorporation = async (req, res) => {
       cin,
       gstin,
       pan,
-      tan
+      tan,
     } = req.body;
 
+    if (!companyLegalName) {
+      return res.status(400).json({
+        message: "companyLegalName is required",
+      });
+    }
+
     const payload = {
+      companyId,
       companyAdminId,
-      companyLegalName
+      companyLegalName,
+      incorporationDate,
+      companyType,
+      cin,
+      gstin,
+      pan,
+      tan,
     };
 
-    if (incorporationDate) payload.incorporationDate = incorporationDate;
-    if (companyType) payload.companyType = companyType;
-    if (cin) payload.cin = cin;
-    if (gstin) payload.gstin = gstin;
-    if (pan) payload.pan = pan;
-    if (tan) payload.tan = tan;
+    const incorporation = await IncorporationModel.findOneAndUpdate(
+      { companyId },
+      payload,
+      { new: true, upsert: true }
+    );
 
-    const incorporation = await IncorporationModel.create(payload);
-
-    res.status(201).json({
-      message: "Incorporation created",
+    res.status(200).json({
+      message: "Incorporation saved",
       incorporation,
     });
 
@@ -45,12 +58,21 @@ const createIncorporation = async (req, res) => {
 };
 
 
+
+// GET BY ID (TENANT SAFE)
 const getIncorporationById = async (req, res) => {
   try {
-    const incorporation = await IncorporationModel.findById(req.params.id);
+    const companyId = req.user?.companyId;
+
+    const incorporation = await IncorporationModel.findOne({
+      _id: req.params.id,
+      companyId,
+    });
 
     if (!incorporation) {
-      return res.status(404).json({ message: "Incorporation not found" });
+      return res.status(404).json({
+        message: "Incorporation not found",
+      });
     }
 
     res.status(200).json({ incorporation });
@@ -59,6 +81,7 @@ const getIncorporationById = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
+
 
 module.exports = {
   createIncorporation,

@@ -3,19 +3,21 @@ const controller = require("./incorporation-controller");
 const auth = require("../../../middlewares/auth.middleware");
 const { allowRoles } = require("../../../middlewares/role.middleware");
 
-// Create a new incorporation
+
+// CREATE / UPDATE
 router.post(
   "/incorporation",
   auth,
- allowRoles("COMPANY_ADMIN"),
+  allowRoles("COMPANY_ADMIN"),
   controller.createIncorporation
 );
 
-// Get a single incorporation by ID
+
+// GET SINGLE
 router.get(
   "/incorporation-get/:id",
   auth,
- allowRoles("COMPANY_ADMIN"),
+  allowRoles("COMPANY_ADMIN"),
   controller.getIncorporationById
 );
 

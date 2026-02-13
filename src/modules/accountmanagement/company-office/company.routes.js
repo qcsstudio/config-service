@@ -26,14 +26,18 @@ router.put(
 // 🔓 Get single office (NO AUTH)
 router.get(
   "/company-office-get/:id",
+  auth,
   controller.getCompanyOffice
 );
 
 // 🔓 Get all offices (NO AUTH)
 router.get(
   "/company-offices-getAll",
+  auth,
+  allowRoles("COMPANY_ADMIN"),
   controller.getAllCompanyOffices
 );
+
 
 // 🔐 Delete
 router.delete(

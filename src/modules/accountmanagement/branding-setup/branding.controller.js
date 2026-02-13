@@ -1,6 +1,7 @@
 const BrandingModel = require("./branding.model.js");
 const uploadToS3 = require("../../../middlewares/s3Upload.js");
 
+
 const brandingUpload = uploadToS3("account-management").fields([
   { name: "brandLogo", maxCount: 1 },
   { name: "loginCoverImage", maxCount: 1 },
@@ -8,15 +9,16 @@ const brandingUpload = uploadToS3("account-management").fields([
 
 const createOrUpdateBranding = async (req, res) => {
   try {
-    const companyAdminId = req.user?._id;
 
-    if (!companyAdminId) {
-      return res.status(401).json({ message: "Unauthorized. Admin not found." });
+    const companyId = req.user?.companyId;
+
+    if (!companyId) {
+      return res.status(401).json({ message: "Unauthorized. Company not found." });
     }
 
     const { welcomeTitle, welcomeMessage } = req.body;
 
-    const payload = { companyAdminId };
+    const payload = { companyId };
 
     if (req.files?.brandLogo?.[0]) {
       payload.brandLogo = req.files.brandLogo[0].location;
@@ -29,7 +31,7 @@ const createOrUpdateBranding = async (req, res) => {
     if (welcomeTitle) payload.welcomeTitle = welcomeTitle;
     if (welcomeMessage) payload.welcomeMessage = welcomeMessage;
 
-    let branding = await BrandingModel.findOne({ companyAdminId });
+    let branding = await BrandingModel.findOne({ companyId });
 
     if (!branding) {
       branding = await BrandingModel.create(payload);
@@ -51,19 +53,22 @@ const createOrUpdateBranding = async (req, res) => {
 
 const getBranding = async (req, res) => {
   try {
-    const companyAdminId = req.user?._id;
 
-    if (!companyAdminId) {
-      return res.status(401).json({ message: "Unauthorized. Admin not found." });
+    const companyId = req.user?.companyId;
+
+    if (!companyId) {
+      return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const branding = await BrandingModel.findOne({ companyAdminId });
+    const branding = await BrandingModel.findOne({ companyId });
+
     res.status(200).json({ branding });
 
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
+
 
 module.exports = {
   brandingUpload,

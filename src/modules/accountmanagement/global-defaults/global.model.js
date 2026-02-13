@@ -2,7 +2,11 @@ const mongoose = require("mongoose");
 
 const GlobalSchema = new mongoose.Schema(
   {
-    adminId:  mongoose.Schema.Types.ObjectId,
+companyAdminId: {
+  type: mongoose.Schema.Types.ObjectId,
+  required: true,
+  index: true
+},
   
     subdomain: {
       type: String,
