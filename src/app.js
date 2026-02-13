@@ -2,8 +2,52 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 
-/* ===================== CORS ===================== */
-// ... your CORS code remains the same ...
+/* ===================== CORS CONFIG ===================== */
+
+//  Your exact allowed origins
+const allowedExactOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "https://qcshrms.vercel.app",
+  "https://qcsssss.qcsstudios.com",
+];
+
+// Optional: allow all subdomains of qcsstudios.com
+const allowedDomainRegex = /(^|\.)qcsstudios\.com$/;
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true); // Allow Postman / curl
+
+      // Exact match check
+      if (allowedExactOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      // Subdomain check
+      try {
+        const hostname = new URL(origin).hostname;
+        if (allowedDomainRegex.test(hostname)) {
+          return callback(null, true);
+        }
+      } catch (err) {
+        console.log(" Invalid origin:", origin);
+      }
+
+      console.log(" CORS blocked:", origin);
+      return callback(new Error("CORS not allowed"));
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "x-invite-token",
+      "x-tenant",
+    ],
+  })
+);
 
 /* ===================== BODY PARSERS ===================== */
 app.use(express.json());
@@ -11,15 +55,15 @@ app.use(express.urlencoded({ extended: true }));
 
 /* ===================== DEBUG ===================== */
 app.use((req, res, next) => {
-  console.log(req.method, req.originalUrl);
-  next();
+  console.log("", req.method, req.originalUrl);
+  next();
 });
 
 /* ===================== ROUTES ===================== */
 const brandingRoutes = require("./modules/accountmanagement/branding-setup/branding.routes");
 const companyRoutes = require("./modules/accountmanagement/company-office/company.routes");
 const globalRoutes = require("./modules/accountmanagement/global-defaults/global.routes");
-const incorporationRoutes = require("./modules/accountmanagement/incorporation-details/incorporation.routes"); // corrected path
+const incorporationRoutes = require("./modules/accountmanagement/incorporation-details/incorporation.routes");
 
 app.use("/config", brandingRoutes);
 app.use("/config", companyRoutes);
@@ -28,21 +72,22 @@ app.use("/config", incorporationRoutes);
 
 /* ===================== HEALTH ===================== */
 app.get("/", (req, res) => {
-  res.json({ status: "API is running 🚀" });
+  res.json({ status: "API is running " });
 });
 
 /* ===================== 404 ===================== */
 app.use((req, res) => {
-  res.status(404).json({ error: "Route not found" });
+  res.status(404).json({ error: "Route not found" });
 });
 
 /* ===================== ERROR ===================== */
 app.use((err, req, res, next) => {
-  if (err.message === "CORS not allowed") {
-    return res.status(403).json({ error: "CORS blocked" });
-  }
-  console.error(err);
-  res.status(500).json({ error: "Server error" });
+  if (err.message === "CORS not allowed") {
+    return res.status(403).json({ error: "CORS blocked by server" });
+  }
+
+  console.error(" Server Error:", err);
+  res.status(500).json({ error: "Server error" });
 });
 
 module.exports = app;
