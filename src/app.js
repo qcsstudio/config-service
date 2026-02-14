@@ -65,10 +65,11 @@ const companyRoutes = require("./modules/accountmanagement/company-office/compan
 const globalRoutes = require("./modules/accountmanagement/global-defaults/global.routes");
 const incorporationRoutes = require("./modules/accountmanagement/incorporation-details/incorporation.routes");
 
-app.use("/config", brandingRoutes);
-app.use("/config", companyRoutes);
-app.use("/config", globalRoutes);
-app.use("/config", incorporationRoutes);
+app.use(companyRoutes);
+app.use(brandingRoutes);
+app.use(globalRoutes);
+app.use(incorporationRoutes);
+
 
 /* ===================== HEALTH ===================== */
 app.get("/", (req, res) => {
