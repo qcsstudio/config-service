@@ -75,6 +75,10 @@ app.get("/", (req, res) => {
   res.json({ status: "API is running " });
 });
 
+app.get("/health", (req, res) => {
+  res.status(200).send("OK");
+});
+
 /* ===================== 404 ===================== */
 app.use((req, res) => {
   res.status(404).json({ error: "Route not found" });
