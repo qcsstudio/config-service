@@ -2,10 +2,7 @@ const CompanyOfficeModel = require("./company.model");
 
 const createCompanyOffice = async (req, res) => {
   try {
-    // ✅ Get admin id from normalized middleware payload
     const adminId = req.user?.userId;
-
-    console.log("Company Admin ID from JWT:", adminId);
 
     if (!adminId) {
       return res.status(401).json({
@@ -16,8 +13,8 @@ const createCompanyOffice = async (req, res) => {
     const {
       locationName,
       addressType,
-      addressLine1,
-      addressLine2,
+      address1,
+      address2,
       country,
       state,
       city,
@@ -29,41 +26,48 @@ const createCompanyOffice = async (req, res) => {
       geoRadius,
     } = req.body;
 
-    // ✅ Validation
+    // ✅ Required validation (NO lat/lng required)
     if (
       !locationName ||
       !addressType ||
-      !addressLine1 ||
+      !address1 ||
       !country ||
       !state ||
       !city ||
-      !postalCode ||
-      latitude === undefined ||
-      longitude === undefined
+      !postalCode
     ) {
       return res.status(400).json({
         message: "Missing required fields"
       });
     }
 
-    // ✅ Correct field name (matches schema)
+    // Optional geo support
+    let location = {
+      type: "Point",
+      coordinates: [0, 0],
+    };
+
+    if (latitude && longitude) {
+      location.coordinates = [
+        Number(longitude),
+        Number(latitude),
+      ];
+    }
+
     const office = await CompanyOfficeModel.create({
-      adminId: adminId,
+      adminId,
 
       locationName,
       addressType,
 
       address: {
-        addressLine1,
-        addressLine2,
+        address1,
+        address2,
         country,
         state,
         city,
         postalCode,
-        location: {
-          type: "Point",
-          coordinates: [Number(longitude), Number(latitude)],
-        },
+        location,
       },
 
       geoRadius: geoRadius || 10,
@@ -71,31 +75,29 @@ const createCompanyOffice = async (req, res) => {
       ipAddress,
     });
 
-    return res.status(201).json({
+    res.status(201).json({
       message: "Company office created",
       office,
     });
 
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({
-      message: err.message
-    });
+    res.status(500).json({ message: err.message });
   }
 };
 
 
+
 const updateCompanyOffice = async (req, res) => {
   try {
-    const companyAdminId = req.user?._id;
+    const adminId = req.user?.userId;
 
     const updateData = {};
 
     const {
       locationName,
       addressType,
-      addressLine1,
-      addressLine2,
+      address1,
+      address2,
       country,
       state,
       city,
@@ -113,22 +115,23 @@ const updateCompanyOffice = async (req, res) => {
     if (ipAddress) updateData.ipAddress = ipAddress;
     if (geoRadius) updateData.geoRadius = geoRadius;
 
-    if (addressLine1) updateData["address.addressLine1"] = addressLine1;
-    if (addressLine2) updateData["address.addressLine2"] = addressLine2;
+    if (address1) updateData["address.address1"] = address1;
+    if (address2) updateData["address.address2"] = address2;
     if (country) updateData["address.country"] = country;
     if (state) updateData["address.state"] = state;
     if (city) updateData["address.city"] = city;
     if (postalCode) updateData["address.postalCode"] = postalCode;
 
-    if (latitude !== undefined && longitude !== undefined) {
+    // Optional geo update
+    if (latitude && longitude) {
       updateData["address.location"] = {
         type: "Point",
-        coordinates: [longitude, latitude],
+        coordinates: [Number(longitude), Number(latitude)],
       };
     }
 
     const office = await CompanyOfficeModel.findOneAndUpdate(
-      { _id: req.params.id, companyAdminId },
+      { _id: req.params.id, adminId },
       { $set: updateData },
       { new: true }
     );
@@ -137,8 +140,8 @@ const updateCompanyOffice = async (req, res) => {
       return res.status(404).json({ message: "Office not found" });
     }
 
-    res.status(200).json({
-      message: "Company office updated successfully",
+    res.json({
+      message: "Updated successfully",
       office,
     });
 
@@ -146,6 +149,7 @@ const updateCompanyOffice = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
+
 
 const getCompanyOffice = async (req, res) => {
   try {

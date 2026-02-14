@@ -23,16 +23,17 @@ const CompanyOfficeSchema = new mongoose.Schema(
         trim: true,
       },
 
-      addressLine1: {
-        type: String,
-        trim: true,
-        required: true,
-      },
+     address1: {
+  type: String,
+  trim: true,
+  required: true,
+},
 
-      addressLine2: {
-        type: String,
-        trim: true,
-      },
+address2: {
+  type: String,
+  trim: true,
+},
+
 
       country: {
         type: String,
