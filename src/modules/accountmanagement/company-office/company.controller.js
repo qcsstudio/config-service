@@ -87,7 +87,7 @@ const createCompanyOffice = async (req, res) => {
 
 const updateCompanyOffice = async (req, res) => {
   try {
-    const companyAdminId = req.user?._id;
+    // const adminId = req.user?.userId;;
 
     const updateData = {};
 
@@ -128,7 +128,7 @@ const updateCompanyOffice = async (req, res) => {
     }
 
     const office = await CompanyOfficeModel.findOneAndUpdate(
-      { _id: req.params.id, companyAdminId },
+      { _id: req.params.id },
       { $set: updateData },
       { new: true }
     );
@@ -149,18 +149,21 @@ const updateCompanyOffice = async (req, res) => {
 
 const getCompanyOffice = async (req, res) => {
   try {
-    const companyAdminId = req.user?._id;
+    const adminId = req.user?.userId;;
 
     const office = await CompanyOfficeModel.findOne({
       _id: req.params.id,
-      companyAdminId,
+      adminId,
     });
 
     if (!office) {
       return res.status(404).json({ message: "Office not found" });
     }
 
-    res.status(200).json({ office });
+    res.status(200).json({
+      message: "Company data fetch successfully",
+      office,
+    });
 
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -179,7 +182,7 @@ const getAllCompanyOffices = async (req, res) => {
       .find({ adminId })
       .sort({ createdAt: -1 });
 
-    res.status(200).json({ offices });
+    res.status(200).json({ message: "Company data fetch successfully", offices });
 
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -189,11 +192,11 @@ const getAllCompanyOffices = async (req, res) => {
 
 const deleteCompanyOffice = async (req, res) => {
   try {
-    const companyAdminId = req.user?._id;
+    const adminId = req.user?.userId;
 
     const office = await CompanyOfficeModel.findOneAndDelete({
       _id: req.params.id,
-      companyAdminId,
+      adminId,
     });
 
     if (!office) {

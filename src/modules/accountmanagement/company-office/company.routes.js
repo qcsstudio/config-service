@@ -18,8 +18,8 @@ router.post(
 // 🔐 Update
 router.put(
   "/company-office-edit/:id",
-  auth,
-  allowRoles("COMPANY_ADMIN"),
+  // auth,
+  // allowRoles("COMPANY_ADMIN"),
   controller.updateCompanyOffice
 );
 

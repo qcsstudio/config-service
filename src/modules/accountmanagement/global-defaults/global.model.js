@@ -2,11 +2,9 @@ const mongoose = require("mongoose");
 
 const GlobalSchema = new mongoose.Schema(
   {
-companyAdminId: {
-  type: mongoose.Schema.Types.ObjectId,
-  required: true,
-  index: true
-},
+adminId: mongoose.Schema.Types.ObjectId,
+
+
   
     subdomain: {
       type: String,
@@ -51,12 +49,12 @@ companyAdminId: {
     },
     dateFormat: {
       type: String,
-      enum: ["DD-MM-YYYY", "MM-DD-YYYY", "YYYY-MM-DD"],
-      default: "DD-MM-YYYY",
+      // enum: ["DD-MM-YYYY", "MM-DD-YYYY", "YYYY-MM-DD"],
+      // default: "DD-MM-YYYY",
     },
     timeFormat: {
       type: String,
-      enum: ["12", "24"],
+      // enum: ["12", "24"],
       default: "24",
     },
   },

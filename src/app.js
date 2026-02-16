@@ -64,15 +64,32 @@ const brandingRoutes = require("./modules/accountmanagement/branding-setup/brand
 const companyRoutes = require("./modules/accountmanagement/company-office/company.routes");
 const globalRoutes = require("./modules/accountmanagement/global-defaults/global.routes");
 const incorporationRoutes = require("./modules/accountmanagement/incorporation-details/incorporation.routes");
+const approvalWorkflow = require("./modules/employee-data/aprovalworkflow/approvalWorkflow.routes")
+const employeeId = require("./modules/employee-data/employeeid/employee.routes")
+const ExitReason = require("./modules/employee-data/exitreason/exitReason.routes")
+const Probation = require("./modules/employee-data/probation/parobation.routes")
+const customData = require("./modules/employee-data/customdata/customData.routes")
+const commonAccess = require("./modules/employee-data/commonAccess/commonAccess.routes")
 
 app.use("/config", brandingRoutes);
 app.use("/config", companyRoutes);
 app.use("/config", globalRoutes);
 app.use("/config", incorporationRoutes);
+app.use("/config", approvalWorkflow);
+app.use("/config", employeeId);
+app.use("/config", ExitReason);
+app.use("/config", Probation);
+app.use("/config", customData);
+app.use("/config", commonAccess);
+
 
 /* ===================== HEALTH ===================== */
 app.get("/", (req, res) => {
   res.json({ status: "API is running " });
+});
+
+app.get("/health", (req, res) => {
+  res.status(200).send("OK");
 });
 
 /* ===================== 404 ===================== */

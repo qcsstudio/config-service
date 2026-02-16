@@ -3,10 +3,10 @@ const GlobalModel = require("./global.model");
 // Create or update global settings
 const createOrUpdateGlobal = async (req, res) => {
   try {
-    // ✅ Get companyAdminId from token
-const companyAdminId = req.user?.userId;
+    // ✅ Get adminId from token
+    const adminId = req.user?.userId;
 
-    if (!companyAdminId) {
+    if (!adminId) {
       return res.status(401).json({ message: "Unauthorized. Admin not found." });
     }
 
@@ -24,7 +24,7 @@ const companyAdminId = req.user?.userId;
     } = req.body;
 
     const payload = {
-      companyAdminId,
+     adminId,
       subdomain,
       country: {
         name: country?.name,
@@ -40,8 +40,8 @@ const companyAdminId = req.user?.userId;
       timeFormat,
     };
 
-    // 🔎 Check existing by companyAdminId
-    const existingGlobal = await GlobalModel.findOne({ companyAdminId });
+    // 🔎 Check existing by adminId
+    const existingGlobal = await GlobalModel.findOne({ adminId });
 
     let global;
 
@@ -74,13 +74,13 @@ const companyAdminId = req.user?.userId;
 // Get global settings (by logged-in admin)
 const getGlobalSettings = async (req, res) => {
   try {
-const companyAdminId = req.user?.userId;
+    const adminId = req.user?.userId;
 
-    if (!companyAdminId) {
+    if (!adminId) {
       return res.status(401).json({ message: "Unauthorized. Admin not found." });
     }
 
-    const globalSettings = await GlobalModel.findOne({ companyAdminId });
+    const globalSettings = await GlobalModel.findOne({ adminId });
 
     if (!globalSettings) {
       return res.status(404).json({ message: "Global settings not found" });

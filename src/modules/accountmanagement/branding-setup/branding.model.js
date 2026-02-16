@@ -3,9 +3,9 @@ const mongoose = require("mongoose");
 const BrandingSchema = new mongoose.Schema({
   companyId: {
     type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    index: true,
-    unique: true
+    // required: true,
+    // index: true,
+    // unique: true
   },
 
   adminId: mongoose.Schema.Types.ObjectId,

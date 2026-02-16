@@ -4,10 +4,10 @@ const IncorporationModel = require("./incorporation.model");
 // CREATE or UPDATE (UPSERT)
 const createIncorporation = async (req, res) => {
   try {
-    const companyId = req.user?.companyId;
-    const companyAdminId = req.user?.userId;
 
-    if (!companyId) {
+    const adminId = req.user?.userId;
+
+    if (!adminId) {
       return res.status(401).json({
         message: "Unauthorized. Company not found.",
       });
@@ -30,8 +30,7 @@ const createIncorporation = async (req, res) => {
     }
 
     const payload = {
-      companyId,
-      companyAdminId,
+      adminId,
       companyLegalName,
       incorporationDate,
       companyType,
@@ -42,7 +41,7 @@ const createIncorporation = async (req, res) => {
     };
 
     const incorporation = await IncorporationModel.findOneAndUpdate(
-      { companyId },
+      { adminId },
       payload,
       { new: true, upsert: true }
     );
@@ -62,11 +61,10 @@ const createIncorporation = async (req, res) => {
 // GET BY ID (TENANT SAFE)
 const getIncorporationById = async (req, res) => {
   try {
-    const companyId = req.user?.companyId;
+   
 
     const incorporation = await IncorporationModel.findOne({
       _id: req.params.id,
-      companyId,
     });
 
     if (!incorporation) {
@@ -75,7 +73,7 @@ const getIncorporationById = async (req, res) => {
       });
     }
 
-    res.status(200).json({ incorporation });
+    res.status(200).json({ message:"incorporation fetch successfully", incorporation });
 
   } catch (err) {
     res.status(400).json({ message: err.message });

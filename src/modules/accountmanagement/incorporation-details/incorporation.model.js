@@ -2,16 +2,9 @@ const mongoose = require("mongoose");
 
 const IncorporationSchema = new mongoose.Schema(
   {
-    companyId: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      index: true,
-      unique: true, // one incorporation per company
-    },
-
-    companyAdminId: {
-      type: mongoose.Schema.Types.ObjectId,
-    },
+    adminId:
+ mongoose.Schema.Types.ObjectId,
+  
 
     companyLegalName: {
       type: String,
