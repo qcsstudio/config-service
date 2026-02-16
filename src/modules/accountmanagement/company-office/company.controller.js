@@ -2,22 +2,24 @@ const CompanyOfficeModel = require("./company.model");
 
 const createCompanyOffice = async (req, res) => {
   try {
-    // ✅ Get admin id from normalized middleware payload
     const adminId = req.user?.userId;
-
-    console.log("Company Admin ID from JWT:", adminId);
 
     if (!adminId) {
       return res.status(401).json({
-        message: "Unauthorized. Admin not found."
+        message: "Unauthorized. Admin not found.",
       });
     }
 
     const {
       locationName,
       addressType,
+
+      // Accept BOTH naming styles
+      address1,
+      address2,
       addressLine1,
       addressLine2,
+
       country,
       state,
       city,
@@ -29,41 +31,57 @@ const createCompanyOffice = async (req, res) => {
       geoRadius,
     } = req.body;
 
-    // ✅ Validation
+    // Normalize names
+    const line1 = addressLine1 || address1;
+    const line2 = addressLine2 || address2;
+
+    // ✅ Base validation (NO GEO REQUIRED)
     if (
       !locationName ||
       !addressType ||
-      !addressLine1 ||
+      !line1 ||
       !country ||
       !state ||
       !city ||
-      !postalCode ||
-      latitude === undefined ||
-      longitude === undefined
+      !postalCode
     ) {
       return res.status(400).json({
-        message: "Missing required fields"
+        message: "Missing required fields",
       });
     }
 
-    // ✅ Correct field name (matches schema)
+    // ✅ Build location object safely
+    let location = {
+      type: "Point",
+      coordinates: [0, 0],
+    };
+
+    if (
+      latitude !== undefined &&
+      longitude !== undefined &&
+      latitude !== "" &&
+      longitude !== ""
+    ) {
+      location.coordinates = [
+        Number(longitude),
+        Number(latitude),
+      ];
+    }
+
     const office = await CompanyOfficeModel.create({
-      adminId: adminId,
+      adminId,
 
       locationName,
       addressType,
 
       address: {
-        addressLine1,
-        addressLine2,
+        addressLine1: line1,
+        addressLine2: line2,
         country,
         state,
         city,
         postalCode,
-        location: {
-          type: "Point",
-          coordinates: [Number(longitude), Number(latitude)],
-        },
+        location,
       },
 
       geoRadius: geoRadius || 10,
@@ -78,11 +96,10 @@ const createCompanyOffice = async (req, res) => {
 
   } catch (err) {
     console.error(err);
-    return res.status(500).json({
-      message: err.message
-    });
+    res.status(500).json({ message: err.message });
   }
 };
+
 
 
 const updateCompanyOffice = async (req, res) => {
