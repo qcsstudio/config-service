@@ -14,8 +14,14 @@ router.post(
 // Get Workflow By Id
 router.get(
   "/approvalWorkflow-get/:id",
-  auth,
+  // auth,
   workflowController.getWorkflow
+);
+
+router.get(
+  "/approvalWorkflow-get-all",
+  // auth,
+  workflowController.getWorkflowAll
 );
 
 module.exports = router;

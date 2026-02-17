@@ -76,5 +76,22 @@ module.exports = {
                 error: error.message
             });
         }
-    }
+    },
+
+     getExitReasons: async (req, res) => {
+  try {
+    const data = await ExitReason.find().sort({ createdAt: -1 });
+
+    res.status(200).json({
+      message: "Exit reasons fetched successfully",
+      count: data.length,
+      data,
+    });
+
+  } catch (error) {
+    console.error("Error fetching exit reasons:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+}
+
 }

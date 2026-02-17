@@ -90,3 +90,23 @@ exports.getWorkflow = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.getWorkflowAll = async (req, res) => {
+  try {
+
+    const workflow = await ApprovalWorkflow.find();
+
+    if (!workflow || workflow.length === 0) {
+      return res.status(404).json({ message: "Workflow not found" });
+    }
+
+    res.status(200).json({
+      message: "Approval workflow fetched successfully",
+      data: workflow
+    });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
