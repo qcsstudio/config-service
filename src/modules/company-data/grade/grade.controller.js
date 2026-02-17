@@ -1,4 +1,4 @@
-const Grade = require("../models/Grade");
+const Grade = require("./grade.model");
 
 
 // ✅ 1. CREATE GRADE

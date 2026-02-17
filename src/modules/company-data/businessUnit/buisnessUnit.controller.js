@@ -1,4 +1,4 @@
-const BusinessUnit = require("../models/BusinessUnit");
+const BusinessUnit = require("./businessUnit.model");
 exports.createBusinessUnit = async (req, res) => {
   try {
 

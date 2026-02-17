@@ -70,6 +70,12 @@ const ExitReason = require("./modules/employee-data/exitreason/exitReason.routes
 const Probation = require("./modules/employee-data/probation/parobation.routes")
 const customData = require("./modules/employee-data/customdata/customData.routes")
 const commonAccess = require("./modules/employee-data/commonAccess/commonAccess.routes")
+const businessUnit = require("./modules/company-data/businessUnit/businessUnit.routes")
+const department = require('./modules/company-data/department/department.routes')
+const designation = require('./modules/company-data/designation/designation.routes')
+const grade = require("./modules/company-data/grade/grade.routes")
+const team = require("./modules/company-data/team/team.routes")
+
 
 app.use("/config", brandingRoutes);
 app.use("/config", companyRoutes);
@@ -81,6 +87,12 @@ app.use("/config", ExitReason);
 app.use("/config", Probation);
 app.use("/config", customData);
 app.use("/config", commonAccess);
+app.use("/config", businessUnit);
+app.use("/config", department);
+app.use("/config", designation);
+app.use("/config", grade);
+app.use("/config", team);
+
 
 
 /* ===================== HEALTH ===================== */
