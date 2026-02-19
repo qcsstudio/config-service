@@ -35,8 +35,7 @@ const businessUnitSchema = new mongoose.Schema({
     },
 
     businessHead: {
-        employeeid: Number,
-        employeename: String,
+      type:String
         // imagepath: String
     },
 

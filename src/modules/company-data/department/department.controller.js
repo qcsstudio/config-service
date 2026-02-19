@@ -13,7 +13,7 @@ exports.createDepartment = async (req, res) => {
       isPartOfBusinessUnit,
       businessUnitId,
       isSubDepartment,
-      parentDepartmentId,
+      parentDepartmentName,
       assignDepartmentHead,
       departmentHead
     } = req.body;
@@ -35,7 +35,7 @@ exports.createDepartment = async (req, res) => {
       isPartOfBusinessUnit,
       businessUnitId,
       isSubDepartment,
-      parentDepartmentId,
+      parentDepartmentName,
       assignDepartmentHead,
       departmentHead,
       addedById: adminId,
@@ -84,7 +84,7 @@ exports.updateDepartment = async (req, res) => {
       isPartOfBusinessUnit,
       businessUnitId,
       isSubDepartment,
-      parentDepartmentId,
+      parentDepartmentName,
       assignDepartmentHead,
       departmentHead
     } = req.body;
@@ -94,7 +94,7 @@ exports.updateDepartment = async (req, res) => {
       isPartOfBusinessUnit,
       businessUnitId,
       isSubDepartment,
-      parentDepartmentId,
+      parentDepartmentName,
       assignDepartmentHead,
       departmentHead
     };

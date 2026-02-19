@@ -28,9 +28,8 @@ const departmentSchema = new mongoose.Schema({
     default: false
   },
 
-  parentDepartmentId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Department",
+  parentDepartmentName: {
+    type:String,
     default: null
   },
 
@@ -41,9 +40,8 @@ const departmentSchema = new mongoose.Schema({
   },
 
   departmentHead: {
-    employeeid: Number,
-    employeename: String,
-    // imagepath: String
+    type:String,
+    default: null
   },
 
   // 🔹 Added By Info
