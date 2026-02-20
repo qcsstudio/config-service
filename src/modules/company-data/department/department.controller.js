@@ -15,6 +15,7 @@ exports.createDepartment = async (req, res) => {
       isSubDepartment,
       parentDepartmentName,
       assignDepartmentHead,
+      departmentheadId,
       departmentHead
     } = req.body;
 
@@ -37,6 +38,7 @@ exports.createDepartment = async (req, res) => {
       isSubDepartment,
       parentDepartmentName,
       assignDepartmentHead,
+      departmentheadId,
       departmentHead,
       addedById: adminId,
       addedByName: req.user?.name,
@@ -86,6 +88,7 @@ exports.updateDepartment = async (req, res) => {
       isSubDepartment,
       parentDepartmentName,
       assignDepartmentHead,
+      departmentheadId,
       departmentHead
     } = req.body;
 
@@ -96,6 +99,7 @@ exports.updateDepartment = async (req, res) => {
       isSubDepartment,
       parentDepartmentName,
       assignDepartmentHead,
+      departmentheadId,
       departmentHead
     };
 

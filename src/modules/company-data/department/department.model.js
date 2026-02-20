@@ -38,8 +38,11 @@ const departmentSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-
-  departmentHead: {
+departmentheadId:{
+  type:mongoose.Types.ObjectId,
+  default:null
+},
+ departmentHead: {
     type:String,
     default: null
   },
