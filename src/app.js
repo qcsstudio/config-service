@@ -75,7 +75,10 @@ const department = require('./modules/company-data/department/department.routes'
 const designation = require('./modules/company-data/designation/designation.routes')
 const grade = require("./modules/company-data/grade/grade.routes")
 const team = require("./modules/company-data/team/team.routes")
-
+const attendancePolicy = require("./modules/track/attendance/attendancePolicy/attendancePolicy.routes")
+const clockInMethod = require("./modules/track/attendance/clockInMethod/clockInMethod.routes")
+const extraTime = require('./modules/track/attendance/extraTime/extraTime.routes')
+const shift = require('./modules/track/attendance/shift/shift.routes')
 
 app.use("/config", brandingRoutes);
 app.use("/config", companyRoutes);
@@ -92,6 +95,14 @@ app.use("/config", department);
 app.use("/config", designation);
 app.use("/config", grade);
 app.use("/config", team);
+app.use("/config", attendancePolicy);
+app.use("/config", clockInMethod);
+app.use("/config", extraTime);
+app.use("/config", shift);
+
+
+
+
 
 
 
