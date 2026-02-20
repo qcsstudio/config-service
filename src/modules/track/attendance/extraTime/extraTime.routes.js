@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 const {
   getAllExtraTimePolicies,
-  getExtraTimePolicyById,
-} = require("../controllers/extraTimeController");
+  getAllExtraTimePolicies,
+} = require("./extraTime.controller");
 
 const auth = require("../../../../middlewares/auth.middleware");
 
@@ -11,6 +11,6 @@ const auth = require("../../../../middlewares/auth.middleware");
 router.post("/extra-time", auth, getAllExtraTimePolicies);
 
 // Get single policy by ID
-router.get("/extra-time/:id",  getExtraTimePolicyById);
+router.get("/extra-time-getAll",  getAllExtraTimePolicies);
 
 module.exports = router;
