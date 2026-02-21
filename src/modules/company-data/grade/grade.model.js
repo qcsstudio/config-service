@@ -29,26 +29,18 @@ const gradeSchema = new mongoose.Schema({
   assignedEmployeeList: {
     type: [
       {
-        departmentId: {
-          type: mongoose.Schema.Types.ObjectId,
-          default: null
-        },
-
-        departmentName: {
-          type: String,
-          default: ""
-        },
-
-        employeeid: Number,
-        employeename: String,
-        employeecode: String,
-        emailid: String,
-        primarymobile: String,
-        designationid: Number,
-        designationname: String,
-        imagepath: String,
-        probationperiodid: Number,
-      }
+         employeeId: {
+           type: mongoose.Types.ObjectId,
+           ref: "employees",
+           default:null
+         },
+         departmentId: {
+           type: mongoose.Schema.Types.ObjectId,
+           ref: "Department",
+           default: null,
+         },
+        //  designationid: { type: mongoose.Types.ObjectId, ref: "Designation",default:null },
+       },
     ],
     default: []
   }

@@ -115,17 +115,19 @@ const TimeAtWorkSchema = new Schema(
 
 /* ── ASSIGNED EMPLOYEE ─────────────────────────────── */
 const AssignedEmployeeSchema = new Schema(
-  {
-    employeeid: { type: Number, default: null },
-    employeename: { type: String, default: "" },
-    employeecode: { type: String, default: "" },
-    emailid: { type: String, default: "" },
-    primarymobile: { type: String, default: "" },
-    designationid: { type: Number, default: null },
-    designationname: { type: String, default: "" },
-    imagepath: { type: String, default: "" },
-    probationperiodid: { type: Number, default: null },
-  },
+   {
+      employeeId: {
+        type: mongoose.Types.ObjectId,
+        ref: "employees",
+        default:null
+      },
+      departmentId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Department",
+        default: null,
+      },
+      designationid: { type: mongoose.Types.ObjectId, ref: "Designation",default:null },
+    },
   { _id: false }
 );
 
