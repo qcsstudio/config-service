@@ -3,6 +3,7 @@ const AttendancePolicy = require("./attendancePolicy.model")
 exports.createAttendancePolicy = async (req, res) => {
   try {
     const adminId = req.user?.userId;
+    const companyId = req.user?.companyId
     const addedByName = req.user?.name;
     const addedByImage = req.user?.image;
 
@@ -27,7 +28,8 @@ exports.createAttendancePolicy = async (req, res) => {
       status: status || "draft",
       adminId,
       addedByName,
-      addedByImage
+      addedByImage,
+      companyId
     });
 
     return res.status(201).json({

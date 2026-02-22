@@ -5,7 +5,7 @@ exports.createClockInMethod = async (req, res) => {
     const adminId = req.user?.userId;
     const addedByName = req.user?.name || "";
     const addedByImage = req.user?.image || "";
-
+ const companyId = req.user?.companyId
     if (!adminId) {
       return res.status(401).json({
         success: false,
@@ -50,6 +50,7 @@ exports.createClockInMethod = async (req, res) => {
       adminId,
       addedByName,
       addedByImage,
+      companyId,
 
       deviceName: deviceName.trim(),
       description,

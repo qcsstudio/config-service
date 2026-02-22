@@ -79,6 +79,11 @@ const attendancePolicy = require("./modules/track/attendance/attendancePolicy/at
 const clockInMethod = require("./modules/track/attendance/clockInMethod/clockInMethod.routes")
 const extraTime = require('./modules/track/attendance/extraTime/extraTime.routes')
 const shift = require('./modules/track/attendance/shift/shift.routes')
+const holidayPolicy = require("./modules/track/leave/holidayPolicy/holidayPolicy.routes")
+const leaveCycle = require("./modules/track/leave/leaveCycle/leaveCycle.routes")
+const leavePolicy = require("./modules/track/leave/leavePolicy/leavePolicy.routes")
+const leaveType = require("./modules/track/leave/leaveType/leaveType.routes")
+const weeklyOff = require("./modules/track/leave/weekoffName/weekOffName.routes")
 
 app.use("/config", brandingRoutes);
 app.use("/config", companyRoutes);
@@ -99,6 +104,8 @@ app.use("/config", attendancePolicy);
 app.use("/config", clockInMethod);
 app.use("/config", extraTime);
 app.use("/config", shift);
+app.use("/config", holidayPolicy);
+
 
 
 

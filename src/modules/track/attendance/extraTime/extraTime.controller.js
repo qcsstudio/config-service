@@ -2,8 +2,8 @@ const ExtraTime = require("./extraTime.model"); // adjust path as needed
 
 exports.createExtraTimePolicy = async (req, res) => {
   try {
-    const userId = req.user?._id;
-
+    const userId = req.user?.userId;
+ const companyId = req.user?.companyId
     if (!userId) {
       return res.status(401).json({
         success: false,
@@ -51,6 +51,7 @@ exports.createExtraTimePolicy = async (req, res) => {
       status,
       adminId: userId,     // ✅ correct field
       updatedBy: userId,
+      companyId,
     });
 
     return res.status(201).json({

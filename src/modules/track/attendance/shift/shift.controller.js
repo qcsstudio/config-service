@@ -5,7 +5,7 @@ exports.createShift = async (req, res) => {
     const adminId = req.user?.userId;
     const addedByName = req.user?.name;
     const addedByImage = req.user?.image;
-
+    const companyId = req.user?.companyId
     const {
       title,
       description,
@@ -31,6 +31,7 @@ exports.createShift = async (req, res) => {
 
     const shift = await Shift.create({
       adminId,
+      companyId,
       addedByName,
       addedByImage,
       title,

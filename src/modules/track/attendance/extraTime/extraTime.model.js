@@ -271,9 +271,15 @@ const ExtraTimeSchema = new Schema(
     },
 
     adminId: {
-      type: Schema.Types.ObjectId,
-      default: null,
-    },
+        type: mongoose.Schema.Types.ObjectId,
+        ref:"users",
+        default:null
+      },
+         companyId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref:"companies",
+         default:null
+      },
 
     updatedBy: {
       type: Schema.Types.ObjectId,
