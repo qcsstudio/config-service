@@ -9,14 +9,22 @@ exports.createTeam = async (req, res) => {
     const {
       teamName,
       assignTeamLead,
-      teamLead
+      teamLead,
+      companyOfficeId
     } = req.body;
+ let officeIds = [];
 
+    if (companyOfficeId) {
+      officeIds = Array.isArray(companyOfficeId)
+        ? companyOfficeId
+        : [companyOfficeId];
+    }
     const newTeam = new Team({
       adminId,
       teamName,
       assignTeamLead,
       teamLead: assignTeamLead ? teamLead : {},
+      companyOfficeId: officeIds, 
       addedById: req.user?.userId,
       addedByName: req.user?.name,
       addedByImage: req.user?.image
@@ -39,12 +47,25 @@ exports.createTeam = async (req, res) => {
 // ✅ 2. GET ALL TEAMS
 exports.getAllTeams = async (req, res) => {
   try {
+    const adminId = req.user?.userId;
+    const { country } = req.query;
 
-    const teams = await Team.find()
-      .sort({ createdAt: -1 });
+    if (!adminId) return res.status(401).json({ message: "Unauthorized" });
 
-    res.status(200).json(teams);
+    let teams = await Team.find({ adminId }).sort({ createdAt: -1 })
+      .populate({
+        path: "companyOfficeId",
+        match: country ? { "address.country": country } : {},
+        select: "locationName address.country address.state address.city",
+      });
 
+    if (country) teams = teams.filter(t => t.companyOfficeId !== null);
+
+    res.status(200).json({
+      message: "Teams fetched successfully",
+      count: teams.length,
+      data: teams,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

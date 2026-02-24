@@ -22,6 +22,7 @@ router.patch(
 );
 router.get(
   "/exit-reasons-getAll",
+  auth,
   getExitReasons
 );
 

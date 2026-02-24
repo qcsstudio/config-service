@@ -46,5 +46,10 @@ router.delete(
   // allowRoles("SUPER_ADMIN", "COMPANY_ADMIN"),
   controller.deleteCompanyOffice
 );
+router.get(
+  "/company-offices-data",
+  auth,
+  controller.getCompanyOfficeData
+);
 
 module.exports = router;

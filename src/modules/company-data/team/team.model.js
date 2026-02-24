@@ -11,6 +11,15 @@ const teamSchema = new mongoose.Schema({
   teamName: {
     type: String,
   },
+   companyOfficeId: {
+    type: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "CompanyOffice"
+      }
+    ],
+    default: []   // empty array
+  },
 
   // 🔹 Assign Team Lead? (From Image)
   assignTeamLead: {

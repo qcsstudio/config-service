@@ -9,6 +9,18 @@ const departmentSchema = new mongoose.Schema({
   departmentName: {
     type: String,
   },
+   companyOfficeId: {
+    type: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "CompanyOffice"
+      }
+    ],
+    default: []   // empty array
+  },
+
+  // 🔹 Geo Location (For Map / Nearby Search)
+  
 
   // 🔹 Business Unit Relation
   isPartOfBusinessUnit: {

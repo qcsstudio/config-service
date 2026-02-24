@@ -6,6 +6,15 @@ const gradeSchema = new mongoose.Schema({
   adminId: {
     type: mongoose.Schema.Types.ObjectId,
   },
+   companyOfficeId: {
+    type: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "CompanyOffice"
+      }
+    ],
+    default: []   // empty array
+  },
 
   // 🔹 Grade Name (From Image)
   gradeName: {

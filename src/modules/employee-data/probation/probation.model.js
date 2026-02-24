@@ -9,6 +9,15 @@ const ProbationPlanSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+     companyOfficeId: {
+    type: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "CompanyOffice"
+      }
+    ],
+    default: []   // empty array
+  },
 
     description: {
       type: String,

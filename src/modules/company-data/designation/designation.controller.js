@@ -10,8 +10,16 @@ exports.createDesignation = async (req, res) => {
       designationName,
       isPartOfDepartment,
       departmentId,
-      departmentName
+      departmentName,
+      companyOfficeId
     } = req.body;
+     let officeIds = [];
+
+    if (companyOfficeId) {
+      officeIds = Array.isArray(companyOfficeId)
+        ? companyOfficeId
+        : [companyOfficeId];
+    }
 
     const newDesignation = new Designation({
       adminId,
@@ -19,6 +27,7 @@ exports.createDesignation = async (req, res) => {
       isPartOfDepartment,
       departmentId: isPartOfDepartment ? departmentId : null,
       departmentName: isPartOfDepartment ? departmentName : "",
+      companyOfficeId: officeIds,
       addedById: req.user?.userId,
       addedByName: req.user?.name,
       addedByImage: req.user?.image
@@ -41,12 +50,33 @@ exports.createDesignation = async (req, res) => {
 // ✅ 2. GET ALL DESIGNATIONS
 exports.getAllDesignations = async (req, res) => {
   try {
+    const adminId = req.user?.userId;
+    const { country } = req.query;
 
-    const list = await Designation.find()
-      .sort({ createdAt: -1 });
+    if (!adminId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
-    res.status(200).json(list);
+    // Base query: match adminId
+    let query = { adminId };
 
+    // Fetch designations and populate companyOfficeId
+    let designations = await Designation.find(query)
+      .sort({ createdAt: -1 })
+      .populate({
+        path: "companyOfficeId",
+        match: country ? { "address.country": country } : {},
+      });
+
+    // If country filter applied, remove designations with null companyOfficeId
+    if (country) {
+      designations = designations.filter(d => d.companyOfficeId !== null);
+    }
+
+    res.status(200).json({
+      message: "Designations fetched successfully",
+      data: designations,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

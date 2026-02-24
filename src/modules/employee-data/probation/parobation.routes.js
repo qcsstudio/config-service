@@ -9,7 +9,7 @@ const {
 const auth = require("../../../middlewares/auth.middleware");
 
 router.post("/create-probation", auth, createOrUpdateProbationPlan);
-router.get("/probation-getAll",  getAllProbationPlans);
+router.get("/probation-getAll", auth, getAllProbationPlans);
 router.get("/probation-get/:id", getProbationPlanById);
 router.delete("/delete-probation/:id",  deleteProbationPlan);
 

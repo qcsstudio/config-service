@@ -16,11 +16,19 @@ const createOrUpdateProbationPlan = async (req, res) => {
       isAutoConfirm,
       notifyEmployee,
       notifySettings,
+         companyOfficeId,
       _id
     } = req.body;
 
     // If notifyEmployee is false, reset notifySettings
     const finalNotifySettings = notifyEmployee ? notifySettings : {};
+ let officeIds = [];
+
+    if (companyOfficeId) {
+      officeIds = Array.isArray(companyOfficeId)
+        ? companyOfficeId
+        : [companyOfficeId];
+    }
 
     const payload = {
       adminId,
@@ -46,7 +54,10 @@ const createOrUpdateProbationPlan = async (req, res) => {
     if (_id) {
       const updated = await ProbationPlan.findOneAndUpdate(
         { _id },
-        payload,
+      {
+          ...payload
+          // ❌ NOT including companyOfficeId here
+        },
         { new: true }
       );
 
@@ -63,7 +74,8 @@ const createOrUpdateProbationPlan = async (req, res) => {
     }
 
     // 🆕 CREATE
-    const created = await ProbationPlan.create(payload);
+    const created = await ProbationPlan.create({ ...payload,
+      companyOfficeId: officeIds});
 
     res.status(201).json({
       message: "Probation plan created successfully",
@@ -78,19 +90,27 @@ const createOrUpdateProbationPlan = async (req, res) => {
 
 const getAllProbationPlans = async (req, res) => {
   try {
+    const adminId = req.user?.userId;
+    const { country } = req.query;
 
+    if (!adminId) return res.status(401).json({ message: "Unauthorized" });
 
-    const plans = await ProbationPlan.find({  })
-      .sort({ createdAt: -1 });
+    let plans = await ProbationPlan.find({ adminId }).sort({ createdAt: -1 })
+      .populate({
+        path: "companyOfficeId",
+        match: country ? { "address.country": country } : {},
+        select: "locationName address.country address.state address.city",
+      });
+
+    if (country) plans = plans.filter(p => p.companyOfficeId !== null);
 
     res.status(200).json({
       message: "Probation plans fetched successfully",
       count: plans.length,
       data: plans,
     });
-
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 

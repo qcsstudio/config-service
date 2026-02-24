@@ -13,7 +13,8 @@ exports.createBusinessUnit = async (req, res) => {
       longitude,
       logo,
       assignBusinessHead,
-      businessHead
+      businessHead,
+      companyOfficeId
     } = req.body;
 
     // ✅ Required Validation
@@ -33,6 +34,15 @@ exports.createBusinessUnit = async (req, res) => {
         message: "Latitude and Longitude must be valid numbers"
       });
     }
+      let officeIds = [];
+
+    if (companyOfficeId) {
+      if (Array.isArray(companyOfficeId)) {
+        officeIds = companyOfficeId; // multiple ids
+      } else {
+        officeIds = [companyOfficeId]; // single id convert to array
+      }
+    }
 
     // ✅ Create GeoJSON format
     const location = {
@@ -48,6 +58,7 @@ exports.createBusinessUnit = async (req, res) => {
       logo,
       assignBusinessHead,
       businessHead,
+      companyOfficeId: officeIds, 
       addedById: adminId,
       addedByName,
       addedByImage,
@@ -75,16 +86,41 @@ exports.createBusinessUnit = async (req, res) => {
 
 exports.getAllBusinessUnits = async (req, res) => {
   try {
+    const adminId = req.user?.userId;
+    const { country } = req.query;
 
-    const units = await BusinessUnit.find();
+    if (!adminId) {
+      return res.status(401).json({
+        message: "Unauthorized"
+      });
+    }
+
+    // 🔹 Always filter by adminId
+    const units = await BusinessUnit.find({ adminId })
+      .populate({
+        path: "companyOfficeId",
+        match: country
+          ? { "address.country": country }
+          : {},
+        select: "locationName address.country address.state address.city"
+      });
+
+    // 🔹 If country selected → remove unmatched units
+    const filteredUnits = country
+      ? units.filter(unit => unit.companyOfficeId.length > 0)
+      : units;
 
     res.status(200).json({
       message: "Business Units fetched successfully",
-      data: units
+      selectedCountry: country || null,
+      total: filteredUnits.length,
+      data: filteredUnits
     });
 
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      error: error.message
+    });
   }
 };
 

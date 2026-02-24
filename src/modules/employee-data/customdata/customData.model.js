@@ -18,6 +18,15 @@ const CustomDataSectionSchema = new mongoose.Schema(
   addedbyimagepath: {
     type: String,
   },
+   companyOfficeId: {
+    type: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "CompanyOffice"
+      }
+    ],
+    default: []   // empty array
+  },
 
   // 🔹 Section Info
   sectionName: {

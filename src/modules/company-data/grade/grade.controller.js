@@ -5,17 +5,25 @@ const Grade = require("./grade.model");
 exports.createGrade = async (req, res) => {
   try {
     const adminId = req.user?.userId;
-    const { gradeName } = req.body;
+    const { gradeName,companyOfficeId } = req.body;
 
     // Optional: Prevent duplicate grade name for same admin
     const existing = await Grade.findOne({ adminId, gradeName });
     if (existing) {
       return res.status(400).json({ message: "Grade already exists" });
     }
+    let officeIds = [];
+
+    if (companyOfficeId) {
+      officeIds = Array.isArray(companyOfficeId)
+        ? companyOfficeId
+        : [companyOfficeId];
+    }
 
     const newGrade = new Grade({
       adminId,
       gradeName,
+      companyOfficeId: officeIds,
       addedById: req.user?.userId,
       addedByName: req.user?.name,
       addedByImage: req.user?.image
@@ -38,12 +46,33 @@ exports.createGrade = async (req, res) => {
 // ✅ 2. GET ALL GRADES
 exports.getAllGrades = async (req, res) => {
   try {
+    const adminId = req.user?.userId;
+    const { country } = req.query;
 
-    const grades = await Grade.find()
-      .sort({ createdAt: -1 });
+    if (!adminId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
-    res.status(200).json(grades);
+    // Base query: match adminId
+    let query = { adminId };
 
+    // Fetch grades and populate companyOfficeId
+    let grades = await Grade.find(query)
+      .sort({ createdAt: -1 })
+      .populate({
+        path: "companyOfficeId",
+        match: country ? { "address.country": country } : {},
+      });
+
+    // If country filter applied, remove grades with null companyOfficeId
+    if (country) {
+      grades = grades.filter(g => g.companyOfficeId !== null);
+    }
+
+    res.status(200).json({
+      message: "Grades fetched successfully",
+      data: grades,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

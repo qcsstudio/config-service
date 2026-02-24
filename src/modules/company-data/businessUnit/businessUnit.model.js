@@ -14,6 +14,16 @@ const businessUnitSchema = new mongoose.Schema({
     required: true
   },
 
+   companyOfficeId: {
+    type: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+         ref: "CompanyOffice" 
+      }
+    ],
+    default: []   // empty array
+  },
+
     location: {
         type: {
             type: String,

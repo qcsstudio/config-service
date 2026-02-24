@@ -5,7 +5,7 @@ const controller = require("./buisnessUnit.controller");
 const auth = require("../../../middlewares/auth.middleware")
 
 router.post("/create-buinessUnit",auth, controller.createBusinessUnit);
-router.get("/all-buinessUnit", controller.getAllBusinessUnits);
+router.get("/all-buinessUnit", auth,controller.getAllBusinessUnits);
 router.get("/getOne-buinessUnit/:id", controller.getBusinessUnitById);
 router.put("/update-buinessUnit/:id", controller.updateBusinessUnit);
 router.delete("/delete-buinessUnit/:id", controller.deleteBusinessUnit);

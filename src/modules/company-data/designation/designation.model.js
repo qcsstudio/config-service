@@ -11,6 +11,15 @@ const designationSchema = new mongoose.Schema({
   designationName: {
     type: String,
   },
+   companyOfficeId: {
+    type: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "CompanyOffice"
+      }
+    ],
+    default: []   // empty array
+  },
 
   // 🔹 Is Part Of Specific Department? (From Image)
   isPartOfDepartment: {

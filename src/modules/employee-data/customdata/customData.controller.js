@@ -15,8 +15,16 @@ const createCustomDataSection = async (req, res) => {
       includeMandatoryExpiryDate,
       pushNotificationOnExpiry,
       editRights,
-      customFields
+      customFields,
+       companyOfficeId  
     } = req.body;
+    let officeIds = [];
+
+    if (companyOfficeId) {
+      officeIds = Array.isArray(companyOfficeId)
+        ? companyOfficeId
+        : [companyOfficeId];
+    }
 
     if (!sectionName) {
       return res.status(400).json({ message: "Section name is required" });
@@ -60,6 +68,9 @@ const createCustomDataSection = async (req, res) => {
       });
     }
 
+     
+
+
     const newSection = await CustomDataSection.create({
       adminId,
       addedbyid: adminId,
@@ -68,6 +79,7 @@ const createCustomDataSection = async (req, res) => {
       includeMandatoryExpiryDate,
       pushNotificationOnExpiry,
       editRights,
+      companyOfficeId: officeIds,
       customFields: processedFields
     });
 
@@ -83,13 +95,24 @@ const createCustomDataSection = async (req, res) => {
 
 
 // GET ALL
-const getAllCustomDataSections = async (req, res) => {
+ const getAllCustomDataSections = async (req, res) => {
   try {
+    const adminId = req.user?.userId;
+    const { country } = req.query;
 
-    const sections = await CustomDataSection.find({  })
-      .sort({ createdAt: -1 });
+    if (!adminId) return res.status(401).json({ message: "Unauthorized" });
+
+    let sections = await CustomDataSection.find({ adminId }).sort({ createdAt: -1 })
+      .populate({
+        path: "companyOfficeId",
+        match: country ? { "address.country": country } : {},
+        select: "locationName address.country address.state address.city",
+      });
+
+    if (country) sections = sections.filter(s => s.companyOfficeId !== null);
 
     res.status(200).json({
+      message: "Custom data sections fetched successfully",
       count: sections.length,
       data: sections,
     });

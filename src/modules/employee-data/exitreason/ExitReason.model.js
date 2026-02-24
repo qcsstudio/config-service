@@ -11,7 +11,15 @@ const ExitReasonSchema = new mongoose.Schema(
       // enum: ["resignation", "termination"],
       required: true
     },
-
+ companyOfficeId: {
+    type: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "CompanyOffice"
+      }
+    ],
+    default: []   // empty array
+  },
     description: {
       type: String,
       required: true,

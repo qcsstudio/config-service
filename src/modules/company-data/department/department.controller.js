@@ -16,7 +16,8 @@ exports.createDepartment = async (req, res) => {
       parentDepartmentName,
       assignDepartmentHead,
       departmentheadId,
-      departmentHead
+      departmentHead,
+      companyOfficeId
     } = req.body;
 
     // Validation
@@ -29,7 +30,13 @@ exports.createDepartment = async (req, res) => {
         message: "Department head details are required"
       });
     }
+ let officeIds = [];
 
+    if (companyOfficeId) {
+      officeIds = Array.isArray(companyOfficeId)
+        ? companyOfficeId
+        : [companyOfficeId];
+    }
     const newDepartment = new Department({
       adminId,
       departmentName,
@@ -40,6 +47,7 @@ exports.createDepartment = async (req, res) => {
       assignDepartmentHead,
       departmentheadId,
       departmentHead,
+       companyOfficeId: officeIds,
       addedById: adminId,
       addedByName: req.user?.name,
       addedByImage: req.user?.image
@@ -62,15 +70,28 @@ exports.createDepartment = async (req, res) => {
 
 exports.getAllDepartments = async (req, res) => {
   try {
+    const adminId = req.user?.userId;
+    const { country } = req.query;
 
+    if (!adminId) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
+    }
 
-    const departments = await Department.find().sort({ createdAt: -1 });
+    // Fetch departments and populate companyOfficeId with optional country filter
+    const departments = await Department.find()
+      .sort({ createdAt: -1 })
+      .populate({
+        path: "companyOfficeId",
+        match: country ? { "address.country": country } : {},
+        select: "locationName address.country address.state address.city",
+      });
 
     res.status(200).json({
       message: "Departments fetched successfully",
-      data: departments
+      data: departments,
     });
-
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

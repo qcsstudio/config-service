@@ -227,10 +227,53 @@ const deleteCompanyOffice = async (req, res) => {
   }
 };
 
+const getCompanyOfficeData = async (req, res) => {
+  try {
+    const adminId = req.user?.userId;
+    const { country } = req.query;
+
+    if (!adminId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    // 🔹 If NO country selected → return all countries only
+    if (!country) {
+      const countries = await CompanyOfficeModel.distinct(
+        "address.country",
+        { adminId }
+      );
+
+      return res.status(200).json({
+        type: "country",
+        countries
+      });
+    }
+
+    // 🔹 If country selected → return only offices of that country
+    const offices = await CompanyOfficeModel.find({
+      adminId,
+      "address.country": country
+    })
+
+    return res.status(200).json({
+      type: "office",
+      selectedCountry: country,
+      officeCount: offices.length,
+      offices
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message
+    });
+  }
+};
+
 module.exports = {
   createCompanyOffice,
   updateCompanyOffice,
   getCompanyOffice,
   getAllCompanyOffices,
   deleteCompanyOffice,
+  getCompanyOfficeData
 };

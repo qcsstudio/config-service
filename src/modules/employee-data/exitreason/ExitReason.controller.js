@@ -9,8 +9,14 @@ module.exports = {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const { exitType, description } = req.body;
+    const { exitType, description,companyOfficeId } = req.body;
+let officeIds = [];
 
+    if (companyOfficeId) {
+      officeIds = Array.isArray(companyOfficeId)
+        ? companyOfficeId
+        : [companyOfficeId];
+    }
     const addedById = req.user?.id || adminId;
     const addedByName = req.user?.name || "Unknown";
     const addedByImagePath = req.user?.image || "";
@@ -20,6 +26,7 @@ module.exports = {
       exitType,
       description,
       addedById,
+       companyOfficeId: officeIds,
       addedByName,
       addedByImagePath,
     });
@@ -78,20 +85,32 @@ module.exports = {
         }
     },
 
-     getExitReasons: async (req, res) => {
+getExitReasons : async (req, res) => {
   try {
-    const data = await ExitReason.find().sort({ createdAt: -1 });
+    const adminId = req.user?.userId;
+    const { country } = req.query;
+
+    if (!adminId) return res.status(401).json({ message: "Unauthorized" });
+
+    let reasons = await ExitReason.find({ adminId }).sort({ createdAt: -1 })
+      .populate({
+        path: "companyOfficeId",
+        match: country ? { "address.country": country } : {},
+        select: "locationName address.country address.state address.city",
+      });
+
+    if (country) reasons = reasons.filter(r => r.companyOfficeId !== null);
 
     res.status(200).json({
       message: "Exit reasons fetched successfully",
-      count: data.length,
-      data,
+      count: reasons.length,
+      data: reasons,
     });
-
   } catch (error) {
-    console.error("Error fetching exit reasons:", error);
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: error.message });
   }
-}
 
+
+
+}
 }
