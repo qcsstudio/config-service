@@ -18,8 +18,15 @@ exports.createExtraTimePolicy = async (req, res) => {
       nonWorkingDayBenefits = {},
       extraTimePolicy = {},
       status = "draft",
+      companyOfficeId,
     } = req.body;
+let officeIds = [];
 
+    if (companyOfficeId) {
+      officeIds = Array.isArray(companyOfficeId)
+        ? companyOfficeId
+        : [companyOfficeId];
+    }
     // ✅ Validate policy name
     if (!policyName?.trim()) {
       return res.status(400).json({
@@ -52,6 +59,7 @@ exports.createExtraTimePolicy = async (req, res) => {
       adminId: userId,     // ✅ correct field
       updatedBy: userId,
       companyId,
+      companyOfficeId: officeIds,
     });
 
     return res.status(201).json({

@@ -7,7 +7,8 @@ exports.createAttendancePolicy = async (req, res) => {
     const addedByName = req.user?.name;
     const addedByImage = req.user?.image;
 
-    const { policyName, policyDescription, workRequest = {}, absenteeism = {}, punctuality = {}, timeAtWork = {}, status } = req.body;
+        
+    const {  companyOfficeId, policyName, policyDescription, workRequest = {}, absenteeism = {}, punctuality = {}, timeAtWork = {}, status } = req.body;
 
     if (!policyName?.trim()) {
       return res.status(400).json({ success: false, message: "Policy name is required" });
@@ -17,6 +18,14 @@ exports.createAttendancePolicy = async (req, res) => {
     if (existingPolicy) {
       return res.status(400).json({ success: false, message: "Policy name already exists" });
     }
+    let officeIds = [];
+
+    if (companyOfficeId) {
+      officeIds = Array.isArray(companyOfficeId)
+        ? companyOfficeId
+        : [companyOfficeId];
+    }
+
 
     const policy = await AttendancePolicy.create({
       policyName: policyName.trim(),
@@ -29,7 +38,8 @@ exports.createAttendancePolicy = async (req, res) => {
       adminId,
       addedByName,
       addedByImage,
-      companyId
+      companyId,
+       companyOfficeId: officeIds,
     });
 
     return res.status(201).json({

@@ -9,7 +9,7 @@ exports.createTeam = async (req, res) => {
     const {
       teamName,
       assignTeamLead,
-      teamLead,
+      teamLeadId,
       companyOfficeId
     } = req.body;
  let officeIds = [];
@@ -23,7 +23,7 @@ exports.createTeam = async (req, res) => {
       adminId,
       teamName,
       assignTeamLead,
-      teamLead: assignTeamLead ? teamLead : {},
+      teamLeadId: teamLeadId,
       companyOfficeId: officeIds, 
       addedById: req.user?.userId,
       addedByName: req.user?.name,
@@ -97,7 +97,7 @@ exports.updateTeam = async (req, res) => {
     const {
       teamName,
       assignTeamLead,
-      teamLead
+      teamLeadId
     } = req.body;
 
     const updated = await Team.findByIdAndUpdate(
@@ -105,7 +105,7 @@ exports.updateTeam = async (req, res) => {
       {
         teamName,
         assignTeamLead,
-        teamLead: assignTeamLead ? teamLead : {}
+        teamLeadId
       },
       { new: true }
     );

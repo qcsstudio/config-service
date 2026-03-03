@@ -88,6 +88,15 @@ const shiftSchema = new mongoose.Schema({
         type: String,
         default: "",
     },
+    companyOfficeId: {
+        type: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "CompanyOffice"
+            }
+        ],
+        default: []
+    },
     // 🔹 Assigned Employees
     assignedEmployeeList: {
         type: [

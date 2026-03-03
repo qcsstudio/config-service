@@ -242,8 +242,10 @@ const getCompanyOfficeData = async (req, res) => {
         "address.country",
         { adminId }
       );
+      const responseKey = countries.length === 1 ? 1 : 2;
 
       return res.status(200).json({
+        key: responseKey, 
         type: "country",
         countries
       });

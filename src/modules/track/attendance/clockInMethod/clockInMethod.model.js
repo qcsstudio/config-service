@@ -164,6 +164,15 @@ const clockInMethodSchema = new mongoose.Schema(
             type: Boolean,
             default: true,
         },
+        companyOfficeId: {
+            type: [
+                {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "CompanyOffice"
+                }
+            ],
+            default: []
+        },
     },
     { timestamps: true }
 );

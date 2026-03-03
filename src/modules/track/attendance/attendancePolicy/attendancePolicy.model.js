@@ -162,6 +162,15 @@ const AttendancePolicySchema = new Schema(
             ref: "companies",
             default: null
         },
+        companyOfficeId: {
+            type: [
+                {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "CompanyOffice"
+                }
+            ],
+            default: []
+        },
         updatedBy: { type: Schema.Types.ObjectId, default: null },
     },
     { timestamps: true, versionKey: false }

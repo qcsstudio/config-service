@@ -28,7 +28,8 @@ exports.createClockInMethod = async (req, res) => {
       mobileAttendance = false,
       gpsAttendance = false,
       gpsList = [],
-      isActive = true
+      isActive = true,
+      companyOfficeId
     } = req.body;
 
     // ✅ Required Validation
@@ -44,6 +45,13 @@ exports.createClockInMethod = async (req, res) => {
         success: false,
         message: "Biometric field is required (true/false)"
       });
+    }
+     let officeIds = [];
+
+    if (companyOfficeId) {
+      officeIds = Array.isArray(companyOfficeId)
+        ? companyOfficeId
+        : [companyOfficeId];
     }
 
     const clockInMethod = await ClockInMethod.create({
@@ -76,7 +84,7 @@ exports.createClockInMethod = async (req, res) => {
       mobileAttendance: !biometric ? mobileAttendance : false,
       gpsAttendance: !biometric ? gpsAttendance : false,
       gpsList: !biometric ? gpsList : [],
-
+ companyOfficeId: officeIds,
       isActive
     });
 

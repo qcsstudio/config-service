@@ -28,19 +28,11 @@ const teamSchema = new mongoose.Schema({
   },
 
   // 🔹 Team Lead Info (If Yes Selected)
-  teamLead: {
-    employeeid: {
-      type: Number,
-      default: null
+  teamLeadId: {
+    type: mongoose.Schema.Types.ObjectId,
+     ref: "employees",
+     default:null
     },
-    employeename: {
-      type: String,
-      default: ""
-    },
-    employeecode: String,
-    emailid: String,
-    primarymobile: String,
-  },
 
   // 🔹 Added By Info
   addedById: {

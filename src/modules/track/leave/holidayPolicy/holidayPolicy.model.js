@@ -137,6 +137,16 @@ const HolidayPlanSchema = new Schema(
             default: null
         },
 
+        companyOfficeId: {
+            type: [
+                {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "CompanyOffice"
+                }
+            ],
+            default: []
+        },
+
         status: {
             type: String,
             enum: ["draft", "active"],
