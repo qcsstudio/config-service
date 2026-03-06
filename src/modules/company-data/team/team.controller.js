@@ -1,4 +1,5 @@
 const Team = require("./team.model");
+const populateEmployeeDetails = require("../populateEmployees");
 
 
 // ✅ 1. CREATE TEAM
@@ -61,10 +62,12 @@ exports.getAllTeams = async (req, res) => {
 
     if (country) teams = teams.filter(t => t.companyOfficeId !== null);
 
+    const data = await populateEmployeeDetails(teams);
+
     res.status(200).json({
       message: "Teams fetched successfully",
-      count: teams.length,
-      data: teams,
+      count: data.length,
+      data,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -82,7 +85,9 @@ exports.getTeamById = async (req, res) => {
       return res.status(404).json({ message: "Team not found" });
     }
 
-    res.status(200).json(team);
+    const data = await populateEmployeeDetails(team);
+
+    res.status(200).json(data);
 
   } catch (error) {
     res.status(500).json({ error: error.message });

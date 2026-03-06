@@ -1,4 +1,5 @@
 const Grade = require("./grade.model");
+const populateEmployeeDetails = require("../populateEmployees");
 
 
 // ✅ 1. CREATE GRADE
@@ -69,9 +70,11 @@ exports.getAllGrades = async (req, res) => {
       grades = grades.filter(g => g.companyOfficeId !== null);
     }
 
+    const data = await populateEmployeeDetails(grades);
+
     res.status(200).json({
       message: "Grades fetched successfully",
-      data: grades,
+      data,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -89,7 +92,9 @@ exports.getGradeById = async (req, res) => {
       return res.status(404).json({ message: "Grade not found" });
     }
 
-    res.status(200).json(grade);
+    const data = await populateEmployeeDetails(grade);
+
+    res.status(200).json(data);
 
   } catch (error) {
     res.status(500).json({ error: error.message });

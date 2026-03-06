@@ -1,4 +1,5 @@
 const Department = require("./department.model");
+const populateEmployeeDetails = require("../populateEmployees");
 
 exports.createDepartment = async (req, res) => {
   try {
@@ -88,9 +89,11 @@ exports.getAllDepartments = async (req, res) => {
         select: "locationName address.country address.state address.city",
       });
 
+    const data = await populateEmployeeDetails(departments);
+
     res.status(200).json({
       message: "Departments fetched successfully",
-      data: departments,
+      data,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -183,9 +186,11 @@ exports.getOneDepartment = async (req, res) => {
       return res.status(404).json({ message: "Department not found" });
     }
 
+    const data = await populateEmployeeDetails(getOne);
+
     res.status(200).json({
       message: "Department fetch successfully",
-      data:getOne
+      data
     });
 
   } catch (error) {

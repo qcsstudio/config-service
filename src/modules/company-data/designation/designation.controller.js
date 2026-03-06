@@ -1,4 +1,5 @@
 const Designation = require("./designation.model");
+const populateEmployeeDetails = require("../populateEmployees");
 
 
 // ✅ 1. CREATE DESIGNATION
@@ -73,9 +74,11 @@ exports.getAllDesignations = async (req, res) => {
       designations = designations.filter(d => d.companyOfficeId !== null);
     }
 
+    const data = await populateEmployeeDetails(designations);
+
     res.status(200).json({
       message: "Designations fetched successfully",
-      data: designations,
+      data,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -93,7 +96,9 @@ exports.getDesignationById = async (req, res) => {
       return res.status(404).json({ message: "Not found" });
     }
 
-    res.status(200).json(data);
+    const populatedData = await populateEmployeeDetails(data);
+
+    res.status(200).json(populatedData);
 
   } catch (error) {
     res.status(500).json({ error: error.message });
