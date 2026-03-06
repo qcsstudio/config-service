@@ -1,4 +1,5 @@
 const BusinessUnit = require("./businessUnit.model");
+const populateEmployeeDetails = require("../populateEmployees");
 exports.createBusinessUnit = async (req, res) => {
   try {
 
@@ -110,11 +111,13 @@ exports.getAllBusinessUnits = async (req, res) => {
       ? units.filter(unit => unit.companyOfficeId.length > 0)
       : units;
 
+    const data = await populateEmployeeDetails(filteredUnits);
+
     res.status(200).json({
       message: "Business Units fetched successfully",
       selectedCountry: country || null,
-      total: filteredUnits.length,
-      data: filteredUnits
+      total: data.length,
+      data
     });
 
   } catch (error) {
@@ -135,9 +138,11 @@ exports.getBusinessUnitById = async (req, res) => {
       return res.status(404).json({ message: "Business Unit not found" });
     }
 
+    const data = await populateEmployeeDetails(unit);
+
     res.status(200).json({
       message: "Business Unit fetched successfully",
-      data: unit
+      data
     });
 
   } catch (error) {
