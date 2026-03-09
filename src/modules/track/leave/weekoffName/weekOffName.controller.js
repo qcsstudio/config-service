@@ -14,6 +14,7 @@ exports.createWeeklyOff = async (req, res) => {
       refreshType,
       limitCount,
       isDraft = false,
+      companyOfficeId,
     } = req.body;
 
     if (!name || !name.trim()) {
@@ -63,6 +64,11 @@ exports.createWeeklyOff = async (req, res) => {
         }
       }
     }
+         if (companyOfficeId) {
+            officeIds = Array.isArray(companyOfficeId)
+                ? companyOfficeId
+                : [companyOfficeId];
+        }
 
     const weeklyOff = await WeeklyOff.create({
       name: name.trim(),
@@ -77,7 +83,8 @@ exports.createWeeklyOff = async (req, res) => {
       limitCount: accType === "limited" ? limitCount : undefined,
       isDraft,
       adminId: req.user?.userId || null,
-      companyId:req.user?.companyId
+      companyId:req.user?.companyId,
+      companyOfficeId: officeIds,
     });
 
     return res.status(201).json({

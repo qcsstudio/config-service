@@ -4,15 +4,15 @@ const shiftSchema = new mongoose.Schema({
 
     // Same as image
     adminId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "users",
-        default: null
-    },
-    companyId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "companies",
-        default: null
-    },
+          type: mongoose.Schema.Types.ObjectId,
+          ref:"User",
+          default: null,
+        },
+        companyId:{
+          type:mongoose.Schema.Types.ObjectId,
+          ref:"Company",
+          default: null,
+        },
 
     title: {
         type: String,
@@ -78,16 +78,7 @@ const shiftSchema = new mongoose.Schema({
     },
 
 
-    addedByName: {
-        type: String,
-        //   trim: true,
-        default: "",
-    },
-
-    addedByImage: {
-        type: String,
-        default: "",
-    },
+  
     companyOfficeId: {
         type: [
             {

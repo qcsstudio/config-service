@@ -4,6 +4,13 @@ const departmentSchema = new mongoose.Schema({
 
   adminId: {
     type: mongoose.Schema.Types.ObjectId,
+    ref:"User",
+    default: null,
+  },
+  companyId:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:"Company",
+    default: null,
   },
 
   departmentName: {

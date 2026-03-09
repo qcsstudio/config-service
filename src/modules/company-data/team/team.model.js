@@ -1,17 +1,20 @@
 const mongoose = require("mongoose");
 
 const teamSchema = new mongoose.Schema({
-
-  // 🔹 Admin Owner
   adminId: {
-    type: mongoose.Schema.Types.ObjectId,
-  },
-
+      type: mongoose.Schema.Types.ObjectId,
+      ref:"User"
+    },
+    companyId:{
+      type:mongoose.Schema.Types.ObjectId,
+      ref:"Company",
+      default: null,
+    },
   // 🔹 Team Name
   teamName: {
     type: String,
   },
-   companyOfficeId: {
+  companyOfficeId: {
     type: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -30,9 +33,9 @@ const teamSchema = new mongoose.Schema({
   // 🔹 Team Lead Info (If Yes Selected)
   teamLeadId: {
     type: mongoose.Schema.Types.ObjectId,
-     ref: "employees",
-     default:null
-    },
+    ref: "employees",
+    default: null
+  },
 
   // 🔹 Added By Info
   addedById: {
@@ -50,19 +53,19 @@ const teamSchema = new mongoose.Schema({
   // 🔹 Assigned Employees List
   assignedEmployeeList: {
     type: [
-    {
-       employeeId: {
-         type: mongoose.Types.ObjectId,
-         ref: "employees",
-         default:null
-       },
-       departmentId: {
-         type: mongoose.Schema.Types.ObjectId,
-         ref: "Department",
-         default: null,
-       },
-      //  designationid: { type: mongoose.Types.ObjectId, ref: "Designation",default:null },
-     },
+      {
+        employeeId: {
+          type: mongoose.Types.ObjectId,
+          ref: "employees",
+          default: null
+        },
+        departmentId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Department",
+          default: null,
+        },
+        //  designationid: { type: mongoose.Types.ObjectId, ref: "Designation",default:null },
+      },
     ],
     default: []
   }

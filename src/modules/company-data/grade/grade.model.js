@@ -4,8 +4,14 @@ const gradeSchema = new mongoose.Schema({
 
   // 🔹 Admin Owner
   adminId: {
-    type: mongoose.Schema.Types.ObjectId,
-  },
+     type: mongoose.Schema.Types.ObjectId,
+     ref:"User"
+   },
+   companyId:{
+     type:mongoose.Schema.Types.ObjectId,
+     ref:"Company",
+     default: null,
+   },
    companyOfficeId: {
     type: [
       {

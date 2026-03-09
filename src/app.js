@@ -84,6 +84,33 @@ const leaveCycle = require("./modules/track/leave/leaveCycle/leaveCycle.routes")
 const leavePolicy = require("./modules/track/leave/leavePolicy/leavePolicy.routes")
 const leaveType = require("./modules/track/leave/leaveType/leaveType.routes")
 const weeklyOff = require("./modules/track/leave/weekoffName/weekOffName.routes")
+const defaultPermission = require("./modules/employee-data/defaultPermission/defaultPermission.routes")  
+
+const payrollComponent = require("./modules/pay/payroll/payrollComponent/payrollComponent.routes")
+const payrollSignature = require("./modules/pay/payroll/payrollSignature/payrollSignature.routes")
+const payrollMisc = require("./modules/pay/payroll/payrollMisc/payrollMisc.routes")
+const salaryStructure = require("./modules/pay/payroll/salaryStructure/salaryStructure.routes")
+const payroll =  require("./modules/pay/payroll/payrollTag/payrollTag.routes")
+const overtimePayment = require("./modules/pay/payroll/overtimePayment/overtimePayment.routes")
+const payrollMethod = require("./modules/pay/payroll/payrollMethod/payrollMethod.routes")
+const salaryCycle = require("./modules/pay/payroll/salaryCycle/salaryCycle.routes")
+const fnfPolicy = require('./modules/pay/payroll/fnfPolicy/fnfPolicy.routes')
+
+const Compensator = require("./modules/pay/expense/Compensator/Compensator.routes")
+const Currency = require("./modules/pay/expense/Currency/Currency.routes")
+const ExpenseCycle = require("./modules/pay/expense/ExpenseCycle/ExpenseCycle.routes")
+const ExpensePolicy = require("./modules/pay/expense/expensePolicy/expensePolicy.routes")
+const fuelConfiguration = require("./modules/pay/expense/fuelConfiguration/fuelConfiguration.routes")
+
+const checklist = require("./modules/resolve/checklist/checklist.routes")
+const PolicyCenter = require("./modules/resolve/PolicyCenter/PolicyCenter.routes")
+
+const assestsCatgeory = require("./modules/hrOps/assests/assestsCatgeory.routes")
+
+const pageLayout = require("./modules/Organise/pageLayout/pageLayout.routes")
+const AuthoritySignature = require("./modules/Organise/Authoritysignture/Authoritysignture.routes")
+const template = require("./modules/Organise/template/template.routes")
+
 
 app.use("/config", brandingRoutes);
 app.use("/config", companyRoutes);
@@ -105,6 +132,36 @@ app.use("/config", clockInMethod);
 app.use("/config", extraTime);
 app.use("/config", shift);
 app.use("/config", holidayPolicy);
+app.use("/config", leaveCycle);
+app.use("/config", leavePolicy);
+app.use("/config", leaveType);
+app.use("/config", weeklyOff);
+app.use("/config", payrollComponent);
+app.use("/config", payrollSignature);
+app.use("/config", payrollMisc);
+app.use("/config", salaryStructure);
+app.use("/config", payroll);
+app.use("/config", defaultPermission);
+app.use("/config", overtimePayment);
+app.use("/config", payrollMethod);
+app.use("/config", salaryCycle);
+app.use("/config", Compensator);
+app.use("/config", Currency);
+app.use("/config", ExpenseCycle);
+app.use("/config", ExpensePolicy);
+app.use("/config", fuelConfiguration);
+app.use("/config", checklist);
+app.use("/config", PolicyCenter);
+app.use("/config", assestsCatgeory);
+app.use("/config", pageLayout);
+app.use("/config", fnfPolicy);
+app.use("/config", AuthoritySignature);
+app.use("/config", template);
+
+
+
+
+
 
 
 

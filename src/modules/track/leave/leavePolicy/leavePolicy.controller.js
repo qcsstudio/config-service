@@ -71,7 +71,7 @@ exports.createLeavePolicy = async (req, res) => {
       giftLeave,
       giftLeavesPerYear,
       giftReceive,
-
+companyOfficeId,
       // SYSTEM
       status
 
@@ -84,6 +84,11 @@ exports.createLeavePolicy = async (req, res) => {
         message: "policyName are required",
       });
     }
+     if (companyOfficeId) {
+            officeIds = Array.isArray(companyOfficeId)
+                ? companyOfficeId
+                : [companyOfficeId];
+        }
 
     const newPolicy = await LeavePolicy.create({
       policyName,
@@ -149,6 +154,7 @@ exports.createLeavePolicy = async (req, res) => {
       giftLeavesPerYear,
       giftReceive,
 
+      companyOfficeId: officeIds,
       companyId,
       adminId,
       status,

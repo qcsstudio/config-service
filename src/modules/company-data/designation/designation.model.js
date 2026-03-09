@@ -4,9 +4,15 @@ const designationSchema = new mongoose.Schema({
 
   // 🔹 Admin Owner
   adminId: {
-    type: mongoose.Schema.Types.ObjectId,
-  },
-
+     type: mongoose.Schema.Types.ObjectId,
+     ref:"User",
+     default: null,
+   },
+   companyId:{
+     type:mongoose.Schema.Types.ObjectId,
+     ref:"Company",
+     default: null,
+   },
   // 🔹 Designation Name
   designationName: {
     type: String,

@@ -10,15 +10,15 @@ const leaveCycleSchema = new mongoose.Schema(
         },
 
         adminId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "users",
-            default: null
-        },
-        companyId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "companies",
-            default: null
-        },
+              type: mongoose.Schema.Types.ObjectId,
+              ref:"User",
+              default: null,
+            },
+            companyId:{
+              type:mongoose.Schema.Types.ObjectId,
+              ref:"Company",
+              default: null,
+            },
     },
     {
         timestamps: true,

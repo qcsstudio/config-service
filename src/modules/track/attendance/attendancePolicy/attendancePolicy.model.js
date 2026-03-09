@@ -142,9 +142,6 @@ const AttendancePolicySchema = new Schema(
         punctuality: { type: PunctualitySchema, default: () => ({}) },
         timeAtWork: { type: TimeAtWorkSchema, default: () => ({}) },
 
-        addedByName: { type: String, default: "" },
-        addedByImage: { type: String, default: "" },
-
         assignedEmployeeList: {
             type: [AssignedEmployeeSchema],
             default: [],
@@ -153,15 +150,15 @@ const AttendancePolicySchema = new Schema(
         status: { type: String, default: "draft" },
 
         adminId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "users",
-            default: null
-        },
-        companyId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "companies",
-            default: null
-        },
+              type: mongoose.Schema.Types.ObjectId,
+              ref:"User",
+              default: null,
+            },
+            companyId:{
+              type:mongoose.Schema.Types.ObjectId,
+              ref:"Company",
+              default: null,
+            },
         companyOfficeId: {
             type: [
                 {

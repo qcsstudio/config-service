@@ -3,16 +3,16 @@ const { Schema } = mongoose;
 
 const LeaveTypeSchema = new Schema(
   {
-    companyId: {
-      type: Schema.Types.ObjectId,
-      ref: "companies",
-    //   required: true,
-    },
-     adminId: {
-      type: Schema.Types.ObjectId,
-      ref: "users",
-    //   required: true,
-    },
+    adminId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref:"User",
+          default: null,
+        },
+        companyId:{
+          type:mongoose.Schema.Types.ObjectId,
+          ref:"Company",
+          default: null,
+        },
 
     // ───── General Types ─────
     customLeave: { type: Boolean, default: false },

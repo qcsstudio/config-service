@@ -6,7 +6,7 @@ const populateEmployeeDetails = require("../populateEmployees");
 exports.createDesignation = async (req, res) => {
   try {
     const adminId = req.user?.userId;
-
+ const companyId = req.user?.companyId
     const {
       designationName,
       isPartOfDepartment,
@@ -24,6 +24,7 @@ exports.createDesignation = async (req, res) => {
 
     const newDesignation = new Designation({
       adminId,
+    companyId,
       designationName,
       isPartOfDepartment,
       departmentId: isPartOfDepartment ? departmentId : null,

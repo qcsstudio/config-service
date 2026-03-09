@@ -6,6 +6,7 @@ const populateEmployeeDetails = require("../populateEmployees");
 exports.createGrade = async (req, res) => {
   try {
     const adminId = req.user?.userId;
+    const companyId = req.user?.companyId
     const { gradeName,companyOfficeId } = req.body;
 
     // Optional: Prevent duplicate grade name for same admin
@@ -24,6 +25,7 @@ exports.createGrade = async (req, res) => {
     const newGrade = new Grade({
       adminId,
       gradeName,
+      companyId,
       companyOfficeId: officeIds,
       addedById: req.user?.userId,
       addedByName: req.user?.name,

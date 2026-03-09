@@ -90,17 +90,26 @@ const WeeklyOffSchema = new Schema(
             type: Boolean,
             default: false,
         },
+        companyOfficeId: {
+            type: [
+                {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "CompanyOffice"
+                }
+            ],
+            default: []
+        },
 
-        adminId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "users",
-            default: null
-        },
-        companyId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "companies",
-            default: null
-        },
+       adminId: {
+             type: mongoose.Schema.Types.ObjectId,
+             ref:"User",
+             default: null,
+           },
+           companyId:{
+             type:mongoose.Schema.Types.ObjectId,
+             ref:"Company",
+             default: null,
+           },
     },
     { timestamps: true }
 );

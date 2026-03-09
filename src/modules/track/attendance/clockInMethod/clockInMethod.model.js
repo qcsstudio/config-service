@@ -24,27 +24,16 @@ const assignedEmployeeSchema = new mongoose.Schema(
 const clockInMethodSchema = new mongoose.Schema(
     {
         adminId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "users",
-            default: null
-        },
-        companyId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "companies",
-            default: null
-        },
+              type: mongoose.Schema.Types.ObjectId,
+              ref:"User",
+              default: null,
+            },
+            companyId:{
+              type:mongoose.Schema.Types.ObjectId,
+              ref:"Company",
+              default: null,
+            },
 
-
-        // 🔹 Added By Info
-        addedByName: {
-            type: String,
-            default: "",
-        },
-
-        addedByImage: {
-            type: String,
-            default: "",
-        },
 
         // ─────────────────────────────────────────
         // 🔹 Step 1 — Describe

@@ -4,8 +4,6 @@ exports.createAttendancePolicy = async (req, res) => {
   try {
     const adminId = req.user?.userId;
     const companyId = req.user?.companyId
-    const addedByName = req.user?.name;
-    const addedByImage = req.user?.image;
 
         
     const {  companyOfficeId, policyName, policyDescription, workRequest = {}, absenteeism = {}, punctuality = {}, timeAtWork = {}, status } = req.body;
@@ -36,8 +34,6 @@ exports.createAttendancePolicy = async (req, res) => {
       timeAtWork,
       status: status || "draft",
       adminId,
-      addedByName,
-      addedByImage,
       companyId,
        companyOfficeId: officeIds,
     });

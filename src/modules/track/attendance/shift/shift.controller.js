@@ -3,8 +3,6 @@ const Shift = require("./shift.model")
 exports.createShift = async (req, res) => {
     try {
         const adminId = req.user?.userId;
-        const addedByName = req.user?.name;
-        const addedByImage = req.user?.image;
         const companyId = req.user?.companyId
         const {
             title,
@@ -39,8 +37,6 @@ exports.createShift = async (req, res) => {
         const shift = await Shift.create({
             adminId,
             companyId,
-            addedByName,
-            addedByImage,
             title,
             description,
             shiftCategory,

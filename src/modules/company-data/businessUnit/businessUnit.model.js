@@ -2,8 +2,15 @@ const mongoose = require("mongoose");
 const businessUnitSchema = new mongoose.Schema({
 
     adminId: {
-        type: mongoose.Schema.Types.ObjectId,
-    },
+       type: mongoose.Schema.Types.ObjectId,
+       ref:"User",
+       default: null,
+     },
+     companyId:{
+       type:mongoose.Schema.Types.ObjectId,
+       ref:"Company",
+       default: null,
+     },
 
     businessUnitName: {
         type: String,
@@ -48,18 +55,7 @@ const businessUnitSchema = new mongoose.Schema({
       type:String
         // imagepath: String
     },
-
-    addedById: {
-        type: mongoose.Schema.Types.ObjectId,
-    },
-
-    addedByName: {
-        type: String
-    },
-
-    addedByImage: {
-        type: String
-    },
+    
 
     assignedEmployeeList: {
     type: [

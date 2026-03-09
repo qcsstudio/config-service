@@ -20,6 +20,7 @@ exports.createHolidayPlan = async (req, res) => {
       approver,
       notifyApprover,
       status,
+      companyOfficeId,
     } = req.body;
 
     const companyId = req.user?.companyId; // from auth middleware
@@ -31,6 +32,11 @@ const adminId = req.user?.userId
         message: "Name and Year are required",
       });
     }
+       if (companyOfficeId) {
+            officeIds = Array.isArray(companyOfficeId)
+                ? companyOfficeId
+                : [companyOfficeId];
+        }
 
     const holidayPlan = await HolidayPlan.create({
       name,
@@ -49,6 +55,7 @@ const adminId = req.user?.userId
       status,
       companyId,
       adminId,
+      companyOfficeId: officeIds,
     });
 
     return res.status(201).json({

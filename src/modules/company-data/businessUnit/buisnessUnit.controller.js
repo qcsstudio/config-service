@@ -4,9 +4,8 @@ exports.createBusinessUnit = async (req, res) => {
   try {
 
     const adminId = req.user?.userId;
-    const addedByName = req.user?.name;
-    const addedByImage = req.user?.image;
 
+ const companyId = req.user?.companyId
     const {
       businessUnitName,
       locationName,
@@ -53,6 +52,7 @@ exports.createBusinessUnit = async (req, res) => {
 
     const newUnit = new BusinessUnit({
       adminId,
+      companyId,
       businessUnitName,
       locationName,
       location,
@@ -60,9 +60,6 @@ exports.createBusinessUnit = async (req, res) => {
       assignBusinessHead,
       businessHead,
       companyOfficeId: officeIds, 
-      addedById: adminId,
-      addedByName,
-      addedByImage,
       assignedEmployeeList: []
     });
 

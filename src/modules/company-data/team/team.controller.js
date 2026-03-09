@@ -6,7 +6,7 @@ const populateEmployeeDetails = require("../populateEmployees");
 exports.createTeam = async (req, res) => {
   try {
     const adminId = req.user?.userId;
-
+const companyId = req.user?.companyId;
     const {
       teamName,
       assignTeamLead,
@@ -22,6 +22,7 @@ exports.createTeam = async (req, res) => {
     }
     const newTeam = new Team({
       adminId,
+      companyId,
       teamName,
       assignTeamLead,
       teamLeadId: teamLeadId,
@@ -49,11 +50,12 @@ exports.createTeam = async (req, res) => {
 exports.getAllTeams = async (req, res) => {
   try {
     const adminId = req.user?.userId;
+    const companyId = req.user?.companyId;
     const { country } = req.query;
 
     if (!adminId) return res.status(401).json({ message: "Unauthorized" });
 
-    let teams = await Team.find({ adminId }).sort({ createdAt: -1 })
+    let teams = await Team.find({ adminId, companyId }).sort({ createdAt: -1 })
       .populate({
         path: "companyOfficeId",
         match: country ? { "address.country": country } : {},

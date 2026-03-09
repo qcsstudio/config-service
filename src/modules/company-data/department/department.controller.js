@@ -4,7 +4,7 @@ const populateEmployeeDetails = require("../populateEmployees");
 exports.createDepartment = async (req, res) => {
   try {
     const adminId = req.user?.userId;
-
+ const companyId = req.user?.companyId
     if (!adminId) {
       return res.status(401).json({ message: "Unauthorized. Admin not found." });
     }
@@ -40,6 +40,7 @@ exports.createDepartment = async (req, res) => {
     }
     const newDepartment = new Department({
       adminId,
+      companyId,
       departmentName,
       isPartOfBusinessUnit,
       businessUnitId,

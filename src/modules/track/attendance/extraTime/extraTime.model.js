@@ -249,16 +249,7 @@ const ExtraTimeSchema = new Schema(
             default: () => ({}),
         },
 
-        addedByName: {
-            type: String,
-            default: "",
-        },
-
-        addedByImage: {
-            type: String,
-            default: "",
-        },
-
+        
         assignedEmployeeList: {
             type: [AssignedEmployeeSchema],
             default: [],
@@ -271,15 +262,15 @@ const ExtraTimeSchema = new Schema(
         },
 
         adminId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "users",
-            default: null
-        },
-        companyId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "companies",
-            default: null
-        },
+              type: mongoose.Schema.Types.ObjectId,
+              ref:"User",
+              default: null,
+            },
+            companyId:{
+              type:mongoose.Schema.Types.ObjectId,
+              ref:"Company",
+              default: null,
+            },
         companyOfficeId: {
             type: [
                 {
