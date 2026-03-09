@@ -1,4 +1,5 @@
 const Shift = require("./shift.model")
+const populateEmployeeDetails = require("../../../company-data/populateEmployees");
 
 exports.createShift = async (req, res) => {
     try {
@@ -64,11 +65,12 @@ exports.createShift = async (req, res) => {
 exports.getAllShifts = async (req, res) => {
     try {
         const shifts = await Shift.find();
+        const data = await populateEmployeeDetails(shifts);
 
         res.status(200).json({
             success: true,
-            count: shifts.length,
-            data: shifts
+            count: data.length,
+            data
         });
 
     } catch (error) {
@@ -91,9 +93,11 @@ exports.getShiftById = async (req, res) => {
             });
         }
 
+        const data = await populateEmployeeDetails(shift);
+
         res.status(200).json({
             success: true,
-            data: shift
+            data
         });
 
     } catch (error) {

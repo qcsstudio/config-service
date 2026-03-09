@@ -1,4 +1,5 @@
 const HolidayPlan = require("./holidayPolicy.model");
+const populateEmployeeDetails = require("../../../company-data/populateEmployees");
 
 /* ─────────────────────────────────────────────
    CREATE HOLIDAY PLAN
@@ -112,12 +113,14 @@ exports.getAllHolidayPlans = async (req, res) => {
       .skip((page - 1) * limit)
       .limit(Number(limit));
 
+    const data = await populateEmployeeDetails(plans);
+
     return res.status(200).json({
       success: true,
       total,
       currentPage: Number(page),
       totalPages: Math.ceil(total / limit),
-      data: plans,
+      data,
     });
   } catch (error) {
     console.error("Get Holiday Plans Error:", error);
@@ -145,9 +148,11 @@ exports.getHolidayPlanById = async (req, res) => {
       });
     }
 
+    const data = await populateEmployeeDetails(holidayPlan);
+
     return res.status(200).json({
       success: true,
-      data: holidayPlan,
+      data,
     });
   } catch (error) {
     console.error("Get Holiday Plan By ID Error:", error);

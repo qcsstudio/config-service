@@ -1,4 +1,5 @@
 const AttendancePolicy = require("./attendancePolicy.model")
+const populateEmployeeDetails = require("../../../company-data/populateEmployees");
 
 exports.createAttendancePolicy = async (req, res) => {
   try {
@@ -155,17 +156,17 @@ exports.getAllAttendancePolicies = async (req, res) => {
     const policies = await AttendancePolicy.find(query)
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(Number(limit))
-      .select("-assignedEmployeeList"); // 🔥 HIDE assignedEmployeeList
+      .limit(Number(limit));
 
     const total = await AttendancePolicy.countDocuments(query);
+    const data = await populateEmployeeDetails(policies);
 
     return res.status(200).json({
       success: true,
       total,
       currentPage: Number(page),
       totalPages: Math.ceil(total / limit),
-      data: policies
+      data
     });
 
   } catch (error) {

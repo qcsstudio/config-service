@@ -1,4 +1,5 @@
 const SalaryStructure = require("./salaryStructure.model")
+const populateEmployeeDetails = require("../../../company-data/populateEmployees");
 
 exports.createSalaryStructure = async (req, res) => {
   try {
@@ -89,10 +90,12 @@ exports.getAllSalaryStructures = async (req, res) => {
       })
       .sort({ createdAt: -1 });
 
+    const data = await populateEmployeeDetails(structures);
+
     res.status(200).json({
       success: true,
-      count: structures.length,
-      data: structures,
+      count: data.length,
+      data,
     });
   } catch (error) {
     console.error("Get Salary Structures Error:", error);
@@ -224,9 +227,11 @@ exports.getOneSalaryStructure = async (req, res) => {
       });
     }
 
+    const data = await populateEmployeeDetails(salaryStructure);
+
     res.status(200).json({
       success: true,
-      data: salaryStructure,
+      data,
     });
   } catch (error) {
     console.error("Get One Salary Structure Error:", error);

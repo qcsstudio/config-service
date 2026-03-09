@@ -1,4 +1,5 @@
 const LeavePolicy = require("./leavePolicy.model");
+const populateEmployeeDetails = require("../../../company-data/populateEmployees");
 
 exports.createLeavePolicy = async (req, res) => {
   try {
@@ -191,19 +192,19 @@ exports.getAllLeavePolicies = async (req, res) => {
     }
 
     const policies = await LeavePolicy.find(query)
-      .select("-assignedEmployeeList") // exclude assigned employees
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(Number(limit));
 
     const total = await LeavePolicy.countDocuments(query);
+    const populatedPolicies = await populateEmployeeDetails(policies);
 
     res.status(200).json({
       success: true,
       total,
       page: Number(page),
       pages: Math.ceil(total / limit),
-      data: policies,
+      data: populatedPolicies,
     });
   } catch (error) {
     console.error("GetAll Error:", error);
@@ -219,8 +220,7 @@ exports.getOneLeavePolicy = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const policy = await LeavePolicy.findById(id)
-      .select("-assignedEmployeeList");
+    const policy = await LeavePolicy.findById(id);
 
     if (!policy) {
       return res.status(404).json({
@@ -229,9 +229,11 @@ exports.getOneLeavePolicy = async (req, res) => {
       });
     }
 
+    const data = await populateEmployeeDetails(policy);
+
     res.status(200).json({
       success: true,
-      data: policy,
+      data,
     });
   } catch (error) {
     console.error("GetOne Error:", error);

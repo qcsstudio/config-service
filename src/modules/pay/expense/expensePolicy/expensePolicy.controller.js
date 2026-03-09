@@ -1,4 +1,5 @@
 const ExpensePolicy = require("./expensePolicy.model");
+const populateEmployeeDetails = require("../../../company-data/populateEmployees");
 
 exports.createPolicy = async (req, res) => {
     try {
@@ -356,9 +357,11 @@ exports.getPolicyById = async (req, res) => {
       });
     }
 
+    const data = await populateEmployeeDetails(policy);
+
     res.status(200).json({
       success: true,
-      data: policy
+      data
     });
 
   } catch (error) {
@@ -414,10 +417,12 @@ exports.getPoliciesByCompany = async (req, res) => {
       isDeleted: false
     })
 
+    const data = await populateEmployeeDetails(policies);
+
     res.status(200).json({
       success: true,
-      count: policies.length,
-      data: policies
+      count: data.length,
+      data
     });
 
   } catch (error) {

@@ -1,4 +1,5 @@
 const ExtraTime = require("./extraTime.model"); // adjust path as needed
+const populateEmployeeDetails = require("../../../company-data/populateEmployees");
 
 exports.createExtraTimePolicy = async (req, res) => {
   try {
@@ -122,10 +123,11 @@ let officeIds = [];
 exports.getAllExtraTimePolicies = async (req, res) => {
   try {
     const policies = await ExtraTime.find().sort({ createdAt: -1 }); // latest first
+    const data = await populateEmployeeDetails(policies);
     return res.status(200).json({
       success: true,
       message: "All Extra Time policies fetched",
-      data: policies,
+      data,
     });
   } catch (error) {
     console.error("Get All Policies Error:", error);

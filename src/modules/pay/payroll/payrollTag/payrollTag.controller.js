@@ -1,4 +1,5 @@
 const PayrollTag = require("./payrollTag.model");
+const populateEmployeeDetails = require("../../../company-data/populateEmployees");
 
 // ✅ Create Payroll Tag
 exports.createPayrollTag = async (req, res) => {
@@ -75,10 +76,12 @@ exports.getAllPayrollTags = async (req, res) => {
       tags = tags.filter(tag => tag.companyOfficeId.length > 0);
     }
 
+    const data = await populateEmployeeDetails(tags);
+
     return res.status(200).json({
       success: true,
-      count: tags.length,
-      data: tags,
+      count: data.length,
+      data,
     });
 
   } catch (error) {

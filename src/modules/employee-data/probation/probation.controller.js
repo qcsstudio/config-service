@@ -1,4 +1,5 @@
 const ProbationPlan = require("./probation.model");
+const populateEmployeeDetails = require("../../company-data/populateEmployees");
 
 const createOrUpdateProbationPlan = async (req, res) => {
   try {
@@ -104,10 +105,12 @@ const getAllProbationPlans = async (req, res) => {
 
     if (country) plans = plans.filter(p => p.companyOfficeId !== null);
 
+    const data = await populateEmployeeDetails(plans);
+
     res.status(200).json({
       message: "Probation plans fetched successfully",
-      count: plans.length,
-      data: plans,
+      count: data.length,
+      data,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -127,9 +130,11 @@ const getProbationPlanById = async (req, res) => {
       });
     }
 
+    const data = await populateEmployeeDetails(plan);
+
     res.status(200).json({
       message: "Probation plan fetched successfully",
-      data: plan,
+      data,
     });
 
   } catch (error) {

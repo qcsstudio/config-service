@@ -1,4 +1,5 @@
 const FnfPolicy = require("./fnfPolicy.model");
+const populateEmployeeDetails = require("../../../company-data/populateEmployees");
 
 /* ==============================
    CREATE POLICY
@@ -82,10 +83,12 @@ exports.getAllFnfPolicies = async (req, res) => {
         select: "locationName address.country address.state address.city",
       }).sort({ createdAt: -1 });
 
+    const data = await populateEmployeeDetails(policies);
+
     res.status(200).json({
       success: true,
-      count: policies.length,
-      data: policies,
+      count: data.length,
+      data,
     });
 
   } catch (error) {
@@ -115,9 +118,11 @@ exports.getFnfPolicyById = async (req, res) => {
       });
     }
 
+    const data = await populateEmployeeDetails(policy);
+
     res.status(200).json({
       success: true,
-      data: policy,
+      data,
     });
   } catch (error) {
     res.status(500).json({

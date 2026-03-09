@@ -1,4 +1,5 @@
 const ClockInMethod = require("./clockInMethod.model");
+const populateEmployeeDetails = require("../../../company-data/populateEmployees");
 
 exports.createClockInMethod = async (req, res) => {
   try {
@@ -108,10 +109,12 @@ exports.getAllClockInMethods = async (req, res) => {
     const methods = await ClockInMethod.find()
       .sort({ createdAt: -1 });
 
+    const data = await populateEmployeeDetails(methods);
+
     res.status(200).json({
       success: true,
-      count: methods.length,
-      data: methods
+      count: data.length,
+      data
     });
 
   } catch (error) {

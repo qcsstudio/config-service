@@ -1,4 +1,5 @@
 const CompensatorConfiguration = require("./Compensator.model");
+const populateEmployeeDetails = require("../../../company-data/populateEmployees");
 
 // CREATE
 exports.createCompensatorConfiguration = async (req, res) => {
@@ -58,10 +59,12 @@ exports.createCompensatorConfiguration = async (req, res) => {
 exports.getAllCompensatorConfiguration = async (req, res) => {
   try {
 const companyId = req.user?.companyId;
-    const data = await CompensatorConfiguration.find({isDeleted:false,companyId:companyId})
+    const configs = await CompensatorConfiguration.find({isDeleted:false,companyId:companyId})
       .populate("businessUnitId")
       .populate("departmentId")
       .populate("locationId");
+
+    const data = await populateEmployeeDetails(configs);
 
     res.status(200).json({
       success: true,
@@ -84,20 +87,20 @@ exports.getCompensatorConfigurationById = async (req, res) => {
 
     const { id } = req.params;
 
-    const data = await CompensatorConfiguration.findById(id)
-      .populate("assignedEmployeeList.employeeId")
-      .populate("adminId")
+    const config = await CompensatorConfiguration.findById(id)
       .populate("companyId")
       .populate("businessUnitId")
       .populate("departmentId")
       .populate("locationId");
 
-    if (!data) {
+    if (!config) {
       return res.status(404).json({
         success: false,
         message: "Configuration not found"
       });
     }
+
+    const data = await populateEmployeeDetails(config);
 
     res.status(200).json({
       success: true,
