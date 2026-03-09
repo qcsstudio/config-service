@@ -55,9 +55,9 @@ const createOrUpdateProbationPlan = async (req, res) => {
     if (_id) {
       const updated = await ProbationPlan.findOneAndUpdate(
         { _id },
-      {
-          ...payload
-          // ❌ NOT including companyOfficeId here
+        {
+          ...payload,
+          companyOfficeId: officeIds
         },
         { new: true }
       );
@@ -68,9 +68,11 @@ const createOrUpdateProbationPlan = async (req, res) => {
         });
       }
 
+      const data = await populateEmployeeDetails(updated);
+
       return res.status(200).json({
         message: "Probation plan updated successfully",
-        data: updated,
+        data,
       });
     }
 

@@ -145,9 +145,11 @@ exports.updateDepartment = async (req, res) => {
       return res.status(404).json({ message: "Department not found" });
     }
 
+    const data = await populateEmployeeDetails(updated);
+
     res.status(200).json({
       message: "Department updated successfully",
-      data: updated
+      data
     });
 
   } catch (error) {

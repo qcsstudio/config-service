@@ -60,10 +60,12 @@ exports.createSalaryStructure = async (req, res) => {
       monthlyProration,
     });
 
+    const data = await populateEmployeeDetails(salaryStructure);
+
     res.status(201).json({
       success: true,
       message: "Salary structure created successfully",
-      data: salaryStructure,
+      data,
     });
   } catch (error) {
     console.error("Create Salary Structure Error:", error);
@@ -191,10 +193,12 @@ exports.updateSalaryStructure = async (req, res) => {
       { new: true }
     );
 
+    const data = await populateEmployeeDetails(updated);
+
     res.status(200).json({
       success: true,
       message: "Salary structure updated successfully",
-      data: updated,
+      data,
     });
   } catch (error) {
     console.error("Update Salary Structure Error:", error);

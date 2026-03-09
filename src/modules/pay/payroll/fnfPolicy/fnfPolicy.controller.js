@@ -50,10 +50,12 @@ exports.createFnfPolicy = async (req, res) => {
       companyId: req.user.companyId,
     });
 
+    const data = await populateEmployeeDetails(policy);
+
     res.status(201).json({
       success: true,
       message: "FnF Policy created successfully",
-      data: policy,
+      data,
     });
 
   } catch (error) {
@@ -156,10 +158,12 @@ exports.updateFnfPolicy = async (req, res) => {
       });
     }
 
+    const data = await populateEmployeeDetails(policy);
+
     res.status(200).json({
       success: true,
       message: "Policy updated successfully",
-      data: policy,
+      data,
     });
   } catch (error) {
     res.status(500).json({

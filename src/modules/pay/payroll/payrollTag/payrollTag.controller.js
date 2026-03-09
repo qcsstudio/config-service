@@ -39,10 +39,12 @@ exports.createPayrollTag = async (req, res) => {
       isActive,
     });
 
+    const data = await populateEmployeeDetails(newTag);
+
     return res.status(201).json({
       success: true,
       message: "Payroll Tag created successfully",
-      data: newTag,
+      data,
     });
   } catch (error) {
     return res.status(500).json({

@@ -116,9 +116,11 @@ exports.updateGrade = async (req, res) => {
       { new: true }
     );
 
+    const data = await populateEmployeeDetails(updated);
+
     res.status(200).json({
       message: "Grade updated successfully",
-      data: updated
+      data
     });
 
   } catch (error) {

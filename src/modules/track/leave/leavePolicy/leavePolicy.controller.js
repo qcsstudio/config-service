@@ -253,7 +253,7 @@ exports.updateLeavePolicy = async (req, res) => {
       id,
       { $set: req.body },
       { new: true, runValidators: true }
-    ).select("-assignedEmployeeList");
+    );
 
     if (!updatedPolicy) {
       return res.status(404).json({
@@ -262,10 +262,12 @@ exports.updateLeavePolicy = async (req, res) => {
       });
     }
 
+    const data = await populateEmployeeDetails(updatedPolicy);
+
     res.status(200).json({
       success: true,
-      message: "Leave Policy Updated Successfully",
-      data: updatedPolicy,
+      message: "Leave Policy updated successfully",
+      data,
     });
   } catch (error) {
     console.error("Update Error:", error);

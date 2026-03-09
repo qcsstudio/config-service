@@ -100,7 +100,20 @@ const ApprovalWorkflowSchema = new mongoose.Schema(
         type: [SingleWorkflowSchema],
         default: []
       }
-    }
+    },
+
+    assignedEmployeeList: [
+      {
+        employeeId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Employee"
+        },
+        departmentId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Department"
+        }
+      }
+    ]
 
   },
   { timestamps: true }

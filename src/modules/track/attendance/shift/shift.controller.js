@@ -158,10 +158,12 @@ exports.updateShift = async (req, res) => {
             });
         }
 
+        const data = await populateEmployeeDetails(shift);
+
         res.status(200).json({
             success: true,
             message: "Shift updated successfully",
-            data: shift
+            data
         });
 
     } catch (error) {

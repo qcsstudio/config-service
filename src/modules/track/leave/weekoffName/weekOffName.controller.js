@@ -1,4 +1,5 @@
 const WeeklyOff = require("./weekOffName.model");
+const populateEmployeeDetails = require("../../../company-data/populateEmployees");
 
 exports.createWeeklyOff = async (req, res) => {
   try {
@@ -104,10 +105,12 @@ exports.getAllWeeklyOff = async (req, res) => {
     const data = await WeeklyOff.find()
       .sort({ createdAt: -1 });
 
+    const populatedData = await populateEmployeeDetails(data);
+
     return res.status(200).json({
       success: true,
-      count: data.length,
-      data,
+      count: populatedData.length,
+      data: populatedData,
     });
   } catch (error) {
     return res.status(500).json({

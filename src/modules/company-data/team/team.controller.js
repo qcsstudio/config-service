@@ -117,9 +117,11 @@ exports.updateTeam = async (req, res) => {
       { new: true }
     );
 
+    const data = await populateEmployeeDetails(updated);
+
     res.status(200).json({
       message: "Team updated successfully",
-      data: updated
+      data
     });
 
   } catch (error) {

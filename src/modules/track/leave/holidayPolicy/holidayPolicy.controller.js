@@ -213,10 +213,12 @@ exports.updateHolidayPlan = async (req, res) => {
       });
     }
 
+    const data = await populateEmployeeDetails(holidayPlan);
+
     return res.status(200).json({
       success: true,
       message: "Holiday Plan updated successfully",
-      data: holidayPlan,
+      data,
     });
   } catch (error) {
     console.error("Update Holiday Plan Error:", error);

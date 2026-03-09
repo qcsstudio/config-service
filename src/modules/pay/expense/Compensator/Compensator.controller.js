@@ -154,10 +154,12 @@ exports.updateCompensatorConfiguration = async (req, res) => {
       { new: true }
     );
 
+    const data = await populateEmployeeDetails(updatedData);
+
     res.status(200).json({
       success: true,
       message: "Configuration updated successfully",
-      data: updatedData
+      data
     });
 
   } catch (error) {

@@ -198,12 +198,14 @@ exports.updateBusinessUnit = async (req, res) => {
       return res.status(404).json({ message: "Business Unit not found" });
     }
 
+    const data = await populateEmployeeDetails(updated);
+
     res.status(200).json({
       message: "Business Unit updated successfully",
       data: {
-        ...updated.toObject(),
-        latitude: updated.location?.coordinates?.[1],
-        longitude: updated.location?.coordinates?.[0]
+        ...data,
+        latitude: data.location?.coordinates?.[1],
+        longitude: data.location?.coordinates?.[0]
       }
     });
 

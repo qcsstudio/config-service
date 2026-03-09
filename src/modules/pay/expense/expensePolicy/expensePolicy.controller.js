@@ -327,10 +327,12 @@ exports.updatePolicy = async (req, res) => {
             });
         }
 
+        const data = await populateEmployeeDetails(updatedPolicy);
+
         res.status(200).json({
             success: true,
             message: "Policy updated successfully",
-            data: updatedPolicy
+            data
         });
 
     } catch (error) {

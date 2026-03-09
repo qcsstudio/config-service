@@ -1,4 +1,5 @@
 const ApprovalWorkflow = require("./approvalWorkflow.model");
+const populateEmployeeDetails = require("../../company-data/populateEmployees");
 
 
 exports.createOrUpdateWorkflow = async (req, res) => {
@@ -59,9 +60,11 @@ exports.createOrUpdateWorkflow = async (req, res) => {
       await workflowDoc.save();
     }
 
+    const populatedData = await populateEmployeeDetails(workflowDoc);
+
     res.status(200).json({
       message: "Workflow saved successfully",
-      data: workflowDoc
+      data: populatedData
     });
 
   } catch (error) {
@@ -84,7 +87,9 @@ exports.getWorkflow = async (req, res) => {
       return res.status(404).json({ message: "Workflow not found" });
     }
 
-    res.status(200).json({message:"approvalWorkflow fetch successfully", tabs: workflow.tabs});
+    const populatedData = await populateEmployeeDetails(workflow);
+
+    res.status(200).json({message:"approvalWorkflow fetch successfully", tabs: populatedData.tabs});
 
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -100,9 +105,11 @@ exports.getWorkflowAll = async (req, res) => {
       return res.status(404).json({ message: "Workflow not found" });
     }
 
+    const populatedData = await populateEmployeeDetails(workflow);
+
     res.status(200).json({
       message: "Approval workflow fetched successfully",
-      data: workflow
+      data: populatedData
     });
 
   } catch (error) {

@@ -110,6 +110,18 @@ const WeeklyOffSchema = new Schema(
              ref:"Company",
              default: null,
            },
+           assignedEmployeeList: [
+             {
+               employeeId: {
+                 type: mongoose.Schema.Types.ObjectId,
+                 ref: "Employee"
+               },
+               departmentId: {
+                 type: mongoose.Schema.Types.ObjectId,
+                 ref: "Department"
+               }
+             }
+           ],
     },
     { timestamps: true }
 );
