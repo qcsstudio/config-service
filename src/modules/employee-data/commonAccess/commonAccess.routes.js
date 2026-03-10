@@ -10,14 +10,9 @@ router.post(
   auth,
   saveCommonAccess
 );
-
-// 🔹 UPDATE (By ID only)
-router.put(
-  "/common-access/:id",
-  saveCommonAccess   // if you don't want adminId check
-);
 router.get(
-  "/common-access/:id",
+  "/common-access-get",
+  auth,
   getCommonAccessById
 );
 
