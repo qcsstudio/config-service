@@ -80,46 +80,7 @@ let officeIds = [];
 };
 
 
-// {
-//   "policyName": "Standard Extra Time Policy",
-//   "policyDescription": "Policy for working and non-working day extra time benefits",
 
-//   "workingDayBenefits": {
-//     "benefitEnabled": true,
-//     "earnType": "hours",
-//     "minimumHoursRequired": 8,
-//     "leavesEarnedPerCycle": 1,
-//     "canAccumulateHours": true,
-//     "accumulationOverMonths": 3,
-//     "compOffLimitPerDay": 1,
-//     "minimumThresholdEnabled": true,
-//     "minimumThresholdMinutes": 30
-//   },
-
-//   "nonWorkingDayBenefits": {
-//     "benefitEnabled": true,
-//     "earnType": "both",
-//     "minimumHoursRequired": 6,
-//     "leavesEarnedPerCycle": 1,
-//     "canAccumulateHours": false,
-//     "accumulationOverMonths": null,
-//     "compOffLimitPerDay": 2
-//   },
-
-//   "extraTimePolicy": {
-//     "approvalRequired": true,
-//     "creditApprovalRequired": false,
-//     "unusedBalanceHandling": "lapse",
-//     "lapseDays": 30,
-//     "attachmentsRequired": true,
-//     "attachmentRequiredIfDaysGreaterThan": 2,
-//     "attachmentInstructions": "Upload manager approval screenshot",
-//     "allowPastDateApplications": true,
-//     "pastDateApplicationDaysLimit": 7
-//   },
-
-//   "status": "draft"
-// }
 exports.getAllExtraTimePolicies = async (req, res) => {
   try {
     const policies = await ExtraTime.find().sort({ createdAt: -1 }); // latest first

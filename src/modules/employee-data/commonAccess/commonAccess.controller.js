@@ -3,11 +3,10 @@ const CommonAccess = require("./commonAccess.model")
 const saveCommonAccess = async (req, res) => {
   try {
     const adminId = req.user?.userId;
-    const { id } = req.params;
+    const companyId = req.user?.companyId;
 
     const { department, organization, calendarDataLevel } = req.body;
 
-    // Build whosInToday object automatically
     const whosInToday = {
       department: department || {},
       organization: organization || {}
@@ -24,10 +23,13 @@ const saveCommonAccess = async (req, res) => {
 
     let result;
 
-    if (id) {
+    const existing = await CommonAccess.findOne({ companyId });
+
+    if (existing) {
+
       // UPDATE
-      result = await CommonAccess.findByIdAndUpdate(
-        id,
+      result = await CommonAccess.findOneAndUpdate(
+        { companyId },
         {
           $set: {
             whosInToday,
@@ -37,33 +39,27 @@ const saveCommonAccess = async (req, res) => {
         { new: true, runValidators: true }
       );
 
+      // If nothing updated return existing
       if (!result) {
-        return res.status(404).json({ message: "Record not found" });
+        result = existing;
       }
 
     } else {
-      // CREATE
+
       if (!adminId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
-      const existing = await CommonAccess.findOne({ adminId });
-
-      if (existing) {
-        return res.status(400).json({
-          message: "Already exists. Use update API."
-        });
-      }
-
       result = await CommonAccess.create({
         adminId,
+        companyId,
         whosInToday,
         calendarDataLevel
       });
     }
 
     return res.status(200).json({
-      message: id ? "Updated successfully" : "Created successfully",
+      message: existing ? "Updated successfully" : "Created successfully",
       data: result
     });
 
@@ -77,9 +73,9 @@ const saveCommonAccess = async (req, res) => {
 
 const getCommonAccessById = async (req, res) => {
   try {
-    const { id } = req.params;
+    const companyId = req.user?.companyId
 
-    const data = await CommonAccess.findById(id);
+    const data = await CommonAccess.findById(companyId);
 
     if (!data) {
       return res.status(404).json({
