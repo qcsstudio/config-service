@@ -73,9 +73,9 @@ const saveCommonAccess = async (req, res) => {
 
 const getCommonAccessById = async (req, res) => {
   try {
-    const companyId = req.user?.companyId
+    const companyId = req.user?.companyId;
 
-    const data = await CommonAccess.findById(companyId);
+    const data = await CommonAccess.findOne({ companyId });
 
     if (!data) {
       return res.status(404).json({
@@ -86,7 +86,6 @@ const getCommonAccessById = async (req, res) => {
     return res.status(200).json({
       data
     });
-
   } catch (error) {
     return res.status(500).json({
       message: error.message
