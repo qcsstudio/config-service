@@ -14,8 +14,8 @@ router.post(
 );
 
 router.get(
-  "/employee-id-config-get/:id",
-  // auth,
+  "/employee-id-config-get",
+  auth,
 //   allowRoles("COMPANY_ADMIN"),
   getEmployeeIdConfig
 );

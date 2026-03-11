@@ -84,13 +84,9 @@ const createOrUpdateEmployeeIdConfig = async (req, res) => {
 
 const getEmployeeIdConfig = async (req, res) => {
   try {
-    const { id } = req.params;
+    const companyId = req.user?.companyId;
 
-    if (!id) {
-      return res.status(400).json({ message: "adminId is required" });
-    }
-
-    const config = await EmployeeIdConfig.findOne({_id: id });
+    const config = await EmployeeIdConfig.findOne({companyId: companyId });
 
     if (!config) {
       return res.status(404).json({
