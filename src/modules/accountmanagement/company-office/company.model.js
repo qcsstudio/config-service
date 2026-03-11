@@ -2,7 +2,17 @@ const mongoose = require("mongoose");
 
 const CompanyOfficeSchema = new mongoose.Schema(
   {
-    adminId: mongoose.Schema.Types.ObjectId,
+   adminId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: null,
+      },
+  
+      companyId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Company",
+        default: null
+      },
     
 
     locationName: {

@@ -2,7 +2,17 @@ const mongoose = require("mongoose");
 
 const employeeIdConfigSchema = new mongoose.Schema(
   {
-    adminId: mongoose.Schema.Types.ObjectId,
+    adminId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+
+    companyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Company",
+      default: null
+    },
 
 
     // Manual or Automatic
@@ -11,112 +21,22 @@ const employeeIdConfigSchema = new mongoose.Schema(
       enum: ["manual", "automatic"],
       default: "automatic",
     },
-
-    // Separator Dropdown
-    separator: {
+    preview:{
       type: String,
-      enum: ["-", "/", "\\", "_", "none"],
-      default: "_",
+        default: "",
     },
 
-    // PREFIX SECTION
-    prefix: {
-      enabled: { type: Boolean, default: false },
-
-      type: {
-        type: String,
-        enum: ["custom_text"],
-      },
-
-      customText: {
-        type: String,
-        trim: true,
-      },
-
-      upperCase: {
-        type: Boolean,
-        default: false,
-      },
-    },
-
-    // MID TEXT SECTION
-    midText: {
-      enabled: { type: Boolean, default: false },
-
-      type: {
-        type: String,
-        enum: [
-          "company_name",
-          "business_unit_name",
-          "office_location_name",
-          "department_name",
-          "custom_text",
-          "numerical_series",
-        ],
-      },
-
-      customText: {
-        type: String,
-        trim: true,
-      },
-
-      numberOfCharacters: {
-        type: Number,
-      },
-
-      startFrom: {
-        type: Number,
-      },
-
-      currentNumber: {
-        type: Number,
-      },
-
-      upperCase: {
-        type: Boolean,
-        default: false,
-      },
-    },
-
-    // SUFFIX SECTION
-    suffix: {
-      enabled: { type: Boolean, default: false },
-
-      type: {
-        type: String,
-        enum: ["numerical_series", "custom_text"],
-      },
-
-      customText: {
-        type: String,
-        trim: true,
-      },
-
-      startFrom: {
-        type: Number,
-      },
-
-      currentNumber: {
-        type: Number,
-      },
-
-      upperCase: {
-        type: Boolean,
-        default: false,
-      },
-    },
 
     // Existing employee logic
     assignToExistingEmployees: {
-      type: String,
-      enum: ["oldest_joining_date", "future_only"],
-      default: "oldest_joining_date",
+    type: Boolean,
+    default: false, // false = No, true = Yes
     },
-     includeDeactivatedEmployees: {
+    includeDeactivatedEmployees: {
       type: Boolean,
       default: false, // false = No, true = Yes
     },
-     continueSeriesForFutureEmployees: {
+    continueSeriesForFutureEmployees: {
       type: Boolean,
       default: false,
     },

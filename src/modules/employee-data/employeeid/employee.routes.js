@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const auth  = require("../../../middlewares/auth.middleware");
-const { createOrUpdateEmployeeIdConfig, getEmployeeIdConfig } = require("./employeeid.controller");
+const { createOrUpdateEmployeeIdConfig, getEmployeeIdConfig, gettext } = require("./employeeid.controller");
 // const { allowRoles } = require("../../../middlewares/role.middleware");
 
 
@@ -18,6 +18,13 @@ router.get(
   // auth,
 //   allowRoles("COMPANY_ADMIN"),
   getEmployeeIdConfig
+);
+
+router.get(
+  "/text-get",
+  auth,
+//   allowRoles("COMPANY_ADMIN"),
+ gettext
 );
 
 module.exports = router;
