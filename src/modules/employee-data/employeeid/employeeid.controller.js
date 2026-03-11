@@ -133,7 +133,7 @@ const gettext = async (req, res) => {
           `http://localhost:4000/users/company-get/${companyId}`
         );
 
-        data = response?.data?.data || {};
+        data = response?.data?.data?.slug || "";
         break;
       }
 
@@ -144,7 +144,7 @@ const gettext = async (req, res) => {
           { businessUnitName: 1 }
         );
 
-        data = result || {};
+        data = result?.businessUnitName || "";
         break;
       }
 
@@ -154,8 +154,8 @@ const gettext = async (req, res) => {
           { companyId },
           { "address.city": 1 }
         );
-
-        data = result || {};
+      console.log(result, "resultresultresult");
+        data = result?.address?.city || "";
         break;
       }
 
@@ -165,8 +165,7 @@ const gettext = async (req, res) => {
           { companyId },
           { departmentName: 1 }
         );
-
-        data = result || {};
+        data = result?.departmentName || "";
         break;
       }
 
