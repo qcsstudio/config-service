@@ -3,8 +3,9 @@ const populateEmployeeDetails = require("../../../company-data/populateEmployees
 
 exports.createSalaryStructure = async (req, res) => {
   try {
-    const adminId = req.user?.userId
-    const companyId = req.user?.companyId
+    const adminId = req.user?.userId;
+    const companyId = req.user?.companyId;
+
     const {
       name,
       description,
@@ -12,34 +13,50 @@ exports.createSalaryStructure = async (req, res) => {
       deduction,
       lop,
       trialRun,
-      annualProration,
-      monthlyProration,
       companyOfficeId,
     } = req.body;
 
-   
- let officeIds = [];
+    let officeIds = [];
 
     if (companyOfficeId) {
       officeIds = Array.isArray(companyOfficeId)
         ? companyOfficeId
         : [companyOfficeId];
     }
+
     // 🔹 Normalize Income Components
-    const incomeComponents = Array.isArray(income)
+    const incomeComponentsRaw = Array.isArray(income)
       ? income
       : income
       ? [income]
       : [];
 
+    const incomeComponents = incomeComponentsRaw.map((item) => ({
+      componentId: item.componentId || null,
+      componentName: item.componentName || "",
+      design: item.design || {},
+      annualProration: item.annualProration || 0,
+      monthlyProration: item.monthlyProration || 0,
+    }));
+
+
     // 🔹 Normalize Deduction Components
-    const deductionComponents = Array.isArray(deduction)
+    const deductionComponentsRaw = Array.isArray(deduction)
       ? deduction
       : deduction
       ? [deduction]
       : [];
 
-    // 🔹 Normalize LOP Configurations
+    const deductionComponents = deductionComponentsRaw.map((item) => ({
+      componentId: item.componentId || null,
+      componentName: item.componentName || "",
+      design: item.design || {},
+      annualProration: item.annualProration || 0,
+      monthlyProration: item.monthlyProration || 0,
+    }));
+
+
+    // 🔹 Normalize LOP
     const lopConfigurations = Array.isArray(lop)
       ? lop
       : lop
@@ -56,8 +73,6 @@ exports.createSalaryStructure = async (req, res) => {
       deductionComponents,
       lopConfigurations,
       trialRun,
-      annualProration,
-      monthlyProration,
     });
 
     const data = await populateEmployeeDetails(salaryStructure);
@@ -67,8 +82,10 @@ exports.createSalaryStructure = async (req, res) => {
       message: "Salary structure created successfully",
       data,
     });
+
   } catch (error) {
     console.error("Create Salary Structure Error:", error);
+
     res.status(500).json({
       success: false,
       message: "Internal server error",

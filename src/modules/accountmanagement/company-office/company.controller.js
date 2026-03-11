@@ -3,7 +3,7 @@ const CompanyOfficeModel = require("./company.model");
 const createCompanyOffice = async (req, res) => {
   try {
     const adminId = req.user?.userId;
-
+const companyId = req.user?.companyId
     if (!adminId) {
       return res.status(401).json({
         message: "Unauthorized. Admin not found.",
@@ -70,7 +70,7 @@ const createCompanyOffice = async (req, res) => {
 
     const office = await CompanyOfficeModel.create({
       adminId,
-
+companyId,
       locationName,
       addressType,
 

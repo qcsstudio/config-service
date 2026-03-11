@@ -5,16 +5,16 @@ const salaryStructureSchema = new mongoose.Schema(
         // ==========================================
         // 🔹 COMMON FIELDS
         // ==========================================
-       adminId: {
-             type: mongoose.Schema.Types.ObjectId,
-             ref:"User",
-             default: null,
-           },
-           companyId:{
-             type:mongoose.Schema.Types.ObjectId,
-             ref:"Company",
-             default: null,
-           },
+        adminId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            default: null,
+        },
+        companyId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Company",
+            default: null,
+        },
 
         name: {
             type: String,
@@ -60,6 +60,16 @@ const salaryStructureSchema = new mongoose.Schema(
                         type: Number,
                         default: 0,
                     },
+                    annualProration: {
+                        type: Number, // 16874
+                        default: 0,
+                    },
+
+                    monthlyProration: {
+                        type: Number, // 1406
+                        default: 0,
+                    },
+
                 },
             },
         ],
@@ -98,6 +108,16 @@ const salaryStructureSchema = new mongoose.Schema(
                         type: Number,
                         default: 0,
                     },
+                    annualProration: {
+                        type: Number, // 16874
+                        default: 0,
+                    },
+
+                    monthlyProration: {
+                        type: Number, // 1406
+                        default: 0,
+                    },
+
                 },
             },
         ],
@@ -137,6 +157,7 @@ const salaryStructureSchema = new mongoose.Schema(
                 type: Boolean,
                 default: false,
             },
+
         },
 
 
@@ -148,15 +169,6 @@ const salaryStructureSchema = new mongoose.Schema(
             type: Number,
             default: 0,
 
-        },
-        annualProration: {
-            type: Number, // 16874
-            default: 0,
-        },
-
-        monthlyProration: {
-            type: Number, // 1406
-            default: 0,
         },
 
         // ==========================================
