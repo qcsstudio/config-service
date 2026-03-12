@@ -17,11 +17,6 @@ exports.createBusinessUnit = async (req, res) => {
       companyOfficeId
     } = req.body || {};
 
-    if (!businessUnitName) {
-      return res.status(400).json({
-        message: "businessUnitName is required"
-      });
-    }
 
     if (latitude === undefined || longitude === undefined) {
       return res.status(400).json({
