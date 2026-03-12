@@ -15,8 +15,8 @@ router.post(
 
 // GET SINGLE
 router.get(
-  "/incorporation-get/:id",
-  // auth,
+  "/incorporation-get",
+     auth,
   // allowRoles("COMPANY_ADMIN"),
   controller.getIncorporationById
 );
