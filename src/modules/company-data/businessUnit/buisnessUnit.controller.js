@@ -4,8 +4,8 @@ exports.createBusinessUnit = async (req, res) => {
   try {
 
     const adminId = req.user?.userId;
+    const companyId = req.user?.companyId;
 
- const companyId = req.user?.companyId
     const {
       businessUnitName,
       locationName,
@@ -15,9 +15,13 @@ exports.createBusinessUnit = async (req, res) => {
       assignBusinessHead,
       businessHead,
       companyOfficeId
-    } = req.body;
+    } = req.body || {};
 
-    // ✅ Required Validation
+    if (!businessUnitName) {
+      return res.status(400).json({
+        message: "businessUnitName is required"
+      });
+    }
 
     if (latitude === undefined || longitude === undefined) {
       return res.status(400).json({
@@ -25,7 +29,6 @@ exports.createBusinessUnit = async (req, res) => {
       });
     }
 
-    // ✅ Convert to Number
     const lat = Number(latitude);
     const lng = Number(longitude);
 
@@ -34,20 +37,18 @@ exports.createBusinessUnit = async (req, res) => {
         message: "Latitude and Longitude must be valid numbers"
       });
     }
-      let officeIds = [];
+
+    let officeIds = [];
 
     if (companyOfficeId) {
-      if (Array.isArray(companyOfficeId)) {
-        officeIds = companyOfficeId; // multiple ids
-      } else {
-        officeIds = [companyOfficeId]; // single id convert to array
-      }
+      officeIds = Array.isArray(companyOfficeId)
+        ? companyOfficeId
+        : [companyOfficeId];
     }
 
-    // ✅ Create GeoJSON format
     const location = {
       type: "Point",
-      coordinates: [lng, lat]  // MUST BE [longitude, latitude]
+      coordinates: [lng, lat]
     };
 
     const newUnit = new BusinessUnit({
@@ -59,13 +60,12 @@ exports.createBusinessUnit = async (req, res) => {
       logo,
       assignBusinessHead,
       businessHead,
-      companyOfficeId: officeIds, 
+      companyOfficeId: officeIds,
       assignedEmployeeList: []
     });
 
     await newUnit.save();
 
-    // ✅ Send clean response with lat/long separately
     res.status(201).json({
       message: "Business Unit created successfully",
       data: {
