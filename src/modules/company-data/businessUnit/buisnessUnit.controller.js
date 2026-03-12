@@ -17,21 +17,12 @@ exports.createBusinessUnit = async (req, res) => {
       companyOfficeId
     } = req.body || {};
 
+    // ✅ Safe latitude longitude
+    let lat = parseFloat(latitude);
+    let lng = parseFloat(longitude);
 
-    // if (latitude === undefined || longitude === undefined) {
-    //   return res.status(400).json({
-    //     message: "Latitude and Longitude are required"
-    //   });
-    // }
-
-    const lat = Number(latitude);
-    const lng = Number(longitude);
-
-    // if (isNaN(lat) || isNaN(lng)) {
-    //   return res.status(400).json({
-    //     message: "Latitude and Longitude must be valid numbers"
-    //   });
-    // }
+    if (isNaN(lat)) lat = 0;
+    if (isNaN(lng)) lng = 0;
 
     let officeIds = [];
 
@@ -49,8 +40,8 @@ exports.createBusinessUnit = async (req, res) => {
     const newUnit = new BusinessUnit({
       adminId,
       companyId,
-      businessUnitName,
-      locationName,
+      businessUnitName: businessUnitName || "",
+      locationName: locationName || "",
       location,
       logo,
       assignBusinessHead,
@@ -62,17 +53,22 @@ exports.createBusinessUnit = async (req, res) => {
     await newUnit.save();
 
     res.status(201).json({
+      success: true,
       message: "Business Unit created successfully",
       data: {
         ...newUnit.toObject(),
-        latitude: newUnit.location.coordinates[1],
-        longitude: newUnit.location.coordinates[0]
+        latitude: lat,
+        longitude: lng
       }
     });
 
   } catch (error) {
-    console.log(error,"error")
-    res.status(500).json({ error: error.message });
+    console.log(error, "error");
+
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
 };
 
