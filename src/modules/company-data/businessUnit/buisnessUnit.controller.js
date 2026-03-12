@@ -40,8 +40,8 @@ exports.createBusinessUnit = async (req, res) => {
     const newUnit = new BusinessUnit({
       adminId,
       companyId,
-      businessUnitName: businessUnitName || "",
-      locationName: locationName || "",
+      businessUnitName: businessUnitName,
+      locationName: locationName,
       location,
       logo,
       assignBusinessHead,

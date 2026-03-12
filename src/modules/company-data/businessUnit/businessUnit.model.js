@@ -14,11 +14,9 @@ const businessUnitSchema = new mongoose.Schema({
 
     businessUnitName: {
         type: String,
-        default:""
     },
       locationName: {
     type: String,
-     default:""
   },
 
    companyOfficeId: {
@@ -44,7 +42,6 @@ const businessUnitSchema = new mongoose.Schema({
 
     logo: {
         type: String ,
-         default:""  // store image path or URL
     },
 
     assignBusinessHead: {
@@ -54,7 +51,6 @@ const businessUnitSchema = new mongoose.Schema({
 
     businessHead: {
       type:String,
-       default:""
         // imagepath: String
     },
     
