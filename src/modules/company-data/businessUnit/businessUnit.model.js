@@ -12,7 +12,7 @@ const businessUnitSchema = new mongoose.Schema({
        default: null,
      },
 
-    businessUnitName: {
+     businessUnitName: {
         type: String,
     },
       locationName: {

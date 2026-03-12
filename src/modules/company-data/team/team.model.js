@@ -36,6 +36,10 @@ const teamSchema = new mongoose.Schema({
     ref: "employees",
     default: null
   },
+  teamLeadName:{
+    type:String,
+    default:""
+  },
 
   // 🔹 Added By Info
   addedById: {

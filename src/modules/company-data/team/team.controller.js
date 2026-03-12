@@ -11,7 +11,8 @@ const companyId = req.user?.companyId;
       teamName,
       assignTeamLead,
       teamLeadId,
-      companyOfficeId
+      companyOfficeId,
+      teamLeadName
     } = req.body;
  let officeIds = [];
 
@@ -20,16 +21,18 @@ const companyId = req.user?.companyId;
         ? companyOfficeId
         : [companyOfficeId];
     }
+     const teamLead = teamLeadId && teamLeadId.trim() !== "" ? teamLeadId : undefined;
     const newTeam = new Team({
       adminId,
       companyId,
       teamName,
       assignTeamLead,
-      teamLeadId: teamLeadId,
+      teamLeadId: teamLead,
       companyOfficeId: officeIds, 
       addedById: req.user?.userId,
       addedByName: req.user?.name,
-      addedByImage: req.user?.image
+      addedByImage: req.user?.image,
+      teamLeadName
     });
 
     await newTeam.save();
