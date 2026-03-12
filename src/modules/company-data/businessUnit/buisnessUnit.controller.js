@@ -15,7 +15,7 @@ exports.createBusinessUnit = async (req, res) => {
       assignBusinessHead,
       businessHead,
       companyOfficeId
-    } = req.body || {};
+    } = req.body;
 
     // ✅ Safe latitude longitude
     let lat = parseFloat(latitude);
