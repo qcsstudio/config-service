@@ -5,6 +5,9 @@ const ExitReasonSchema = new mongoose.Schema(
     adminId: {
       type: mongoose.Schema.Types.ObjectId,
     },
+     companyId: {
+      type: mongoose.Schema.Types.ObjectId,
+    },
 
     exitType: {
       type: String,

@@ -14,7 +14,6 @@ const allowedExactOrigins = [
 
 // Optional: allow all subdomains of qcsstudios.com
 const allowedDomainRegex = /(^|\.)qcsstudios\.com$/;
-
 app.use(
   cors({
     origin: (origin, callback) => {

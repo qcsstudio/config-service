@@ -5,7 +5,8 @@ const IncorporationSchema = new mongoose.Schema(
     adminId:
  mongoose.Schema.Types.ObjectId,
   
-
+ companyid:
+ mongoose.Schema.Types.ObjectId,
     companyLegalName: {
       type: String,
       trim: true,

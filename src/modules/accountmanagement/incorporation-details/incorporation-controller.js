@@ -6,7 +6,7 @@ const createIncorporation = async (req, res) => {
   try {
 
     const adminId = req.user?.userId;
-
+const companyId = req.user?.companyId
     if (!adminId) {
       return res.status(401).json({
         message: "Unauthorized. Company not found.",
@@ -38,6 +38,7 @@ const createIncorporation = async (req, res) => {
       gstin,
       pan,
       tan,
+      companyId
     };
 
     const incorporation = await IncorporationModel.findOneAndUpdate(
@@ -62,9 +63,15 @@ const createIncorporation = async (req, res) => {
 const getIncorporationById = async (req, res) => {
   try {
    
+const companyId = req.user?.companyId;
 
+    if (!companyId) {
+      return res.status(401).json({
+        message: "Unauthorized. Company not found.",
+      });
+    }
     const incorporation = await IncorporationModel.findOne({
-      _id: req.params.id,
+      companyId
     });
 
     if (!incorporation) {

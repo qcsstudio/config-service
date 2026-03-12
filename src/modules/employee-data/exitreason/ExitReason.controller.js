@@ -4,7 +4,8 @@ module.exports = {
     createExitReason: async (req, res) => {
   try {
     const adminId = req.user?.userId;
-
+    const companyId =req.user?.companyId
+    console.log`Admin ID: ${adminId}`;
     if (!adminId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
@@ -23,6 +24,7 @@ let officeIds = [];
 
     const newExitReason = new ExitReason({
       adminId,
+       companyId,
       exitType,
       description,
       addedById,

@@ -189,8 +189,76 @@ const gettext = async (req, res) => {
 };
 
 
+const getEmplotyeidforCreate = async (req, res) => {
+  try {
+    const companyId = req.user?.companyId;
+
+    if (!companyId) {
+      return res.status(400).json({
+        success: false,
+        message: "CompanyId not found",
+      });
+    }
+
+    const config = await EmployeeIdConfig.findOne({ companyId });
+
+    if (!config) {
+      return res.status(404).json({
+        success: false,
+        message: "Employee ID configuration not found",
+      });
+    }
+
+    const preview = config.preview; // example EMP001
+
+    const employeeRes = await axios.get(
+      `http://localhost:6001/employees/by-company/${companyId}`
+    );
+console.log(employeeRes, "employeeResemployeeRes");
+    const employee = employeeRes?.data?.data;
+
+    let nextEmployeeId = preview;
+
+    if (employee && employee.employeeId) {
+
+      const lastEmployeeId = employee.employeeId;
+
+      // prefix from existing employeeId
+      const prefix = lastEmployeeId.match(/^\D+/)?.[0] || "";
+
+      const numberPart = lastEmployeeId.match(/\d+$/)?.[0] || "001";
+
+      const numberLength = numberPart.length;
+
+      const lastNumber = parseInt(numberPart, 10) || 0;
+
+      const nextNumber = lastNumber + 1;
+
+      const paddedNumber = String(nextNumber).padStart(numberLength, "0");
+
+      nextEmployeeId = `${prefix}${paddedNumber}`;
+    }
+
+    return res.status(200).json({
+      success: true,
+      employeeId: nextEmployeeId,
+    });
+
+  } catch (error) {
+    console.error("getEmplotyeidforCreate error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
+
 module.exports = {
   createOrUpdateEmployeeIdConfig,
   getEmployeeIdConfig,
-  gettext
+  gettext,
+getEmplotyeidforCreate 
+
 };
