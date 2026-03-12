@@ -18,20 +18,20 @@ exports.createBusinessUnit = async (req, res) => {
     } = req.body || {};
 
 
-    if (latitude === undefined || longitude === undefined) {
-      return res.status(400).json({
-        message: "Latitude and Longitude are required"
-      });
-    }
+    // if (latitude === undefined || longitude === undefined) {
+    //   return res.status(400).json({
+    //     message: "Latitude and Longitude are required"
+    //   });
+    // }
 
     const lat = Number(latitude);
     const lng = Number(longitude);
 
-    if (isNaN(lat) || isNaN(lng)) {
-      return res.status(400).json({
-        message: "Latitude and Longitude must be valid numbers"
-      });
-    }
+    // if (isNaN(lat) || isNaN(lng)) {
+    //   return res.status(400).json({
+    //     message: "Latitude and Longitude must be valid numbers"
+    //   });
+    // }
 
     let officeIds = [];
 
@@ -71,6 +71,7 @@ exports.createBusinessUnit = async (req, res) => {
     });
 
   } catch (error) {
+    console.log(error,"error")
     res.status(500).json({ error: error.message });
   }
 };
