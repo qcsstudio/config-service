@@ -214,16 +214,17 @@ const getEmplotyeidforCreate = async (req, res) => {
     const employeeRes = await axios.get(
       `http://localhost:6001/employees/by-company/${companyId}`
     );
-console.log(employeeRes, "employeeResemployeeRes");
-    const employee = employeeRes?.data?.data;
+
+    console.log(employeeRes.data, "employeeRes.data");
+
+    const employees = employeeRes?.data?.data || [];
 
     let nextEmployeeId = preview;
 
-    if (employee && employee.employeeId) {
+    if (employees.length > 0) {
 
-      const lastEmployeeId = employee.employeeId;
+      const lastEmployeeId = employees[0].employeeId; // latest employee
 
-      // prefix from existing employeeId
       const prefix = lastEmployeeId.match(/^\D+/)?.[0] || "";
 
       const numberPart = lastEmployeeId.match(/\d+$/)?.[0] || "001";
