@@ -6,54 +6,106 @@ const populateEmployeeDetails = require("../../../company-data/populateEmployees
 ───────────────────────────────────────────── */
 exports.createHolidayPlan = async (req, res) => {
   try {
+
     const {
+      // Step 1 — Describe
       name,
       description,
+
+      // Step 2 — Preferences
       year,
       mandatoryHolidays,
       optionalHolidays,
+
+      // Step 3 — Plan (calendar holidays array)
+      holidays,
+
+      // Step 4 — Mandatory holiday date rules
       existingEmployeeDate,
       sendEmailExisting,
       newEmployeeDays,
       sendEmailNew,
+
+      // Step 4 — Optional holiday date rules
+      existingOptionalDate,
+      sendEmailExistingOptional,
+      newOptionalDays,
+      sendEmailNewOptional,
       maxOptionalHolidays,
-      approvalRequired,
-      approver,
-      notifyApprover,
+
+      // System
       status,
       companyOfficeId,
     } = req.body;
 
-    const companyId = req.user?.companyId; // from auth middleware
-const adminId = req.user?.userId
-    // Basic validation
+    const companyId = req.user?.companyId;
+    const adminId   = req.user?.userId;
+console.log(companyId,"ddddd")
+    // Required field validation
     if (!name || !year) {
       return res.status(400).json({
         success: false,
         message: "Name and Year are required",
       });
     }
-       if (companyOfficeId) {
-            officeIds = Array.isArray(companyOfficeId)
-                ? companyOfficeId
-                : [companyOfficeId];
-        }
+
+    // Duplicate check
+    const existingPlan = await HolidayPlan.findOne({
+      companyId,
+      year: Number(year),
+    });
+
+    if (existingPlan) {
+      return res.status(400).json({
+        success: false,
+        message: "Holiday plan already exists for this year",
+      });
+    }
+
+    // Conditional validation — optional holidays
+    if (optionalHolidays === "yes" && !maxOptionalHolidays) {
+      return res.status(400).json({
+        success: false,
+        message: "Max optional holidays is required when optional holidays are enabled",
+      });
+    }
+
+    // Normalize companyOfficeId to array
+    let officeIds = [];
+    if (companyOfficeId) {
+      officeIds = Array.isArray(companyOfficeId)
+        ? companyOfficeId
+        : [companyOfficeId];
+    }
 
     const holidayPlan = await HolidayPlan.create({
-      name,
+      // Step 1
+      name: name.trim(),
       description,
-      year,
+
+      // Step 2
+      year: Number(year),
       mandatoryHolidays,
       optionalHolidays,
-      existingEmployeeDate,
-      sendEmailExisting,
-      newEmployeeDays,
-      sendEmailNew,
-      maxOptionalHolidays,
-      approvalRequired,
-      approver,
-      notifyApprover,
-      status,
+
+      // Step 3
+      holidays: holidays || [],
+
+      // Step 4 — Mandatory
+      existingEmployeeDate:     existingEmployeeDate     || null,
+      sendEmailExisting:        sendEmailExisting        ?? true,
+      newEmployeeDays:          newEmployeeDays          || null,
+      sendEmailNew:             sendEmailNew             ?? true,
+
+      // Step 4 — Optional
+      existingOptionalDate:     existingOptionalDate     || null,
+      sendEmailExistingOptional: sendEmailExistingOptional ?? true,
+      newOptionalDays:          newOptionalDays          || null,
+      sendEmailNewOptional:     sendEmailNewOptional     ?? true,
+      maxOptionalHolidays:      maxOptionalHolidays      || null,
+
+      // System
+      status:          status || "draft",
       companyId,
       adminId,
       companyOfficeId: officeIds,
@@ -64,12 +116,16 @@ const adminId = req.user?.userId
       message: "Holiday Plan created successfully",
       data: holidayPlan,
     });
+
   } catch (error) {
+
     console.error("Create Holiday Plan Error:", error);
+
     return res.status(500).json({
       success: false,
-      message: "Server Error",
+      message: error.message,
     });
+
   }
 };
 
@@ -88,7 +144,7 @@ exports.getAllHolidayPlans = async (req, res) => {
       status,
       year,
     } = req.query;
-
+ const query = {};
     // const query = { companyId };
 
     // 🔎 Search by name

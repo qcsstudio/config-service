@@ -1,122 +1,262 @@
 const mongoose = require("mongoose");
 
+/* ─────────────────────────────────────────────
+   TAB 1: Define Workflow
+───────────────────────────────────────────── */
+const DefineWorkflowSchema = new mongoose.Schema(
+{
+  workflowName: {
+    type: String,
+    required: true,
+    trim: true
+  },
+
+  description: {
+    type: String,
+    default: "",
+    trim: true
+  }
+},
+{ _id: false }
+);
+
+
+/* ─────────────────────────────────────────────
+   LEVEL APPROVER (For level-based workflow)
+───────────────────────────────────────────── */
+const LevelApproverSchema = new mongoose.Schema(
+{
+  levelNumber: {
+    type: Number,
+    required: true,
+    min: 1,
+    max: 5
+  },
+
+  approverHierarchyId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    default: null
+  }
+},
+{ _id: false }
+);
+
+
+/* ─────────────────────────────────────────────
+   SINGLE WORKFLOW CONFIG
+   Used for HRIS / Attendance / Leave / Expense / Exit
+───────────────────────────────────────────── */
 const SingleWorkflowSchema = new mongoose.Schema(
-  {
-    workflowType: {
-      type: String,
-      enum: ["full_trust", "free_flow", "all_hands_in", "level_based"],
-      required: true
-    },
+{
 
-    hierarchyPositionId: {
-      type: mongoose.Schema.Types.ObjectId,
-      default: null
-    },
+  /* Same as HRIS toggle */
+  sameAsHRIS: {
+    type: Boolean,
+    default: false
+  },
 
-    autoHandleInaction: {
-      type: Boolean,
-      default: false
-    },
+  /* Workflow Type */
+  workflowType: {
+    type: String,
+    enum: [
+      "full_trust",
+      "free_flow",
+      "all_hands_in",
+      "level_based"
+    ],
+    default: null
+  },
 
-    forwardAfterDays: {
-      type: Number,
-      default: 0
-    },
+  /* Approver (for free_flow & all_hands_in) */
+  approverHierarchyId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    default: null
+  },
 
-    inactionAction: {
-      type: String,
-      enum: ["auto_approve", "auto_reject", "forward_next"],
-      default: null
-    },
-
-    backupDecisionType: {
-      type: String,
-      enum: ["self_approval", "backup_person"],
-      default: null
-    },
-
-    backupEmployeeId: {
-      type: mongoose.Schema.Types.ObjectId,
-      default: null
-    },
-
-    transferOnManagerChange: {
-      type: String,
-      enum: ["transfer_all", "transfer_pending_only"],
-      default: null
+  /* Level-based approvals */
+  levelApprovers: {
+    type: [LevelApproverSchema],
+    default: [],
+    validate: {
+      validator: (arr) => arr.length <= 5,
+      message: "Maximum 5 levels allowed"
     }
   },
-  { _id: false }
+
+  /* Number of approval levels */
+  approvalLevels: {
+    type: Number,
+    min: 1,
+    max: 5,
+    default: 1
+  },
+
+  /* Inaction handling */
+  autoHandleInaction: {
+    type: Boolean,
+    default: false
+  },
+
+  forwardAfterDays: {
+    type: Number,
+    min: 1,
+    default: null
+  },
+
+  inactionAction: {
+    type: String,
+    enum: [
+      "auto_approve",
+      "auto_reject",
+      "escalate"
+    ],
+    default: null
+  },
+
+  /* Backup decision maker */
+  backupDecisionType: {
+    type: String,
+    enum: [
+      "self_approval",
+      "backup_person"
+    ],
+    default: null
+  },
+
+  backupEmployeeId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Employee",
+    default: null
+  },
+
+  /* Manager change handling */
+  transferOnManagerChange: {
+    type: String,
+    enum: [
+      "transfer_all",
+      "transfer_pending_only"
+    ],
+    default: null
+  }
+
+},
+{ _id: false }
 );
 
+
+/* ─────────────────────────────────────────────
+   ASSIGNED EMPLOYEE / DEPARTMENT
+───────────────────────────────────────────── */
+const AssignedTargetSchema = new mongoose.Schema(
+{
+
+  employeeId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Employee",
+    default: null
+  },
+
+  departmentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Department",
+    default: null
+  }
+
+},
+{ _id: false }
+);
+
+
+/* ─────────────────────────────────────────────
+   MAIN WORKFLOW SCHEMA
+───────────────────────────────────────────── */
 const ApprovalWorkflowSchema = new mongoose.Schema(
-  {
-    // ✅ Outside Tabs
-    adminId: mongoose.Schema.Types.ObjectId,
+{
 
+  /* Admin */
+  adminId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Admin",
+    required: true
+  },
 
-    addedById: {
-      type: mongoose.Schema.Types.ObjectId,
+  companyId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Company",
+    default: null
+  },
 
+  /* Added By */
+  addedById: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Employee"
+  },
+
+  addedByName: {
+    type: String
+  },
+
+  addedByImagePath: {
+    type: String
+  },
+
+  addedDate: {
+    type: Date,
+    default: Date.now
+  },
+
+  /* Tabs */
+  tabs: {
+
+    defineWorkflow: {
+      type: DefineWorkflowSchema,
+      default: {}
     },
 
-    addedByName: {
-      type: String,
-
+    hrisWorkflow: {
+      type: SingleWorkflowSchema,
+      default: {}
     },
 
-    addedByImagePath: {
-      type: String,
+    attendanceWorkflow: {
+      type: SingleWorkflowSchema,
+      default: {}
     },
 
-    addedDate: {
-      type: Date,
-      default: Date.now
+    leaveWorkflow: {
+      type: SingleWorkflowSchema,
+      default: {}
     },
 
-    // ✅ Tabs Section
-    tabs: {
-      defineWorkflow: {
-        type: [SingleWorkflowSchema],
-        default: []
-      },
-      hrisWorkflow: {
-        type: [SingleWorkflowSchema],
-        default: []
-      },
-      attendanceWorkflow: {
-        type: [SingleWorkflowSchema],
-        default: []
-      },
-      leaveWorkflow: {
-        type: [SingleWorkflowSchema],
-        default: []
-      },
-      expenseWorkflow: {
-        type: [SingleWorkflowSchema],
-        default: []
-      },
-      exitWorkflow: {
-        type: [SingleWorkflowSchema],
-        default: []
-      }
+    expenseWorkflow: {
+      type: SingleWorkflowSchema,
+      default: {}
     },
 
-    assignedEmployeeList: [
-      {
-        employeeId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Employee"
-        },
-        departmentId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Department"
-        }
-      }
-    ]
+    exitWorkflow: {
+      type: SingleWorkflowSchema,
+      default: {}
+    }
 
   },
-  { timestamps: true }
+
+  /* Assigned Employees / Departments */
+  assignedEmployeeList: {
+    type: [AssignedTargetSchema],
+    default: []
+  }
+
+},
+{ timestamps: true }
 );
 
-module.exports = mongoose.model("ApprovalWorkflow", ApprovalWorkflowSchema);
+
+/* ─────────────────────────────────────────────
+   EXPORT MODEL
+───────────────────────────────────────────── */
+module.exports = mongoose.model(
+  "ApprovalWorkflow",
+  ApprovalWorkflowSchema
+);

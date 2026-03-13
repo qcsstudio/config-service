@@ -13,6 +13,7 @@ console.log("JWT_SECRET USED:", process.env.JWT_SECRET);
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded; // { userId, role, companyId }
+    console.log(req.user,"dffdfdfdfdfdfdfdfdfdfdfdfd")
   req.user = {
     userId: decoded.id,
     role: decoded.role,
