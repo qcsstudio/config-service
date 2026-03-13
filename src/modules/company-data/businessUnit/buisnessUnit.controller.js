@@ -2,22 +2,38 @@ const BusinessUnit = require("./businessUnit.model");
 const populateEmployeeDetails = require("../populateEmployees");
 exports.createBusinessUnit = async (req, res) => {
   try {
-
     const adminId = req.user?.userId;
     const companyId = req.user?.companyId;
-
+    console.log(companyId,"companyIdcompanyIdcompanyId")
+//  if (!companyId) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "companyId is required"
+//       });
+//     }
+    // ✅ Fallback to empty object if req.body is undefined
     const {
       businessUnitName,
       locationName,
       latitude,
       longitude,
-      logo,
+      // logo,
       assignBusinessHead,
       businessHead,
       companyOfficeId
-    } = req.body;
+    } = req.body || {};
+    let logo = null;
+    if (req.file) {
+      // req.file.location is available if using multer-s3
+      logo = req.file.location; // S3 URL
+    }
+    if (!businessUnitName || !locationName) {
+      return res.status(400).json({
+        success: false,
+        message: "businessUnitName and locationName are required"
+      });
+    }
 
-    // ✅ Safe latitude longitude
     let lat = parseFloat(latitude);
     let lng = parseFloat(longitude);
 
@@ -25,23 +41,19 @@ exports.createBusinessUnit = async (req, res) => {
     if (isNaN(lng)) lng = 0;
 
     let officeIds = [];
-
     if (companyOfficeId) {
       officeIds = Array.isArray(companyOfficeId)
         ? companyOfficeId
         : [companyOfficeId];
     }
 
-    const location = {
-      type: "Point",
-      coordinates: [lng, lat]
-    };
+    const location = { type: "Point", coordinates: [lng, lat] };
 
     const newUnit = new BusinessUnit({
       adminId,
-      companyId,
-      businessUnitName: businessUnitName,
-      locationName: locationName,
+      companyId :companyId|| null,
+      businessUnitName,
+      locationName,
       location,
       logo,
       assignBusinessHead,
@@ -55,20 +67,12 @@ exports.createBusinessUnit = async (req, res) => {
     res.status(201).json({
       success: true,
       message: "Business Unit created successfully",
-      data: {
-        ...newUnit.toObject(),
-        latitude: lat,
-        longitude: lng
-      }
+      data: { ...newUnit.toObject(), latitude: lat, longitude: lng }
     });
 
   } catch (error) {
     console.log(error, "error");
-
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 

@@ -3,8 +3,21 @@ const router = require("express").Router();
 
 const controller = require("./buisnessUnit.controller");
 const auth = require("../../../middlewares/auth.middleware")
-
-router.post("/create-buinessUnit",auth, controller.createBusinessUnit);
+const uploadToS3 = require("../../../middlewares/s3Upload")
+router.post(
+  "/create-buinessUnit",
+  auth,
+  (req, res, next) => {
+    // Single logo upload only
+    uploadToS3("company-branding").single("logo")(req, res, err => {
+      if (err) {
+        return res.status(400).json({ message: err.message });
+      }
+      next();
+    });
+  },
+  controller.createBusinessUnit
+);
 router.get("/all-buinessUnit", auth,controller.getAllBusinessUnits);
 router.get("/getOne-buinessUnit/:id", controller.getBusinessUnitById);
 router.put("/update-buinessUnit/:id", controller.updateBusinessUnit);
