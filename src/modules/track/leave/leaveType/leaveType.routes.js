@@ -16,7 +16,7 @@ router.post(
 // UPDATE Leave Type
 // ===============================
 router.put(
-  "/update/leaveType/:id",
+  "/update/leaveType",
   leaveTypeController.updateLeaveType
 );
 
@@ -32,7 +32,7 @@ router.get(
 // GET Single Leave Type
 // ===============================
 router.get(
-  "/getOne/leaveType/:id",
+  "/getOne/leaveType",
   leaveTypeController.getLeaveTypeById
 );
 
