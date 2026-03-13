@@ -17,6 +17,10 @@ const AuthoritySchema = new mongoose.Schema(
             ref: "Employee",
             default: null,
         },
+         employeeName: {
+            type: String,
+            default: "",
+        },
         signatureImage: {
             type: String,
             default: "",

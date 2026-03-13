@@ -2,7 +2,7 @@ const AuthoritySignature = require("./Authoritysignture.model");
 
 exports.createAuthoritySignature = async (req, res) => {
     try {
-        const { employeeId, companyOfficeId } = req.body;
+        const { employeeId, companyOfficeId ,employeeName} = req.body;
 
         const signatureImage = req.file ? req.file.location : "";
 
@@ -18,6 +18,7 @@ exports.createAuthoritySignature = async (req, res) => {
             adminId: req.user?.userId,
             companyId: req.user?.companyId,
             employeeId,
+            employeeName,
             companyOfficeId: officeIds,
             signatureImage,
         });
@@ -107,7 +108,7 @@ exports.getOneAuthoritySignature = async (req, res) => {
 exports.updateAuthoritySignature = async (req, res) => {
   try {
     const { id } = req.params;
-    const { employeeId } = req.body;
+    const { employeeId,employeeName } = req.body;
 
     // find existing record
     const existingAuthority = await AuthoritySignature.findOne({
@@ -123,6 +124,7 @@ exports.updateAuthoritySignature = async (req, res) => {
     }
 
     const updateData = {
+        employeeName:employeeName || existingAuthority.employeeName,
       employeeId: employeeId || existingAuthority.employeeId,
     };
 
