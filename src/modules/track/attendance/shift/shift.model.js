@@ -31,41 +31,45 @@ const shiftSchema = new mongoose.Schema({
     },
 
     // ✅ shiftTimings ARRAY (inside same schema)
-    shiftTimings: [
-        {
-            startTime: {
-                type: String,
-                required: true
-            },
+   shiftTimings: [
+  {
+    startTime: {
+      type: String,
+      required: true
+    },
 
-            endTime: {
-                type: String,
-                required: true
-            },
+    endTime: {
+      type: String,
+      required: true
+    },
 
-            startOff: {
-                hours: {
-                    type: Number,
-                    default: 0
-                },
-                minutes: {
-                    type: Number,
-                    default: 0
-                }
-            },
+    startOff: {
+      hours: {
+        type: Number,
+        default: 0
+      },
+      minutes: {
+        type: Number,
+        min: 0,
+        max: 59,
+        default: 0
+      }
+    },
 
-            cutOff: {
-                hours: {
-                    type: Number,
-                    default: 0
-                },
-                minutes: {
-                    type: Number,
-                    default: 0
-                }
-            }
-        }
-    ],
+    cutOff: {
+      hours: {
+        type: Number,
+        default: 0
+      },
+      minutes: {
+        type: Number,
+        min: 0,
+        max: 59,
+        default: 0
+      }
+    }
+  }
+],
 
     colorCode: {
         type: String,

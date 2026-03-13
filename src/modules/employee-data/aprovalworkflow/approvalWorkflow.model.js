@@ -26,18 +26,40 @@ const DefineWorkflowSchema = new mongoose.Schema(
 ─────────────────────────────*/
 const LevelApproverSchema = new mongoose.Schema(
 {
+
   levelNumber: {
-    type: Number,
-    required: true,
-    min: 1,
-    max: 5
+    type: Number
   },
 
+  /* hierarchy role tags */
+  hierarchyRoles: {
+    type: [String],
+    default: []
+  },
+
+  /* if specific employee selected */
+  approverEmployeeId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Employee",
+    default: null
+  },
+
+  /* if hierarchy id selected */
   approverHierarchyId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     default: null
+  },
+
+  /* additional employees */
+  additionalEmployees: {
+    type: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Employee"
+    }],
+    default: []
   }
+
 },
 { _id: false }
 );
@@ -68,18 +90,22 @@ const SingleWorkflowSchema = new mongoose.Schema(
   },
 
   /* All hands approvers */
+
   allHandsTags: {
     type: [String],
     default: []
   },
 
   allHandsEmployee: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Employee",
-    default: null
+    type: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Employee"
+    }],
+    default: []
   },
 
   /* Single approver */
+
   approverHierarchyId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -87,6 +113,7 @@ const SingleWorkflowSchema = new mongoose.Schema(
   },
 
   /* Level Based */
+
   levelApprovers: {
     type: [LevelApproverSchema],
     default: [],

@@ -35,13 +35,28 @@ exports.createShift = async (req, res) => {
         //   });
         // }
 
+        const formattedShiftTimings = shiftTimings?.map((shift) => ({
+      startTime: shift.startTime,
+      endTime: shift.endTime,
+
+      startOff: {
+        hours: Number(shift?.startOff?.hours || 0),
+        minutes: Number(shift?.startOff?.minutes || 0),
+      },
+
+      cutOff: {
+        hours: Number(shift?.cutOff?.hours || 0),
+        minutes: Number(shift?.cutOff?.minutes || 0),
+      },
+    }));
+
         const shift = await Shift.create({
             adminId,
             companyId,
             title,
             description,
             shiftCategory,
-            shiftTimings,
+            shiftTimings: formattedShiftTimings,
             colorCode,
             isActive: isActive ?? true,
             companyOfficeId: officeIds,
