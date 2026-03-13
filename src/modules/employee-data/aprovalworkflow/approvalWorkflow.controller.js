@@ -40,7 +40,8 @@ exports.createOrUpdateWorkflow = async (req, res) => {
 
       workflowDoc = await ApprovalWorkflow.findOne({
         _id: workflowId,
-        adminId
+        adminId,
+        companyId
       });
 
       if (!workflowDoc) {
@@ -81,20 +82,41 @@ exports.createOrUpdateWorkflow = async (req, res) => {
 
     else {
 
-      workflowDoc.tabs[tabName] = workflowData;
+      workflowDoc.tabs = {
+        ...workflowDoc.tabs,
+        [tabName]: {
+          ...workflowDoc.tabs[tabName],
+          ...workflowData
+        }
+      };
 
     }
 
     await workflowDoc.save();
 
+    /* POPULATE DATA */
+
     const populatedData = await ApprovalWorkflow
       .findById(workflowDoc._id)
+
+      .populate("tabs.hrisWorkflow.approverHierarchyId")
       .populate("tabs.attendanceWorkflow.approverHierarchyId")
       .populate("tabs.leaveWorkflow.approverHierarchyId")
       .populate("tabs.expenseWorkflow.approverHierarchyId")
       .populate("tabs.exitWorkflow.approverHierarchyId")
+
+      .populate("tabs.hrisWorkflow.allHandsEmployee")
+      .populate("tabs.attendanceWorkflow.allHandsEmployee")
+      .populate("tabs.leaveWorkflow.allHandsEmployee")
+      .populate("tabs.expenseWorkflow.allHandsEmployee")
+      .populate("tabs.exitWorkflow.allHandsEmployee")
+
       .populate("tabs.leaveWorkflow.levelApprovers.approverHierarchyId")
       .populate("tabs.exitWorkflow.levelApprovers.approverHierarchyId")
+
+      .populate("tabs.hrisWorkflow.backupEmployeeId")
+      .populate("tabs.leaveWorkflow.backupEmployeeId")
+
       .populate("assignedEmployeeList.employeeId")
       .populate("assignedEmployeeList.departmentId");
 
@@ -103,9 +125,7 @@ exports.createOrUpdateWorkflow = async (req, res) => {
       data: populatedData
     });
 
-  }
-
-  catch (error) {
+  } catch (error) {
 
     console.error(error);
 

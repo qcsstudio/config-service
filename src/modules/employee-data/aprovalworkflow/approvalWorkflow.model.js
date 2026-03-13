@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
-/* ─────────────────────────────────────────────
-   TAB 1: Define Workflow
-───────────────────────────────────────────── */
+/* ─────────────────────────────
+   TAB 1: DEFINE WORKFLOW
+─────────────────────────────*/
 const DefineWorkflowSchema = new mongoose.Schema(
 {
   workflowName: {
@@ -21,9 +21,9 @@ const DefineWorkflowSchema = new mongoose.Schema(
 );
 
 
-/* ─────────────────────────────────────────────
-   LEVEL APPROVER (For level-based workflow)
-───────────────────────────────────────────── */
+/* ─────────────────────────────
+   LEVEL APPROVER
+─────────────────────────────*/
 const LevelApproverSchema = new mongoose.Schema(
 {
   levelNumber: {
@@ -43,14 +43,13 @@ const LevelApproverSchema = new mongoose.Schema(
 );
 
 
-/* ─────────────────────────────────────────────
-   SINGLE WORKFLOW CONFIG
-   Used for HRIS / Attendance / Leave / Expense / Exit
-───────────────────────────────────────────── */
+/* ─────────────────────────────
+   WORKFLOW CONFIG (HRIS / Leave etc)
+─────────────────────────────*/
 const SingleWorkflowSchema = new mongoose.Schema(
 {
 
-  /* Same as HRIS toggle */
+  /* Same as HRIS */
   sameAsHRIS: {
     type: Boolean,
     default: false
@@ -68,14 +67,26 @@ const SingleWorkflowSchema = new mongoose.Schema(
     default: null
   },
 
-  /* Approver (for free_flow & all_hands_in) */
+  /* All hands approvers */
+  allHandsTags: {
+    type: [String],
+    default: []
+  },
+
+  allHandsEmployee: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Employee",
+    default: null
+  },
+
+  /* Single approver */
   approverHierarchyId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     default: null
   },
 
-  /* Level-based approvals */
+  /* Level Based */
   levelApprovers: {
     type: [LevelApproverSchema],
     default: [],
@@ -85,7 +96,6 @@ const SingleWorkflowSchema = new mongoose.Schema(
     }
   },
 
-  /* Number of approval levels */
   approvalLevels: {
     type: Number,
     min: 1,
@@ -93,7 +103,8 @@ const SingleWorkflowSchema = new mongoose.Schema(
     default: 1
   },
 
-  /* Inaction handling */
+  /* Inaction Handling */
+
   autoHandleInaction: {
     type: Boolean,
     default: false
@@ -101,7 +112,6 @@ const SingleWorkflowSchema = new mongoose.Schema(
 
   forwardAfterDays: {
     type: Number,
-    min: 1,
     default: null
   },
 
@@ -115,7 +125,8 @@ const SingleWorkflowSchema = new mongoose.Schema(
     default: null
   },
 
-  /* Backup decision maker */
+  /* Backup Decision */
+
   backupDecisionType: {
     type: String,
     enum: [
@@ -131,7 +142,8 @@ const SingleWorkflowSchema = new mongoose.Schema(
     default: null
   },
 
-  /* Manager change handling */
+  /* Manager Change */
+
   transferOnManagerChange: {
     type: String,
     enum: [
@@ -146,9 +158,9 @@ const SingleWorkflowSchema = new mongoose.Schema(
 );
 
 
-/* ─────────────────────────────────────────────
-   ASSIGNED EMPLOYEE / DEPARTMENT
-───────────────────────────────────────────── */
+/* ─────────────────────────────
+   ASSIGNED EMPLOYEES
+─────────────────────────────*/
 const AssignedTargetSchema = new mongoose.Schema(
 {
 
@@ -169,13 +181,12 @@ const AssignedTargetSchema = new mongoose.Schema(
 );
 
 
-/* ─────────────────────────────────────────────
-   MAIN WORKFLOW SCHEMA
-───────────────────────────────────────────── */
+/* ─────────────────────────────
+   MAIN WORKFLOW
+─────────────────────────────*/
 const ApprovalWorkflowSchema = new mongoose.Schema(
 {
 
-  /* Admin */
   adminId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Admin",
@@ -185,10 +196,9 @@ const ApprovalWorkflowSchema = new mongoose.Schema(
   companyId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Company",
-    default: null
+    required: true
   },
 
-  /* Added By */
   addedById: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Employee"
@@ -207,7 +217,6 @@ const ApprovalWorkflowSchema = new mongoose.Schema(
     default: Date.now
   },
 
-  /* Tabs */
   tabs: {
 
     defineWorkflow: {
@@ -242,7 +251,6 @@ const ApprovalWorkflowSchema = new mongoose.Schema(
 
   },
 
-  /* Assigned Employees / Departments */
   assignedEmployeeList: {
     type: [AssignedTargetSchema],
     default: []
@@ -252,10 +260,6 @@ const ApprovalWorkflowSchema = new mongoose.Schema(
 { timestamps: true }
 );
 
-
-/* ─────────────────────────────────────────────
-   EXPORT MODEL
-───────────────────────────────────────────── */
 module.exports = mongoose.model(
   "ApprovalWorkflow",
   ApprovalWorkflowSchema
