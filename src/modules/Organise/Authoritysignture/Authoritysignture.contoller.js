@@ -2,8 +2,6 @@ const AuthoritySignature = require("./Authoritysignture.model");
 
 exports.createAuthoritySignature = async (req, res) => {
     try {
-
-
         const { employeeId, companyOfficeId } = req.body;
 
         const signatureImage = req.file ? req.file.location : "";

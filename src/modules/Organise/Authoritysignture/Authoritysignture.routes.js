@@ -7,7 +7,7 @@ const uploadToS3 = require("../../../middlewares/s3Upload");
 
 // Create Authority Signature
 router.post(
-  "/create",
+  "/create-authoritySignature",
   authMiddleware,
   uploadToS3().single("signatureImage"),
   authorityController.createAuthoritySignature
@@ -15,27 +15,27 @@ router.post(
 
 // Get All Authority Signatures
 router.get(
-  "/get-all",
+  "/get-all-authoritySignature",
   authMiddleware,
   authorityController.getAllAuthoritySignatures
 );
 
 // Get One Authority Signature
 router.get(
-  "/get-one/:id",
+  "/get-one-authoritySignature/:id",
   authorityController.getOneAuthoritySignature
 );
 
 // Update Authority Signature
 router.put(
-  "/update/:id",
+  "/update-authoritySignature/:id",
    uploadToS3().single("signatureImage"),
   authorityController.updateAuthoritySignature
 );
 
 // Delete Authority Signature (Soft Delete)
-router.delete(
-  "/delete/:id",
+router.put(
+  "/delete-authoritySignature/:id",
   authorityController.deleteAuthoritySignature
 );
 

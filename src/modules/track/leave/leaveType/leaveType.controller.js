@@ -1,7 +1,7 @@
 const LeaveType = require("./leaveType.model");
 
 // ✅ CREATE Leave Type
-exports.createLeaveType = async (req, res) => {
+exports.createOrUpdateLeaveType = async (req, res) => {
   try {
     const companyId = req.user?.companyId;
     const adminId = req.user?.userId;
@@ -13,16 +13,6 @@ exports.createLeaveType = async (req, res) => {
       });
     }
 
-    // Check if already exists
-    const existing = await LeaveType.findOne({ companyId });
-    if (existing) {
-      return res.status(400).json({
-        success: false,
-        message: "Leave Type already exists for this company",
-      });
-    }
-
-    // 🔹 Destructure all boolean fields safely
     const {
       customLeave,
       hourlyLeave,
@@ -37,36 +27,43 @@ exports.createLeaveType = async (req, res) => {
       paternityLeave,
     } = req.body;
 
-    const leaveType = await LeaveType.create({
-      companyId,
-      adminId,
+    const leaveType = await LeaveType.findOneAndUpdate(
+      { companyId }, // find by company
+      {
+        companyId,
+        adminId,
 
-      customLeave: customLeave ?? false,
-      hourlyLeave: hourlyLeave ?? false,
-      medicalLeave: medicalLeave ?? false,
-      unpaidLeave: unpaidLeave ?? false,
+        customLeave: customLeave ?? false,
+        hourlyLeave: hourlyLeave ?? false,
+        medicalLeave: medicalLeave ?? false,
+        unpaidLeave: unpaidLeave ?? false,
 
-      birthdayLeave: birthdayLeave ?? false,
-      marriageAnniversaryLeave: marriageAnniversaryLeave ?? false,
-      spouseBirthdayLeave: spouseBirthdayLeave ?? false,
+        birthdayLeave: birthdayLeave ?? false,
+        marriageAnniversaryLeave: marriageAnniversaryLeave ?? false,
+        spouseBirthdayLeave: spouseBirthdayLeave ?? false,
 
-      sabbaticalLeave: sabbaticalLeave ?? false,
-      vacationLeave: vacationLeave ?? false,
+        sabbaticalLeave: sabbaticalLeave ?? false,
+        vacationLeave: vacationLeave ?? false,
 
-      maternityLeave: maternityLeave ?? false,
-      paternityLeave: paternityLeave ?? false,
-    });
+        maternityLeave: maternityLeave ?? false,
+        paternityLeave: paternityLeave ?? false,
+      },
+      {
+        new: true,
+        upsert: true // create if not exists
+      }
+    );
 
-    res.status(201).json({
+    res.status(200).json({
       success: true,
-      message: "Leave Type created successfully",
+      message: "Leave Type saved successfully",
       data: leaveType,
     });
 
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Error creating Leave Type",
+      message: "Error saving Leave Type",
       error: error.message,
     });
   }
@@ -135,26 +132,37 @@ exports.getAllLeaveTypes = async (req, res) => {
 // ✅ GET Single Leave Type
 exports.getLeaveTypeById = async (req, res) => {
   try {
-    const companyId = req.user?.companyId
+// console.log(req.user)
+    const companyId = req.user?.companyId;
 
-    const leaveType = await LeaveType.findById({ companyId })
+    if (!companyId) {
+      return res.status(400).json({
+        success: false,
+        message: "CompanyId missing from token"
+      });
+    }
+
+    const leaveType = await LeaveType.findOne({ companyId });
 
     if (!leaveType) {
       return res.status(404).json({
         success: false,
-        message: "Leave Type not found",
+        message: "Leave Type not found"
       });
     }
 
     res.status(200).json({
       success: true,
-      data: leaveType,
+      data: leaveType
     });
+
   } catch (error) {
+    console.log(error, "error");
+
     res.status(500).json({
       success: false,
       message: "Error fetching Leave Type",
-      error: error.message,
+      error: error.message
     });
   }
 };
