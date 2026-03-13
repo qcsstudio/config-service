@@ -75,10 +75,10 @@ exports.createLeaveType = async (req, res) => {
 // ✅ UPDATE Leave Type
 exports.updateLeaveType = async (req, res) => {
   try {
-    const { id } = req.params;
+   const companyId = req.user?.companyId
 
     const updated = await LeaveType.findByIdAndUpdate(
-      id,
+      { companyId: companyId },
       req.body,
       { new: true }
     );
@@ -135,11 +135,9 @@ exports.getAllLeaveTypes = async (req, res) => {
 // ✅ GET Single Leave Type
 exports.getLeaveTypeById = async (req, res) => {
   try {
-    const { id } = req.params;
+    const companyId = req.user?.companyId
 
-    const leaveType = await LeaveType.findById(id)
-      .populate("companyId", "companyName")
-      .populate("adminId", "name email");
+    const leaveType = await LeaveType.findById({ companyId })
 
     if (!leaveType) {
       return res.status(404).json({

@@ -3,7 +3,9 @@ const LeaveCycleSetting = require("./leaveCycle.model")
 exports.createOrUpdateLeaveCycle = async (req, res) => {
   try {
     const { pendingLeaveOption } = req.body;
-    const { id } = req.params; // pass _id in params when updating
+
+    const companyId = req.user?.companyId;
+    const adminId = req.user?.userId;
 
     if (!pendingLeaveOption) {
       return res.status(400).json({
@@ -12,39 +14,30 @@ exports.createOrUpdateLeaveCycle = async (req, res) => {
       });
     }
 
-    // ✅ If ID exists → Update by _id
-    if (id) {
-      const updated = await LeaveCycleSetting.findByIdAndUpdate(
-        id,
-        { pendingLeaveOption },
-        { new: true }
-      );
-
-      if (!updated) {
-        return res.status(404).json({
-          success: false,
-          message: "Leave cycle setting not found",
-        });
-      }
-
-      return res.status(200).json({
-        success: true,
-        message: "Leave cycle setting updated successfully",
-        data: updated,
+    if (!companyId) {
+      return res.status(401).json({
+        success: false,
+        message: "Company not found in token",
       });
     }
 
-    // ✅ If no ID → Create new
-    const newSetting = await LeaveCycleSetting.create({
-      pendingLeaveOption,
-      adminId: req.user?.userId || null,
-      companyId:req.user.companyId || null // only set during create
-    });
+    const setting = await LeaveCycleSetting.findOneAndUpdate(
+      { companyId }, // ✅ find by company
+      {
+        pendingLeaveOption,
+        adminId,
+        companyId
+      },
+      {
+        new: true,
+        upsert: true // ✅ create if not exists
+      }
+    );
 
-    return res.status(201).json({
+    return res.status(200).json({
       success: true,
-      message: "Leave cycle setting created successfully",
-      data: newSetting,
+      message: "Leave cycle setting saved successfully",
+      data: setting,
     });
 
   } catch (error) {
@@ -99,7 +92,8 @@ exports.createOrUpdateLeaveCycle = async (req, res) => {
  */
 exports.getLeaveCycle = async (req, res) => {
   try {
-    const data = await LeaveCycleSetting.findOne().sort({ createdAt: -1 });
+    const companyId = req.user?.companyId
+    const data = await LeaveCycleSetting.findOne({companyId :companyId })
 
     if (!data) {
       return res.status(404).json({
