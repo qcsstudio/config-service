@@ -6,7 +6,7 @@ exports.createOrUpdateWorkflow = async (req, res) => {
   try {
 
     const { tabName, workflowId } = req.query;
-    const workflowData = req.body;
+    let workflowData = req.body;
 
     const adminId = req.user?.userId;
     const companyId = req.user?.companyId;
@@ -30,6 +30,34 @@ exports.createOrUpdateWorkflow = async (req, res) => {
       return res.status(400).json({
         message: "Invalid tab name"
       });
+    }
+
+    /* Ensure level approvers structure */
+
+    if (workflowData.levelApprovers) {
+
+      workflowData.levelApprovers =
+        workflowData.levelApprovers.map(level => {
+
+          if (
+            level.hierarchyRoles &&
+            level.hierarchyRoles.includes("Additional Employee")
+          ) {
+
+            return {
+              ...level,
+              additionalEmployees: level.additionalEmployees || []
+            };
+
+          }
+
+          return {
+            ...level,
+            additionalEmployees: []
+          };
+
+        });
+
     }
 
     let workflowDoc;
@@ -94,16 +122,10 @@ exports.createOrUpdateWorkflow = async (req, res) => {
 
     await workflowDoc.save();
 
-    /* POPULATE DATA */
+    /* POPULATE */
 
     const populatedData = await ApprovalWorkflow
       .findById(workflowDoc._id)
-
-      .populate("tabs.hrisWorkflow.approverHierarchyId")
-      .populate("tabs.attendanceWorkflow.approverHierarchyId")
-      .populate("tabs.leaveWorkflow.approverHierarchyId")
-      .populate("tabs.expenseWorkflow.approverHierarchyId")
-      .populate("tabs.exitWorkflow.approverHierarchyId")
 
       .populate("tabs.hrisWorkflow.allHandsEmployee")
       .populate("tabs.attendanceWorkflow.allHandsEmployee")
@@ -111,8 +133,8 @@ exports.createOrUpdateWorkflow = async (req, res) => {
       .populate("tabs.expenseWorkflow.allHandsEmployee")
       .populate("tabs.exitWorkflow.allHandsEmployee")
 
-      .populate("tabs.leaveWorkflow.levelApprovers.approverHierarchyId")
-      .populate("tabs.exitWorkflow.levelApprovers.approverHierarchyId")
+      .populate("tabs.leaveWorkflow.levelApprovers.approverEmployeeId")
+      .populate("tabs.leaveWorkflow.levelApprovers.additionalEmployees")
 
       .populate("tabs.hrisWorkflow.backupEmployeeId")
       .populate("tabs.leaveWorkflow.backupEmployeeId")
