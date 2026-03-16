@@ -7,10 +7,10 @@ const {
   getOneLeavePolicy,
   updateLeavePolicy,
 } = require("./leavePolicy.controller");
-
-router.post("/create/leavePolicy", createLeavePolicy);
-router.get("/getAll/leavePolicy", getAllLeavePolicies);
-router.get("/ge/leavePolicy/:id", getOneLeavePolicy);
+const auth = require("../../../../middlewares/auth.middleware")
+router.post("/create/leavePolicy",auth, createLeavePolicy);
+router.get("/getAll/leavePolicy",auth, getAllLeavePolicies);
+router.get("/get/leavePolicy/:id", getOneLeavePolicy);
 router.put("/update/leavePolicy/:id", updateLeavePolicy);
 
 module.exports = router;

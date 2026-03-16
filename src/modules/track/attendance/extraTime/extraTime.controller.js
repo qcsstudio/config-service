@@ -83,7 +83,8 @@ let officeIds = [];
 
 exports.getAllExtraTimePolicies = async (req, res) => {
   try {
-    const policies = await ExtraTime.find().sort({ createdAt: -1 }); // latest first
+    const companyId = req.user?.companyId
+    const policies = await ExtraTime.find({companyId :companyId }).sort({ createdAt: -1 }); // latest first
     const data = await populateEmployeeDetails(policies);
     return res.status(200).json({
       success: true,

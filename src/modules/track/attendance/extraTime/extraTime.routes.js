@@ -11,6 +11,6 @@ const auth = require("../../../../middlewares/auth.middleware");
 router.post("/extra-time", auth, createExtraTimePolicy);
 
 // Get single policy by ID
-router.get("/extra-time-getAll",  getAllExtraTimePolicies);
+router.get("/extra-time-getAll",auth,  getAllExtraTimePolicies);
 
 module.exports = router;
