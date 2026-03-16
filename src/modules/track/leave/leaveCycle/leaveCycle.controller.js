@@ -1,5 +1,6 @@
 
 const LeaveCycleSetting = require("./leaveCycle.model")
+const mongoose = require("mongoose")
 exports.createOrUpdateLeaveCycle = async (req, res) => {
   try {
     const { pendingLeaveOption } = req.body;
@@ -92,8 +93,16 @@ exports.createOrUpdateLeaveCycle = async (req, res) => {
  */
 exports.getLeaveCycle = async (req, res) => {
   try {
-    const companyId = req.user?.companyId
-    const data = await LeaveCycleSetting.findOne({companyId :companyId })
+    const companyId = req.user?.companyId;
+
+    if (!companyId) {
+      return res.status(401).json({
+        success: false,
+        message: "Company not found in token",
+      });
+    }
+
+    const data = await LeaveCycleSetting.find({ companyId });
 
     if (!data) {
       return res.status(404).json({
@@ -106,6 +115,7 @@ exports.getLeaveCycle = async (req, res) => {
       success: true,
       data,
     });
+
   } catch (error) {
     return res.status(500).json({
       success: false,

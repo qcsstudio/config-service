@@ -9,7 +9,7 @@ const auth = require("../../../../middlewares/auth.middleware"); // JWT middlewa
 router.post(
   "/create/leaveType",
   auth, // must be logged in
-  leaveTypeController.createLeaveType
+  leaveTypeController.createOrUpdateLeaveType
 );
 
 // ===============================
@@ -33,6 +33,7 @@ router.get(
 // ===============================
 router.get(
   "/getOne/leaveType",
+  auth,
   leaveTypeController.getLeaveTypeById
 );
 
