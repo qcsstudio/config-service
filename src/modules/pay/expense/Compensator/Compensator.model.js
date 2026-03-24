@@ -33,6 +33,10 @@ const compensatorConfigurationSchema = new mongoose.Schema(
             ref: "Company",
             default: null
         },
+        employeeId:{
+            type:mongoose.Types.ObjectId,
+                ref: "employees",
+        },
         businessUnitId: {
             type: [
                 {

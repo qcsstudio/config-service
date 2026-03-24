@@ -4,7 +4,8 @@ const {
   createExtraTimePolicy,
   getAllExtraTimePolicies,
    updateExtraTimePolicy,
-   deleteExtraTimePolicy
+   deleteExtraTimePolicy,
+   getExtraTimePolicyById
 } = require("./extraTime.controller");
 
 const auth = require("../../../../middlewares/auth.middleware");
@@ -14,6 +15,8 @@ router.post("/extra-time", auth, createExtraTimePolicy);
 
 // Get single policy by ID
 router.get("/extra-time-getAll",auth,  getAllExtraTimePolicies);
+router.get("/extra-time-getOne/:id",  getExtraTimePolicyById);
+
 
 
 // ✅ Update

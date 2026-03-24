@@ -477,17 +477,16 @@ exports.updateChecklistStatus = async (req, res) => {
     const { status } = req.query; // 👈 from body (better than query)
 
     // ✅ validate
-    if (typeof status !== "boolean") {
-      return res.status(400).json({
-        success: false,
-        message: "Status must be true or false",
-      });
-    }
+    // if (typeof status !== "boolean") {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Status must be true or false",
+    //   });
+    // }
 
     const checklist = await Checklist.findOneAndUpdate(
       {
         _id: checklistId,
-        companyId: req.user.companyId, // 🔐 secure
       },
       {
         $set: { isDeleted: status },
