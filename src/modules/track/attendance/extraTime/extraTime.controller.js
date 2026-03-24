@@ -98,7 +98,41 @@ exports.getAllExtraTimePolicies = async (req, res) => {
     });
   }
 };
+exports.getExtraTimePolicyById = async (req, res) => {
+  try {
+    const { id } = req.params;
 
+    // ✅ Find policy
+    const policy = await ExtraTime.findOne({
+      _id: id,
+      isDeleted: false,
+    });
+
+    if (!policy) {
+      return res.status(404).json({
+        success: false,
+        message: "Policy not found",
+      });
+    }
+
+    // ✅ Populate employee details (same as your list API)
+    const data = await populateEmployeeDetails([policy]);
+
+    return res.status(200).json({
+      success: true,
+      message: "Extra Time policy fetched successfully",
+      data: data[0], // return single object
+    });
+
+  } catch (error) {
+    console.error("Get Policy By ID Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
 exports.updateExtraTimePolicy = async (req, res) => {
   try {
     const { id } = req.params;

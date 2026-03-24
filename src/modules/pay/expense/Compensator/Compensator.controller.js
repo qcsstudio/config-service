@@ -8,7 +8,7 @@ exports.createCompensatorConfiguration = async (req, res) => {
     const adminId = req.user?.userId;
     const companyId = req.user?.companyId;
 
-    const { businessUnitId, departmentId, locationId } = req.body;
+    const { businessUnitId, departmentId, locationId, employeeId } = req.body;
 
    
 
@@ -35,7 +35,8 @@ exports.createCompensatorConfiguration = async (req, res) => {
       companyId,
       businessUnitId: businessUnits,
       departmentId: departments,
-      locationId: locations
+      locationId: locations,
+       employeeId: employeeId
     });
 
     const savedData = await data.save();
@@ -122,7 +123,7 @@ exports.updateCompensatorConfiguration = async (req, res) => {
 
     const { id } = req.params;
 
-    const { businessUnitId, departmentId, locationId } = req.body;
+    const { businessUnitId, departmentId, locationId, employeeId } = req.body;
 
     const businessUnits = Array.isArray(businessUnitId)
       ? businessUnitId
@@ -150,6 +151,7 @@ exports.updateCompensatorConfiguration = async (req, res) => {
         businessUnitId: businessUnits,
         departmentId: departments,
         locationId: locations,
+         employeeId: employeeId
       },
       { new: true }
     );
