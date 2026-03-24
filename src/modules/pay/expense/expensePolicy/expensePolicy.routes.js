@@ -16,7 +16,7 @@ router.post("/create-expensePolicy", auth,createPolicy);
 router.put("/update/expensePolicy/:id", updatePolicy);
 
 // GET ALL POLICIES BY COMPANY
-router.get("/GetAll/expensePolicy", getPoliciesByCompany);
+router.get("/GetAll/expensePolicy",auth, getPoliciesByCompany);
 
 // GET SINGLE POLICY
 router.get("/getOne/expensePolicy/:id", getPolicyById);

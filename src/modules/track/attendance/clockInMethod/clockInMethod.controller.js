@@ -105,11 +105,19 @@ exports.createClockInMethod = async (req, res) => {
 
 exports.getAllClockInMethods = async (req, res) => {
   try {
-
-    const methods = await ClockInMethod.find()
+ const { country } = req.query; 
+    const methods = await ClockInMethod.find({ isDeleted: false})
+        .populate({
+        path: "companyOfficeId",
+        match: country ? { "address.country": country } : {},
+        select: "locationName address.country address.state address.city",
+      })
       .sort({ createdAt: -1 });
 
-    const data = await populateEmployeeDetails(methods);
+   const filteredMethods = methods.filter(method => method.companyOfficeId && method.companyOfficeId.length > 0);
+
+    const data = await populateEmployeeDetails(filteredMethods);
+
 
     res.status(200).json({
       success: true,
@@ -125,6 +133,139 @@ exports.getAllClockInMethods = async (req, res) => {
   }
 };
 
+
+exports.deleteClockInMethod = async (req, res) => {
+  try {
+    // const adminId = req.user?.userId;
+    const { id } = req.params;
+
+    const method = await ClockInMethod.findOne({
+      _id: id,
+      isDeleted: false
+    });
+
+    if (!method) {
+      return res.status(404).json({
+        success: false,
+        message: "Clock-in method not found"
+      });
+    }
+
+    // ✅ Soft delete
+    method.isDeleted = true;
+    method.deletedAt = new Date();
+
+    await method.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Clock-in Method deleted (soft) successfully"
+    });
+
+  } catch (error) {
+    console.error("Delete ClockInMethod Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message
+    });
+  }
+};
+
+exports.updateClockInMethod = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find existing record
+    const existing = await ClockInMethod.findOne({
+      _id: id,
+      isDeleted: false
+    });
+
+    if (!existing) {
+      return res.status(404).json({
+        success: false,
+        message: "Clock-in method not found"
+      });
+    }
+
+    const {
+      deviceName,
+      description,
+      clockType,
+      trackBreak,
+      breakDuration,
+      hybrid,
+      biometric,
+      directionalDevice,
+      webAttendance,
+      ipRestriction,
+      ipList,
+      mobileAttendance,
+      gpsAttendance,
+      gpsList,
+      isActive,
+    } = req.body;
+
+    // ✅ Optional validation
+    if (deviceName && !deviceName.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "Device name cannot be empty"
+      });
+    }
+
+    // ✅ Handle officeIds
+   
+
+    // ✅ Update fields (only if provided)
+    existing.deviceName = deviceName?.trim() || existing.deviceName;
+    existing.description = description ?? existing.description;
+
+    existing.clockType = clockType ?? existing.clockType;
+    existing.trackBreak = trackBreak ?? existing.trackBreak;
+
+    existing.breakDuration = {
+      hours: breakDuration?.hours ?? existing.breakDuration?.hours ?? 0,
+      minutes: breakDuration?.minutes ?? existing.breakDuration?.minutes ?? 0
+    };
+
+    existing.hybrid = hybrid ?? existing.hybrid;
+
+    if (biometric !== undefined) {
+      existing.biometric = biometric;
+
+      // 🔥 Important logic (same as create)
+      existing.directionalDevice = biometric ? (directionalDevice ?? false) : false;
+
+      existing.webAttendance = !biometric ? (webAttendance ?? false) : false;
+      existing.ipRestriction = !biometric ? (ipRestriction ?? false) : false;
+      existing.ipList = !biometric ? (ipList ?? []) : [];
+
+      existing.mobileAttendance = !biometric ? (mobileAttendance ?? false) : false;
+      existing.gpsAttendance = !biometric ? (gpsAttendance ?? false) : false;
+      existing.gpsList = !biometric ? (gpsList ?? []) : [];
+    }
+
+    existing.isActive = isActive ?? existing.isActive;
+
+    await existing.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Clock-in Method updated successfully",
+      data: existing
+    });
+
+  } catch (error) {
+    console.error("Update ClockInMethod Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message
+    });
+  }
+};
 
 exports.validateWFH = async (req, res) => {
   try {

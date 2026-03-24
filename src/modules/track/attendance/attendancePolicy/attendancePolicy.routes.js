@@ -16,5 +16,7 @@ router.get(
   "/attendance-policy-getAll",
   attendanceController.getAllAttendancePolicies
 );
+router.put("/attendance-policy-update/:id",  attendanceController.updateAttendancePolicy);
+router.delete("/attendance-policy-delete/:id", attendanceController.deleteAttendancePolicy);
 
 module.exports = router;

@@ -162,6 +162,13 @@ const clockInMethodSchema = new mongoose.Schema(
             ],
             default: []
         },
+        isDeleted:{
+            type:Boolean,
+            default:false
+        },
+        deletedAt:{
+            type:Date
+        },
     },
     { timestamps: true }
 );

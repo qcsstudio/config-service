@@ -122,6 +122,14 @@ const WeeklyOffSchema = new Schema(
                }
              }
            ],
+           isDeleted: {
+  type: Boolean,
+  default: false,
+},
+deletedAt: {
+  type: Date,
+  default: null,
+},
     },
     { timestamps: true }
 );

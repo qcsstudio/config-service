@@ -7,12 +7,12 @@ const {
   updateCurrency,
   getCurrencyById
 } = require("./Currency.controller");
-
+const auth = require("../../../../middlewares/auth.middleware")
 // Create Currency
-router.post("/create-currency", createCurrency);
+router.post("/create-currency",auth, createCurrency);
 
 // Get All Currencies
-router.get("/all-currency", getAllCurrencies);
+router.get("/all-currency",auth ,getAllCurrencies);
 
 // Get Currency By ID
 router.get("/getOne-currency/:id", getCurrencyById);

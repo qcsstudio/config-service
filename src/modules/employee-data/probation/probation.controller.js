@@ -4,9 +4,12 @@ const populateEmployeeDetails = require("../../company-data/populateEmployees");
 const createOrUpdateProbationPlan = async (req, res) => {
   try {
     const adminId = req.user?.userId;
+    const companyId = req.user?.companyId;
 
     if (!adminId) {
-      return res.status(401).json({ message: "Unauthorized. Admin not found." });
+      return res.status(401).json({
+        message: "Unauthorized. Admin not found."
+      });
     }
 
     const {
@@ -17,14 +20,18 @@ const createOrUpdateProbationPlan = async (req, res) => {
       isAutoConfirm,
       notifyEmployee,
       notifySettings,
-         companyOfficeId,
-      _id
+      companyOfficeId
     } = req.body;
 
-    // If notifyEmployee is false, reset notifySettings
-    const finalNotifySettings = notifyEmployee ? notifySettings : {};
- let officeIds = [];
+    if (!policyName) {
+      return res.status(400).json({
+        message: "Policy name is required"
+      });
+    }
 
+    const finalNotifySettings = notifyEmployee ? notifySettings : {};
+
+    let officeIds = [];
     if (companyOfficeId) {
       officeIds = Array.isArray(companyOfficeId)
         ? companyOfficeId
@@ -33,6 +40,7 @@ const createOrUpdateProbationPlan = async (req, res) => {
 
     const payload = {
       adminId,
+      companyId,
       policyName,
       description,
       probationDurationDays,
@@ -40,65 +48,58 @@ const createOrUpdateProbationPlan = async (req, res) => {
       isAutoConfirm,
       notifyEmployee,
       notifySettings: finalNotifySettings,
-
-      // 🔹 Always empty while creating/updating from this API
       assignedEmployeeList: [],
       fullcount: 0,
-
-      // 🔹 Added By (auto from token)
       addedbyid: req.user.userId,
       addedbyname: req.user.name,
       addedbyimagepath: req.user.image,
+      companyOfficeId: officeIds
     };
 
-    // 🔁 UPDATE
-    if (_id) {
+    // 🔁 UPDATE based on companyId + policyName
+    const existing = await ProbationPlan.findOne({
+      companyId,
+      policyName
+    });
+
+    if (existing) {
       const updated = await ProbationPlan.findOneAndUpdate(
-        { _id },
-        {
-          ...payload,
-          companyOfficeId: officeIds
-        },
+        { companyId, policyName },
+        { $set: payload },
         { new: true }
       );
 
-      if (!updated) {
-        return res.status(404).json({
-          message: "Probation plan not found",
-        });
-      }
-
-      const data = await populateEmployeeDetails(updated);
-
       return res.status(200).json({
         message: "Probation plan updated successfully",
-        data,
+        data: updated
       });
     }
 
-    // 🆕 CREATE
-    const created = await ProbationPlan.create({ ...payload,
-      companyOfficeId: officeIds});
+    // 🆕 CREATE if not exists
+    const created = await ProbationPlan.create(payload);
 
-    res.status(201).json({
+    return res.status(201).json({
       message: "Probation plan created successfully",
-      data: created,
+      data: created
     });
 
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message
+    });
   }
 };
 
 
 const getAllProbationPlans = async (req, res) => {
   try {
-    const adminId = req.user?.userId;
+    const companyId = req.user?.companyId;
     const { country } = req.query;
 
-    if (!adminId) return res.status(401).json({ message: "Unauthorized" });
+    if (!companyId) return res.status(401).json({ message: "Unauthorized" });
 
-    let plans = await ProbationPlan.find({ adminId }).sort({ createdAt: -1 })
+    let plans = await ProbationPlan.find({ companyId:companyId }).sort({ createdAt: -1 })
       .populate({
         path: "companyOfficeId",
         match: country ? { "address.country": country } : {},

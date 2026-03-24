@@ -58,7 +58,7 @@ exports.createPayrollTag = async (req, res) => {
 // ✅ Get All Payroll Tags
 exports.getAllPayrollTags = async (req, res) => {
   try {
-    const companyId = req.user?.userId;
+    const companyId = req.user?.companyId;
     const { country } = req.query;
 
     let filter = {};
