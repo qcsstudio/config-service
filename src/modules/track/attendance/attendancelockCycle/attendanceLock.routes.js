@@ -19,7 +19,7 @@ router.post(
 
 // ✅ Get by companyId (from logged-in user)
 router.get(
-  "/attendance-lock-cycle",
+  "/attendance-lock-cycle-get",
   authMiddleware,
   getAttendanceLockCycle
 );

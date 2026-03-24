@@ -131,6 +131,45 @@ exports.getActivities = async (req, res) => {
 
   }
 };
+exports.getOneActivity = async (req, res) => {
+  try {
+    const { activityId } = req.params;
+
+    // ✅ find activity inside checklist
+    const checklist = await Checklist.findOne(
+      { "activities._id": activityId },
+      { "activities.$": 1 } // 🔥 only return matched activity
+    );
+
+    if (!checklist || !checklist.activities.length) {
+      return res.status(404).json({
+        success: false,
+        message: "Activity not found"
+      });
+    }
+
+    const activity = checklist.activities[0];
+
+    // ✅ optional: skip deleted
+    if (activity.deleted === true) {
+      return res.status(404).json({
+        success: false,
+        message: "Activity is deleted"
+      });
+    }
+
+    res.json({
+      success: true,
+      data: activity
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
 
 exports.updateActivity = async (req, res) => {
   try {
@@ -266,7 +305,7 @@ exports.getAllChecklists = async (req, res) => {
     }
 
     const data = await Checklist.find(filter)
-      .populate("businessUnit department designation team location assignedEmployees.employeeId")
+      .populate("businessUnit department designation team location")
       .sort({ createdAt: -1 });
 
     res.json({
@@ -294,7 +333,7 @@ exports.getOneChecklist = async (req, res) => {
       .populate("designation")
       .populate("team")
       .populate("location")
-      .populate("assignedEmployees.employeeId");
+      // .populate("assignedEmployees.employeeId");
 
     if (!checklist) {
       return res.status(404).json({
