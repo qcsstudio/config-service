@@ -10,6 +10,8 @@ router.get("/getActivities/:checklistId", checklistController.getActivities);
 router.put("/updateActivity/:checklistId/:activityId", checklistController.updateActivity);
 
 router.delete("/deleteActivity/:checklistId/:activityId", checklistController.deleteActivity);
+router.get("/get-one-Activity/:activityId", checklistController.getOneActivity);
+
 
 router.post("/assignEmployee/:checklistId", checklistController.assignEmployee);
 
