@@ -149,7 +149,11 @@ const checklistSchema = new mongoose.Schema(
          isDeleted: {
             type: Boolean,
             default: false
-        }
+        },
+        status:{
+            type:Boolean,
+            default:true
+        },
     },
     {
         timestamps: true,

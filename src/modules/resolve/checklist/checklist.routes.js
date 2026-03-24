@@ -20,5 +20,7 @@ router.get("/getOneChecklist/:checklistId", checklistController.getOneChecklist)
 router.put("/updateChecklist/:checklistId", checklistController.updateChecklist);
 
 router.delete("/deleteChecklist/:checklistId", checklistController.deleteChecklist);
+router.put("/update-checklist-status/:checklistId", checklistController.updateChecklistStatus);
+
 
 module.exports = router;

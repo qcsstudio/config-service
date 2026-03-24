@@ -211,25 +211,34 @@ exports.deleteActivity = async (req, res) => {
 
 exports.assignEmployee = async (req, res) => {
   try {
-
     const { checklistId } = req.params;
 
-    const employee = {
-      employeeId: req.body.employeeId,
+    let employeeIds = req.body.employeeId;
+
+    // ✅ convert to array if single
+    if (!Array.isArray(employeeIds)) {
+      employeeIds = [employeeIds];
+    }
+
+    // ✅ map employees
+    const employeesToAdd = employeeIds.map(id => ({
+      employeeId: id,
       assignedDate: new Date()
-    };
+    }));
 
     const checklist = await Checklist.findByIdAndUpdate(
       checklistId,
       {
-        $addToSet: { assignedEmployees: employee }
+        $addToSet: {
+          assignedEmployees: { $each: employeesToAdd } // 🔥 important
+        }
       },
       { new: true }
     );
 
     res.json({
       success: true,
-      message: "Employee assigned",
+      message: "Employees assigned",
       data: checklist
     });
 
@@ -246,17 +255,23 @@ exports.assignEmployee = async (req, res) => {
 // Get all checklists for the company with populated references
 exports.getAllChecklists = async (req, res) => {
   try {
-
     const companyId = req.user?.companyId;
+    const { status } = req.query;
 
-    const data = await Checklist.find({
-      companyId,
-      isDeleted: false
-    })
-      .populate("businessUnit department designation team location assignedEmployees.employeeId");
+    let filter = { companyId };
+
+    // ✅ apply status only if provided
+    if (status !== undefined) {
+      filter.status = status === "true";
+    }
+
+    const data = await Checklist.find(filter)
+      .populate("businessUnit department designation team location assignedEmployees.employeeId")
+      .sort({ createdAt: -1 });
 
     res.json({
       success: true,
+      count: data.length,
       data
     });
 
@@ -417,3 +432,47 @@ exports.deleteChecklist = async (req, res) => {
   }
 };
 
+exports.updateChecklistStatus = async (req, res) => {
+  try {
+    const { checklistId } = req.params;
+    const { status } = req.query; // 👈 from body (better than query)
+
+    // ✅ validate
+    if (typeof status !== "boolean") {
+      return res.status(400).json({
+        success: false,
+        message: "Status must be true or false",
+      });
+    }
+
+    const checklist = await Checklist.findOneAndUpdate(
+      {
+        _id: checklistId,
+        companyId: req.user.companyId, // 🔐 secure
+      },
+      {
+        $set: { isDeleted: status },
+      },
+      { new: true }
+    );
+
+    if (!checklist) {
+      return res.status(404).json({
+        success: false,
+        message: "Checklist not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Checklist ${status ? "deleted" : "restored"} successfully`,
+      data: checklist,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
