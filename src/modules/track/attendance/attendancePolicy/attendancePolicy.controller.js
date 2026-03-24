@@ -179,3 +179,145 @@ exports.getAllAttendancePolicies = async (req, res) => {
   }
 };
 
+
+exports.updateAttendancePolicy = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+
+    const existing = await AttendancePolicy.findOne({
+      _id: id,
+      isDeleted: false
+    });
+
+    if (!existing) {
+      return res.status(404).json({
+        success: false,
+        message: "Policy not found"
+      });
+    }
+
+    const {
+      policyName,
+      policyDescription,
+      workRequest,
+      absenteeism,
+      punctuality,
+      timeAtWork,
+      status,
+      
+    } = req.body;
+
+    // ✅ Name validation
+    if (policyName && !policyName.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "Policy name cannot be empty"
+      });
+    }
+
+    // ✅ Unique check
+    if (policyName && policyName.trim() !== existing.policyName) {
+      const duplicate = await AttendancePolicy.findOne({
+        policyName: policyName.trim()
+      });
+
+      if (duplicate) {
+        return res.status(400).json({
+          success: false,
+          message: "Policy name already exists"
+        });
+      }
+    }
+
+    // ✅ Handle officeIds
+  
+    // ✅ SAFE UPDATE (no overwrite)
+    if (policyName) existing.policyName = policyName.trim();
+    if (policyDescription !== undefined) existing.policyDescription = policyDescription;
+
+    if (workRequest) {
+      existing.workRequest = {
+        ...existing.workRequest.toObject(),
+        ...workRequest
+      };
+    }
+
+    if (absenteeism) {
+      existing.absenteeism = {
+        ...existing.absenteeism.toObject(),
+        ...absenteeism
+      };
+    }
+
+    if (punctuality) {
+      existing.punctuality = {
+        ...existing.punctuality.toObject(),
+        ...punctuality
+      };
+    }
+
+    if (timeAtWork) {
+      existing.timeAtWork = {
+        ...existing.timeAtWork.toObject(),
+        ...timeAtWork
+      };
+    }
+
+    if (status !== undefined) existing.status = status;
+
+ 
+    await existing.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Attendance policy updated successfully",
+      data: existing
+    });
+
+  } catch (error) {
+    console.error("Update Attendance Policy Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message
+    });
+  }
+};
+
+exports.deleteAttendancePolicy = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const policy = await AttendancePolicy.findOne({
+      _id: id,
+      isDeleted: false
+    });
+
+    if (!policy) {
+      return res.status(404).json({
+        success: false,
+        message: "Policy not found"
+      });
+    }
+
+    // ✅ Soft delete
+    policy.isDeleted = true;
+    policy.deletedAt = new Date();
+
+    await policy.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Policy deleted successfully (soft delete)"
+    });
+
+  } catch (error) {
+    console.error("Delete Attendance Policy Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message
+    });
+  }
+};
+

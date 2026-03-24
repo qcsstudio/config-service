@@ -4,7 +4,8 @@ const populateEmployeeDetails = require("../populateEmployees");
 exports.createDepartment = async (req, res) => {
   try {
     const adminId = req.user?.userId;
- const companyId = req.user?.companyId
+    const companyId = req.user?.companyId;
+
     if (!adminId) {
       return res.status(401).json({ message: "Unauthorized. Admin not found." });
     }
@@ -21,7 +22,6 @@ exports.createDepartment = async (req, res) => {
       companyOfficeId
     } = req.body;
 
-    // Validation
     if (!departmentName) {
       return res.status(400).json({ message: "Department name is required" });
     }
@@ -31,25 +31,37 @@ exports.createDepartment = async (req, res) => {
         message: "Department head details are required"
       });
     }
- let officeIds = [];
 
+    // ✅ Validate ObjectId
+    if (isPartOfBusinessUnit) {
+      if (!businessUnitId || !mongoose.Types.ObjectId.isValid(businessUnitId)) {
+        return res.status(400).json({
+          message: "Invalid or missing businessUnitId"
+        });
+      }
+    }
+
+    let officeIds = [];
     if (companyOfficeId) {
       officeIds = Array.isArray(companyOfficeId)
         ? companyOfficeId
         : [companyOfficeId];
     }
+
     const newDepartment = new Department({
       adminId,
       companyId,
       departmentName,
       isPartOfBusinessUnit,
-      businessUnitId,
+      businessUnitId: isPartOfBusinessUnit
+        ? new mongoose.Types.ObjectId(businessUnitId)
+        : null,
       isSubDepartment,
       parentDepartmentName,
       assignDepartmentHead,
       departmentheadId,
       departmentHead,
-       companyOfficeId: officeIds,
+      companyOfficeId: officeIds,
       addedById: adminId,
       addedByName: req.user?.name,
       addedByImage: req.user?.image
@@ -72,17 +84,17 @@ exports.createDepartment = async (req, res) => {
 
 exports.getAllDepartments = async (req, res) => {
   try {
-    const adminId = req.user?.userId;
+    const companyId = req.user?.companyId;
     const { country } = req.query;
 
-    if (!adminId) {
+    if (!companyId) {
       return res.status(401).json({
         message: "Unauthorized",
       });
     }
 
     // Fetch departments and populate companyOfficeId with optional country filter
-    const departments = await Department.find()
+    const departments = await Department.find({companyId:companyId})
       .sort({ createdAt: -1 })
       .populate({
         path: "companyOfficeId",
@@ -183,7 +195,7 @@ exports.getOneDepartment = async (req, res) => {
 
     const { id } = req.params;
 
-    const getOne = await Department.findOne(id);
+    const getOne = await Department.findOne({_id:id});
 
     if (!getOne) {
       return res.status(404).json({ message: "Department not found" });

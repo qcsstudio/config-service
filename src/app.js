@@ -109,8 +109,8 @@ const assestsCatgeory = require("./modules/hrOps/assests/assestsCatgeory.routes"
 const pageLayout = require("./modules/Organise/pageLayout/pageLayout.routes")
 const AuthoritySignature = require("./modules/Organise/Authoritysignture/Authoritysignture.routes")
 const template = require("./modules/Organise/template/template.routes")
-
-
+const attendanceLock = require("./modules/track/attendance/attendancelockCycle/attendanceLock.routes")
+const exitPolicy = require("./modules/employee-data/ExitPolicy/ExitPolicy.routes")
 app.use("/config", brandingRoutes);
 app.use("/config", companyRoutes);
 app.use("/config", globalRoutes);
@@ -156,6 +156,8 @@ app.use("/config", pageLayout);
 app.use("/config", fnfPolicy);
 app.use("/config", AuthoritySignature);
 app.use("/config", template);
+app.use("/config", attendanceLock);
+app.use("/config",exitPolicy)
 
 
 

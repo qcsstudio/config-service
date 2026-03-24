@@ -2,8 +2,9 @@ const Currency = require("./Currency.model");
 
 const createCurrency = async (req, res) => {
     try {
-
-        const { currency, conversionRate, adminId, companyId, companyOfficeId } = req.body;
+        const adminId = req.user?.userId
+            const companyId = req.user?.companyId
+        const { currency, conversionRate, companyOfficeId } = req.body;
 
         let officeIds = [];
 

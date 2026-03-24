@@ -168,6 +168,13 @@ const AttendancePolicySchema = new Schema(
             ],
             default: []
         },
+          isDeleted:{
+            type:Boolean,
+            default:false
+        },
+        deletedAt:{
+            type:Date
+        },
         updatedBy: { type: Schema.Types.ObjectId, default: null },
     },
     { timestamps: true, versionKey: false }

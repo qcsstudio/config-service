@@ -3,6 +3,8 @@ const router = express.Router();
 const {
   createExtraTimePolicy,
   getAllExtraTimePolicies,
+   updateExtraTimePolicy,
+   deleteExtraTimePolicy
 } = require("./extraTime.controller");
 
 const auth = require("../../../../middlewares/auth.middleware");
@@ -11,6 +13,12 @@ const auth = require("../../../../middlewares/auth.middleware");
 router.post("/extra-time", auth, createExtraTimePolicy);
 
 // Get single policy by ID
-router.get("/extra-time-getAll",  getAllExtraTimePolicies);
+router.get("/extra-time-getAll",auth,  getAllExtraTimePolicies);
 
+
+// ✅ Update
+router.put("/extra-time-policy-update/:id",  updateExtraTimePolicy);
+
+// ✅ Soft Delete
+router.delete("/extra-time-policy-delete/:id",  deleteExtraTimePolicy);
 module.exports = router;

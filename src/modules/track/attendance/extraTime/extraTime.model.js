@@ -280,6 +280,13 @@ const ExtraTimeSchema = new Schema(
             ],
             default: []
         },
+           isDeleted:{
+            type:Boolean,
+            default:false
+        },
+        deletedAt:{
+            type:Date
+        },
 
         updatedBy: {
             type: Schema.Types.ObjectId,

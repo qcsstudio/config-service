@@ -11,12 +11,12 @@ router.post("/create-template", authMiddleware, templateController.createTemplat
 router.get("/getAll-template", authMiddleware, templateController.getAllTemplates);
 
 // GET ONE TEMPLATE BY ID
-router.get("/getOne-template:templateId", templateController.getTemplateById);
+router.get("/getOne-template/:templateId", templateController.getTemplateById);
 
 // UPDATE TEMPLATE BY ID
 router.put("/update-template/:templateId", templateController.updateTemplate);
 
 // SOFT DELETE TEMPLATE BY ID
-router.delete("/delete-template/:templateId", templateController.deleteTemplate);
+router.put("/delete-template/:templateId", templateController.deleteTemplate);
 
 module.exports = router;

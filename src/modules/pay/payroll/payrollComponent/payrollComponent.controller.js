@@ -82,7 +82,6 @@ exports.createPayrollComponent = async (req, res) => {
 };
 exports.getAllPayrollComponents = async (req, res) => {
   try {
-    // ✅ Get companyId properly
     const companyId = req.user?.companyId;
 
     if (!companyId) {
@@ -92,8 +91,7 @@ exports.getAllPayrollComponents = async (req, res) => {
       });
     }
 
-    // ✅ Get country from query
-    const { country } = req.query;
+    const { country, status } = req.query;
 
     // ✅ Base filter
     const filter = {
@@ -101,7 +99,20 @@ exports.getAllPayrollComponents = async (req, res) => {
       isActive: true,
     };
 
-    // ✅ Fetch components
+    // ✅ Status logic
+    if (status == "1") {
+      // 👉 Income only
+      filter.Income = true;
+
+    } else if (status == "2") {
+      // 👉 Both employee + employer deduction
+      filter.$or = [
+        { employeeDeduction: true },
+        { employerDeduction: true }
+      ];
+    }
+
+    // ✅ Fetch data
     let components = await PayrollComponent.find(filter)
       .sort({ createdAt: -1 })
       .populate({
@@ -110,7 +121,7 @@ exports.getAllPayrollComponents = async (req, res) => {
         select: "locationName address.country address.state address.city",
       });
 
-    // ✅ If country provided → remove unmatched populated records
+    // ✅ Remove null populated (country filter)
     if (country) {
       components = components.filter(
         (comp) => comp.companyOfficeId !== null

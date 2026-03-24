@@ -79,11 +79,10 @@ let officeIds = [];
   }
 };
 
-
-
 exports.getAllExtraTimePolicies = async (req, res) => {
   try {
-    const policies = await ExtraTime.find().sort({ createdAt: -1 }); // latest first
+    const companyId = req.user?.companyId
+    const policies = await ExtraTime.find({companyId :companyId, isDeleted:false }).sort({ createdAt: -1 }); // latest first
     const data = await populateEmployeeDetails(policies);
     return res.status(200).json({
       success: true,
@@ -96,6 +95,139 @@ exports.getAllExtraTimePolicies = async (req, res) => {
       success: false,
       message: "Server error",
       error: error.message,
+    });
+  }
+};
+
+exports.updateExtraTimePolicy = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const existing = await ExtraTime.findOne({
+      _id: id
+    });
+
+    if (!existing) {
+      return res.status(404).json({
+        success: false,
+        message: "Policy not found"
+      });
+    }
+
+    const {
+      policyName,
+      policyDescription,
+      workingDayBenefits,
+      nonWorkingDayBenefits,
+      extraTimePolicy,
+      status,
+    } = req.body;
+
+    // ✅ Name validation
+    if (policyName && !policyName.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "Policy name cannot be empty"
+      });
+    }
+
+    // ✅ Unique check
+    if (policyName && policyName.trim() !== existing.policyName) {
+      const duplicate = await ExtraTime.findOne({
+        policyName: policyName.trim(),
+        companyId: existing.companyId
+      });
+
+      if (duplicate) {
+        return res.status(400).json({
+          success: false,
+          message: "Policy name already exists"
+        });
+      }
+    }
+
+    // ✅ Handle officeIds
+  
+
+    // ✅ SAFE UPDATE (no overwrite)
+    if (policyName) existing.policyName = policyName.trim();
+    if (policyDescription !== undefined) existing.policyDescription = policyDescription;
+
+    if (workingDayBenefits) {
+      existing.workingDayBenefits = {
+        ...existing.workingDayBenefits.toObject(),
+        ...workingDayBenefits
+      };
+    }
+
+    if (nonWorkingDayBenefits) {
+      existing.nonWorkingDayBenefits = {
+        ...existing.nonWorkingDayBenefits.toObject(),
+        ...nonWorkingDayBenefits
+      };
+    }
+
+    if (extraTimePolicy) {
+      existing.extraTimePolicy = {
+        ...existing.extraTimePolicy.toObject(),
+        ...extraTimePolicy
+      };
+    }
+
+    if (status !== undefined) existing.status = status;
+
+
+
+    await existing.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Extra Time policy updated successfully",
+      data: existing
+    });
+
+  } catch (error) {
+    console.error("Update Extra Time Policy Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message
+    });
+  }
+};
+
+exports.deleteExtraTimePolicy = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+
+    const policy = await ExtraTime.findOne({
+      _id: id,
+      isDeleted: false
+    });
+
+    if (!policy) {
+      return res.status(404).json({
+        success: false,
+        message: "Policy not found"
+      });
+    }
+
+    policy.isDeleted = true;
+    policy.deletedAt = new Date();
+    await policy.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Policy deleted successfully (soft)"
+    });
+
+  } catch (error) {
+    console.error("Delete Extra Time Policy Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message
     });
   }
 };

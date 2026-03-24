@@ -179,9 +179,13 @@ companyOfficeId,
 
 exports.getAllLeavePolicies = async (req, res) => {
   try {
+        const companyId = req.user?.companyId; 
     const { page = 1, limit = 10, search, status } = req.query;
 
-    const query = {};
+     const query = {
+      companyId: companyId   // ✅ filter by company
+    };
+
 
     if (status) {
       query.status = status;

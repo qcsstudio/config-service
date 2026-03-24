@@ -120,8 +120,163 @@ exports.getAllWeeklyOff = async (req, res) => {
   }
 };
 
+exports.updateWeeklyOff = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const {
+      name,
+      description,
+      grid,
+      specifyLastWeek = false,
+      lastWeekRow,
+      accumulation = false,
+      accType,
+      refreshAcc,
+      refreshType,
+      limitCount,
+      isDraft = false,
+      companyOfficeId,
+    } = req.body;
+
+    if (!id) {
+      return res.status(400).json({ message: "ID is required" });
+    }
+
+    if (!name || !name.trim()) {
+      return res.status(400).json({ message: "Name is required" });
+    }
+
+    // ✅ Grid validation
+    for (let week of grid) {
+      if (!Array.isArray(week) || week.length !== 7) {
+        return res.status(400).json({ message: "Each week must contain 7 days" });
+      }
+    }
+
+    // ✅ Last week validation
+    if (specifyLastWeek) {
+      if (!lastWeekRow || lastWeekRow.length !== 7) {
+        return res.status(400).json({ message: "Last week must contain 7 days" });
+      }
+    }
+
+    // ✅ Accumulation validation
+    if (!accumulation) {
+      if (accType || refreshAcc || refreshType || limitCount) {
+        return res.status(400).json({
+          message: "Accumulation settings not allowed when accumulation is false",
+        });
+      }
+    }
+
+    if (accumulation) {
+      if (!accType) {
+        return res.status(400).json({ message: "Accumulation type is required" });
+      }
+
+      if (accType === "limited" && (!limitCount || limitCount <= 0)) {
+        return res.status(400).json({
+          message: "Valid limit count is required for limited accumulation",
+        });
+      }
+
+      if (refreshAcc && !refreshType) {
+        return res.status(400).json({
+          message: "Refresh type is required when refresh is enabled",
+        });
+      }
+    }
+
+    // ✅ Office handling
+    let officeIds = [];
+    if (companyOfficeId) {
+      officeIds = Array.isArray(companyOfficeId)
+        ? companyOfficeId
+        : [companyOfficeId];
+    }
+
+    const updated = await WeeklyOff.findOneAndUpdate(
+      {
+        _id: id,
+        companyId: req.user?.companyId, // 🔥 security check
+      },
+      {
+        name: name.trim(),
+        description,
+        grid,
+        specifyLastWeek,
+        lastWeekRow: specifyLastWeek ? lastWeekRow : undefined,
+        accumulation,
+        accType: accumulation ? accType : undefined,
+        refreshAcc: accumulation ? refreshAcc : undefined,
+        refreshType: accumulation && refreshAcc ? refreshType : undefined,
+        limitCount: accType === "limited" ? limitCount : undefined,
+        isDraft,
+        companyOfficeId: officeIds,
+      },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({
+        success: false,
+        message: "WeeklyOff not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: updated,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 
+exports.deleteWeeklyOff = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ message: "ID is required" });
+    }
+
+    const deleted = await WeeklyOff.findOneAndUpdate(
+      {
+        _id: id,
+        companyId: req.user?.companyId,
+        isDeleted: false, // 🔥 prevent double delete
+      },
+      {
+        isDeleted: true,
+        deletedAt: new Date(),
+      },
+      { new: true }
+    );
+
+    if (!deleted) {
+      return res.status(404).json({
+        success: false,
+        message: "WeeklyOff not found or already deleted",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "WeeklyOff deleted successfully (soft delete)",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 // {
 //   "name": "Standard Weekly Off",
