@@ -100,36 +100,36 @@ const WeeklyOffSchema = new Schema(
             default: []
         },
 
-       adminId: {
-             type: mongoose.Schema.Types.ObjectId,
-             ref:"User",
-             default: null,
-           },
-           companyId:{
-             type:mongoose.Schema.Types.ObjectId,
-             ref:"Company",
-             default: null,
-           },
-           assignedEmployeeList: [
-             {
-               employeeId: {
-                 type: mongoose.Schema.Types.ObjectId,
-                 ref: "Employee"
-               },
-               departmentId: {
-                 type: mongoose.Schema.Types.ObjectId,
-                 ref: "Department"
-               }
-             }
-           ],
-           isDeleted: {
-  type: Boolean,
-  default: false,
-},
-deletedAt: {
-  type: Date,
-  default: null,
-},
+        adminId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            default: null,
+        },
+        companyId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Company",
+            default: null,
+        },
+        assignedEmployeeList: [
+            {
+                employeeId: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "Employee"
+                },
+                departmentId: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "Department"
+                }
+            }
+        ],
+        isDeleted: {
+            type: Boolean,
+            default: false,
+        },
+        deletedAt: {
+            type: Date,
+            default: null,
+        },
     },
     { timestamps: true }
 );

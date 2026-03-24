@@ -16,6 +16,7 @@ exports.createWeeklyOff = async (req, res) => {
       limitCount,
       isDraft = false,
       companyOfficeId,
+      // isDeleted,
     } = req.body;
 
     if (!name || !name.trim()) {
@@ -86,6 +87,7 @@ exports.createWeeklyOff = async (req, res) => {
       adminId: req.user?.userId || null,
       companyId:req.user?.companyId,
       companyOfficeId: officeIds,
+      isDeleted:false
     });
 
     return res.status(201).json({
@@ -102,7 +104,8 @@ exports.createWeeklyOff = async (req, res) => {
 
 exports.getAllWeeklyOff = async (req, res) => {
   try {
-    const data = await WeeklyOff.find()
+    const companyId= req.user?.companyId
+    const data = await WeeklyOff.find({companyId:companyId,isDeleted:false})
       .sort({ createdAt: -1 });
 
     const populatedData = await populateEmployeeDetails(data);
@@ -136,7 +139,7 @@ exports.updateWeeklyOff = async (req, res) => {
       refreshType,
       limitCount,
       isDraft = false,
-      companyOfficeId,
+      // companyOfficeId,
     } = req.body;
 
     if (!id) {
@@ -189,17 +192,16 @@ exports.updateWeeklyOff = async (req, res) => {
     }
 
     // ✅ Office handling
-    let officeIds = [];
-    if (companyOfficeId) {
-      officeIds = Array.isArray(companyOfficeId)
-        ? companyOfficeId
-        : [companyOfficeId];
-    }
+    // let officeIds = [];
+    // if (companyOfficeId) {
+    //   officeIds = Array.isArray(companyOfficeId)
+    //     ? companyOfficeId
+    //     : [companyOfficeId];
+    // }
 
     const updated = await WeeklyOff.findOneAndUpdate(
       {
         _id: id,
-        companyId: req.user?.companyId, // 🔥 security check
       },
       {
         name: name.trim(),
@@ -213,7 +215,7 @@ exports.updateWeeklyOff = async (req, res) => {
         refreshType: accumulation && refreshAcc ? refreshType : undefined,
         limitCount: accType === "limited" ? limitCount : undefined,
         isDraft,
-        companyOfficeId: officeIds,
+        // companyOfficeId: officeIds,
       },
       { new: true }
     );
@@ -236,7 +238,45 @@ exports.updateWeeklyOff = async (req, res) => {
     });
   }
 };
+exports.getWeeklyOffById = async (req, res) => {
+  try {
+    const { id } = req.params;
 
+    // ✅ check id
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "ID is required",
+      });
+    }
+
+    // ✅ find with company security
+    const data = await WeeklyOff.findOne({
+      _id: id,
+      isDeleted: false,
+    });
+
+    if (!data) {
+      return res.status(404).json({
+        success: false,
+        message: "WeeklyOff not found",
+      });
+    }
+
+    // ✅ populate employee details (same as your list API)
+    const populatedData = await populateEmployeeDetails([data]);
+
+    return res.status(200).json({
+      success: true,
+      data: populatedData[0],
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 exports.deleteWeeklyOff = async (req, res) => {
   try {
@@ -249,7 +289,6 @@ exports.deleteWeeklyOff = async (req, res) => {
     const deleted = await WeeklyOff.findOneAndUpdate(
       {
         _id: id,
-        companyId: req.user?.companyId,
         isDeleted: false, // 🔥 prevent double delete
       },
       {

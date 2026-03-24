@@ -27,12 +27,12 @@ const expenseCycleSchema = new mongoose.Schema(
 
     // 🔹 Expense Cycle Fields
     endDate: {
-      type: Number,default:"" // e.g. 30 or 31 (day of month)
+      type: Date,default:0// e.g. 30 or 31 (day of month)
     },
 
     processingDate: {
-      type: Number, 
-      default:""// e.g. 5 (5th day of next month)
+      type: Date, 
+      default:0// e.g. 5 (5th day of next month)
     },
 
     transitionPeriod: {

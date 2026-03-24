@@ -5,7 +5,8 @@ const {
   createWeeklyOff,
   getAllWeeklyOff,
   updateWeeklyOff,
-  deleteWeeklyOff
+  deleteWeeklyOff,
+  getWeeklyOffById
 } = require("./weekOffName.controller");
 
 // If you have auth middleware
@@ -13,7 +14,9 @@ const auth = require("../../../../middlewares/auth.middleware");
 
 router.post("/weekOff/create", auth, createWeeklyOff);
 
-router.get("/getAll/weekoff",  getAllWeeklyOff);
+router.get("/getAll/weekoff",auth,  getAllWeeklyOff);
+router.get("/getOne/weekoff/:id",  getWeeklyOffById);
+
 // ✅ Update
 router.put("/weekly-off-update/:id", updateWeeklyOff);
 
