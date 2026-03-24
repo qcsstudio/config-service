@@ -369,7 +369,7 @@ exports.getOneChecklist = async (req, res) => {
 // Update checklist details and add new references (businessUnit, department, etc.)
 exports.updateChecklist = async (req, res) => {
   try {
-
+console.log(req.body,"ffffffff")
     const { checklistId } = req.params;
 
     const {
