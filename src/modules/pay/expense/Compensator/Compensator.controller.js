@@ -1,5 +1,7 @@
 const CompensatorConfiguration = require("./Compensator.model");
 const populateEmployeeDetails = require("../../../company-data/populateEmployees");
+const populateSingleEmployee = require("../../../company-data/populateSingleEmployee");
+
 
 // CREATE
 exports.createCompensatorConfiguration = async (req, res) => {
@@ -59,13 +61,14 @@ exports.createCompensatorConfiguration = async (req, res) => {
 // GET ALL
 exports.getAllCompensatorConfiguration = async (req, res) => {
   try {
-const companyId = req.user?.companyId;
-    const configs = await CompensatorConfiguration.find({isDeleted:false,companyId:companyId})
+    const companyId = req.user?.companyId;
+    const configs = await CompensatorConfiguration.find({ isDeleted: false, companyId: companyId })
       .populate("businessUnitId")
       .populate("departmentId")
       .populate("locationId");
 
-    const data = await populateEmployeeDetails(configs);
+    // Reads from "employeeId" field, saves populated details into "employeeDetails"
+    const data = await populateSingleEmployee(configs, "employeeId", "employeeDetails");
 
     res.status(200).json({
       success: true,

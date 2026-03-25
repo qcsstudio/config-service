@@ -21,6 +21,7 @@ router.post(
 ───────────────────────────────────────────── */
 router.get(
   "/getAll/holidayPlan",
+  auth,
   holidayPlanController.getAllHolidayPlans
 );
 
@@ -42,5 +43,8 @@ router.put(
   holidayPlanController.updateHolidayPlan
 );
 
-
+router.delete(
+  "/delete/holidayPlan/:id",
+  holidayPlanController.deleteHolidayPlan
+);
 module.exports = router;

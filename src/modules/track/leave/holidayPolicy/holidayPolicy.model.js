@@ -207,13 +207,7 @@ const HolidayPlanSchema = new Schema(
 
 /* ─────────────────────────────────────────────
    CONDITIONAL VALIDATION
-───────────────────────────────────────────── */
-HolidayPlanSchema.pre("validate", function (next) {
-  if (this.optionalHolidays === "yes" && !this.maxOptionalHolidays) {
-    return next(new Error("maxOptionalHolidays is required when optionalHolidays is yes"));
-  }
-  next();
-});
+]
 
 /* ─────────────────────────────────────────────
    INDEX — Prevent duplicate plan per company per year

@@ -105,18 +105,19 @@ exports.createClockInMethod = async (req, res) => {
 
 exports.getAllClockInMethods = async (req, res) => {
   try {
- const { country } = req.query; 
-    const methods = await ClockInMethod.find({ isDeleted: false})
+    const companyId = req.user?.companyId
+      const { country } = req.query; 
+    const methods = await ClockInMethod.find({companyId:companyId, isDeleted: false})
         .populate({
         path: "companyOfficeId",
         match: country ? { "address.country": country } : {},
         select: "locationName address.country address.state address.city",
       })
       .sort({ createdAt: -1 });
+// console.log(methods,"methodsmethodsmethods")
+//    const filteredMethods = methods.filter(method => method.companyOfficeId && method.companyOfficeId.length > 0);
 
-   const filteredMethods = methods.filter(method => method.companyOfficeId && method.companyOfficeId.length > 0);
-
-    const data = await populateEmployeeDetails(filteredMethods);
+    const data = await populateEmployeeDetails(methods);
 
 
     res.status(200).json({
@@ -132,7 +133,20 @@ exports.getAllClockInMethods = async (req, res) => {
     });
   }
 };
+exports.getOneClockInMethod = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const method = await ClockInMethod.findById(id);
 
+    if (!method) {
+      return res.status(404).json({ success: false, message: "Method not found" });
+    }
+
+    res.status(200).json({ success: true, data: method });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
 
 exports.deleteClockInMethod = async (req, res) => {
   try {

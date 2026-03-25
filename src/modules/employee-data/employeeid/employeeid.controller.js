@@ -192,7 +192,7 @@ const gettext = async (req, res) => {
 const getEmplotyeidforCreate = async (req, res) => {
   try {
     const companyId = req.user?.companyId;
-
+console.log
     if (!companyId) {
       return res.status(400).json({
         success: false,
@@ -208,7 +208,7 @@ const getEmplotyeidforCreate = async (req, res) => {
         message: "Employee ID configuration not found",
       });
     }
-
+const assignType = config.assignType
     const preview = config.preview; // example EMP001
 
     const employeeRes = await axios.get(
@@ -243,6 +243,7 @@ const getEmplotyeidforCreate = async (req, res) => {
     return res.status(200).json({
       success: true,
       employeeId: nextEmployeeId,
+      assignType: assignType
     });
 
   } catch (error) {

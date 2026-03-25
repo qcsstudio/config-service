@@ -139,7 +139,11 @@ exports.getAllAttendancePolicies = async (req, res) => {
 
     const { status, search, page = 1, limit = 10 } = req.query;
 
-    const query = {};
+      const query = {
+      isDeleted: false,
+      companyId: req.user.companyId   // ✅ ADD THIS
+    };
+
 
     // 🔹 Filter by status
     if (status) {
@@ -178,7 +182,38 @@ exports.getAllAttendancePolicies = async (req, res) => {
     });
   }
 };
+exports.getAttendancePolicyById = async (req, res) => {
+  try {
+    const { id } = req.params;
 
+    // 🔍 Find single policy
+    const policy = await AttendancePolicy.findById(id);
+
+    if (!policy) {
+      return res.status(404).json({
+        success: false,
+        message: "Policy not found"
+      });
+    }
+
+    // 🔹 (optional) populate employee details
+    const data = await populateEmployeeDetails([policy]);
+
+    return res.status(200).json({
+      success: true,
+      data: data[0] // return single object
+    });
+
+  } catch (error) {
+    console.error("Get One Policy Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message
+    });
+  }
+};
 
 exports.updateAttendancePolicy = async (req, res) => {
   try {

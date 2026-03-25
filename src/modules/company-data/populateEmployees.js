@@ -92,4 +92,6 @@ async function populateEmployeeDetails(docs) {
   return isArray ? result : result[0];
 }
 
+
+
 module.exports = populateEmployeeDetails;

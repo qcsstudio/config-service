@@ -55,12 +55,12 @@ console.log(companyId,"ddddd")
       year: Number(year),
     });
 
-    if (existingPlan) {
-      return res.status(400).json({
-        success: false,
-        message: "Holiday plan already exists for this year",
-      });
-    }
+    // if (existingPlan) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Holiday plan already exists for this year",
+    //   });
+    // }
 
     // Conditional validation — optional holidays
     if (optionalHolidays === "yes" && !maxOptionalHolidays) {
@@ -135,7 +135,7 @@ console.log(companyId,"ddddd")
 ───────────────────────────────────────────── */
 exports.getAllHolidayPlans = async (req, res) => {
   try {
-    // const companyId = req.user.companyId;
+    const companyId = req.user.companyId;
 
     const {
       page = 1,
@@ -144,8 +144,8 @@ exports.getAllHolidayPlans = async (req, res) => {
       status,
       year,
     } = req.query;
- const query = {};
-    // const query = { companyId };
+//  const query = {};
+    const query = { companyId };
 
     // 🔎 Search by name
     if (search) {
@@ -190,11 +190,11 @@ exports.getAllHolidayPlans = async (req, res) => {
 exports.getHolidayPlanById = async (req, res) => {
   try {
     const { id } = req.params;
-    const companyId = req.user.companyId;
+    // const companyId = req.user.companyId;
 
     const holidayPlan = await HolidayPlan.findOne({
       _id: id,
-      companyId,
+      // companyId,
     });
 
     if (!holidayPlan) {
@@ -219,6 +219,40 @@ exports.getHolidayPlanById = async (req, res) => {
   }
 };
 
+exports.deleteHolidayPlan = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "Holiday Plan ID is required",
+      });
+    }
+
+    const holidayPlan = await HolidayPlan.findOneAndDelete({
+      _id: id,
+    });
+
+    if (!holidayPlan) {
+      return res.status(404).json({
+        success: false,
+        message: "Holiday Plan not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Holiday Plan deleted successfully",
+    });
+  } catch (error) {
+    console.error("Delete Holiday Plan Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
 exports.updateHolidayPlan = async (req, res) => {
   try {
     const { id } = req.params;
