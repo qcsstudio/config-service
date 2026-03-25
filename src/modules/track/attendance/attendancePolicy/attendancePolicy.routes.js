@@ -14,8 +14,10 @@ router.post(
 // 🔹 GET ALL POLICIES
 router.get(
   "/attendance-policy-getAll",
+  auth,
   attendanceController.getAllAttendancePolicies
 );
+router.get('/attendance-policy/:id',attendanceController.getAttendancePolicyById);
 router.put("/attendance-policy-update/:id",  attendanceController.updateAttendancePolicy);
 router.delete("/attendance-policy-delete/:id", attendanceController.deleteAttendancePolicy);
 

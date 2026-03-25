@@ -350,7 +350,7 @@ exports.getPolicyById = async (req, res) => {
   try {
 
     const policy = await ExpensePolicy.findById(req.params.id)
-      .populate("adminId companyId companyOfficeId");
+      .populate("companyOfficeId");
 
     if (!policy) {
       return res.status(404).json({
