@@ -5,6 +5,7 @@ const {
   addSignAuthority,
   assignAuthority,
   getAllPayrollSignatures,
+  findAvailablePayrollSignatures
 } = require("./payrollSignature.controller");
 
 // 🔐 Import your auth middleware
@@ -22,7 +23,7 @@ router.post(
 // ======================================
 // ✅ ASSIGN AUTHORITY (Update Only)
 // ======================================
-router.put(
+router.post(
   "/assign-authority",
   auth,
   assignAuthority
@@ -32,9 +33,14 @@ router.put(
 // ✅ GET ALL SIGNATURES
 // ======================================
 router.get(
-  "/get-all",
+  "/get-all-authority",
   auth,
   getAllPayrollSignatures
 );
 
+router.get(
+  "/get-all-authority-mapping",
+  auth,
+  findAvailablePayrollSignatures
+);
 module.exports = router;

@@ -6,11 +6,15 @@ const auth = require("../../../middlewares/auth.middleware");
 
 // Create or Update Workflow (tab based)
 router.post(
-  "/create-update-approvalWorkflow",
+  "/createWorkflow",
   auth,
-  workflowController.createOrUpdateWorkflow
+  workflowController.createWorkflow
 );
-
+router.put(
+  "/update-approvalWorkflow",
+  auth,
+  workflowController.updateWorkflow
+);
 // Get Workflow By Id
 router.get(
   "/approvalWorkflow-get/:id",
@@ -23,5 +27,9 @@ router.get(
   // auth,
   workflowController.getWorkflowAll
 );
-
+router.delete(
+  "/approvalWorkflow-delete/:id",
+  // auth,
+  workflowController.deleteWorkflow
+);
 module.exports = router;

@@ -67,33 +67,7 @@ const payrollSignatureSchema = new mongoose.Schema(
             default: []   // empty array
         },
         // 🔹 Assign Authority Section
-        effectiveFrom: {
-            type: Date,
-            required: true,
-        },
-
-        signingAuhorityId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "PayrollSignature",
-            default: null,
-        },
-
-         fallbackAuthorityId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "PayrollSignature",
-            default: null,
-        },
-        // 🔹 Document Permissions
-        isPaySlipEnabled: {
-            type: Boolean,
-            default: false,
-        },
-
-        isForm16Enabled: {
-            type: Boolean,
-            default: false,
-        },
-
+      
         // 🔹 Status
         isActive: {
             type: Boolean,

@@ -1,4 +1,5 @@
 const ExitPolicy = require("./ExitPolicy.model");
+const populateEmployeeDetails = require("../../company-data/populateEmployees"); // adjust path
 
 // ── CREATE exit policy
 // POST /config/create-exit-policy
@@ -17,7 +18,15 @@ exports.createExitPolicy = async (req, res) => {
       managerInitiate,
       managerChangeNotice,
       notifyOn,
+      companyOfficeId
     } = req.body;
+ let officeIds = [];
+
+        if (companyOfficeId) {
+            officeIds = Array.isArray(companyOfficeId)
+                ? companyOfficeId
+                : [companyOfficeId];
+        }
 
     const exitPolicy = await ExitPolicy.create({
       adminId,
@@ -33,6 +42,7 @@ exports.createExitPolicy = async (req, res) => {
       // If managerInitiate is false, force managerChangeNotice to false
       managerChangeNotice: managerInitiate === false ? false : managerChangeNotice,
       notifyOn,
+       companyOfficeId: officeIds
     });
 
     res.status(201).json({
@@ -51,17 +61,26 @@ exports.getAllExitPolicies = async (req, res) => {
   try {
     const companyId = req.user?.companyId;
 
-    const policies = await ExitPolicy.find({ companyId, isActive: true }).sort({
-      createdAt: -1,
-    });
+    const policies = await ExitPolicy.find({
+      companyId,
+      isActive: true,
+    }).sort({ createdAt: -1 });
+
+    // 🔥 IMPORTANT: populate employee + admin details
+    const data = await populateEmployeeDetails(policies);
 
     res.status(200).json({
       success: true,
       message: "Exit policies fetched successfully",
-      data: policies,
+      data,
     });
+
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error("Get Exit Policies Error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 

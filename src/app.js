@@ -111,6 +111,7 @@ const AuthoritySignature = require("./modules/Organise/Authoritysignture/Authori
 const template = require("./modules/Organise/template/template.routes")
 const attendanceLock = require("./modules/track/attendance/attendancelockCycle/attendanceLock.routes")
 const exitPolicy = require("./modules/employee-data/ExitPolicy/ExitPolicy.routes")
+const defaultPrivacy = require("./modules/employee-data/defaultPrivacy/defaultPrivacy.routes")
 app.use("/config", brandingRoutes);
 app.use("/config", companyRoutes);
 app.use("/config", globalRoutes);
@@ -158,6 +159,8 @@ app.use("/config", AuthoritySignature);
 app.use("/config", template);
 app.use("/config", attendanceLock);
 app.use("/config",exitPolicy)
+app.use("/config",defaultPrivacy)
+
 
 
 
