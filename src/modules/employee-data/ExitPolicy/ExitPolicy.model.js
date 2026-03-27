@@ -1,5 +1,22 @@
 const mongoose = require("mongoose");
 
+// 🔹 Assigned Employee Schema
+const assignedEmployeeSchema = new mongoose.Schema(
+  {
+    employeeId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "employees",
+      required: true,
+    },
+    assignedDate: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  { _id: false }
+);
+
+// 🔹 Main Exit Policy Schema
 const exitPolicySchema = new mongoose.Schema(
   {
     adminId: {
@@ -12,6 +29,23 @@ const exitPolicySchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Company",
       required: true,
+    },
+
+    // 🔹 Company Offices
+    companyOfficeId: {
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "CompanyOffice",
+        },
+      ],
+      default: [],
+    },
+
+    // 🔹 Assigned Employees
+    assignedEmployeeList: {
+      type: [assignedEmployeeSchema],
+      default: [],
     },
 
     // ── Basic Info
@@ -33,7 +67,7 @@ const exitPolicySchema = new mongoose.Schema(
       required: true,
     },
 
-    // ── Status (Active / Draft tab)
+    // ── Status (Active / Draft)
     status: {
       type: String,
       enum: ["active", "draft"],
@@ -46,7 +80,7 @@ const exitPolicySchema = new mongoose.Schema(
       default: true,
     },
 
-    // ── Employee notice period change request (only relevant if selfResign = true)
+    // ── Employee notice change
     changeNotice: {
       type: Boolean,
       default: true,
@@ -58,19 +92,20 @@ const exitPolicySchema = new mongoose.Schema(
       default: true,
     },
 
-    // ── Manager notice period change request (only relevant if managerInitiate = true)
+    // ── Manager notice change
     managerChangeNotice: {
       type: Boolean,
       default: true,
     },
 
-    // ── Approval Notification target
+    // ── Notification target
     notifyOn: {
       type: String,
       enum: ["employee", "approvers"],
       default: "employee",
     },
 
+    // 🔹 Active flag
     isActive: {
       type: Boolean,
       default: true,

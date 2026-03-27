@@ -154,13 +154,21 @@ const SingleWorkflowSchema = new mongoose.Schema(
 
   /* Backup Decision */
 
-  backupDecisionType: {
-    type: String,
-    enum: [
-      "self_approval",
-      "backup_person"
-    ],
-    default: null
+  // backupDecisionType: {
+  //   type: String,
+  //   enum: [
+  //     "self_approval",
+  //     "backup_person"
+  //   ],
+  //   default: null
+  // },
+  self_approval:{
+    type:Boolean,
+    default:false
+  },
+  backup_person:{
+     type:Boolean,
+    default:false
   },
 
   backupEmployeeId: {
@@ -170,15 +178,15 @@ const SingleWorkflowSchema = new mongoose.Schema(
   },
 
   /* Manager Change */
+  transferToNewuser:{
+  type:Boolean,
+  default:false
+},
+transferToManagerChange:{
+   type:Boolean,
+  default:false
+}
 
-  transferOnManagerChange: {
-    type: String,
-    enum: [
-      "transfer_all",
-      "transfer_pending_only"
-    ],
-    default: null
-  }
 
 },
 { _id: false }

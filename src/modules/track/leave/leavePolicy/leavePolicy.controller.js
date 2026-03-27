@@ -3,15 +3,166 @@ const populateEmployeeDetails = require("../../../company-data/populateEmployees
 
 exports.createLeavePolicy = async (req, res) => {
   try {
-    const adminId = req.user?.userId
-    const companyId = req.user?.companyId
+    const adminId = req.user?.userId;
+    const companyId = req.user?.companyId;
+
     const {
+      // ── BASIC INFO ──────────────────────────────────────────────
+      policyName,
+      description,
+      selectedTypes,
+
+      // ── USAGE POLICY  (s2 — Unpaid Leave) ──────────────────────
+      leaveName,
+      usageLimitType,
+      maxDaysLeave,
+      maxConsecutive,
+      halfDay,
+      limitFuture,
+      allowPast,
+      sandwiched,
+      clubbing,
+      futureDuration,
+      futureApplyAtLeast,
+      futureNotEarlier,
+      pastDays,
+      sandwichTypes,
+      sandwichSubTypes,       // ✅ ADDED
+      clubbingTypes,
+
+      // ── HOURLY LEAVE  (s3) ──────────────────────────────────────
+      hourlyName,
+      maxHours,
+      employmentType,
+      calcType,
+      prorateFrom,
+      joinMonthCalc,
+      joinAfterDays,
+      includeExtendedProbation,
+      probationMonthCalc,
+      probationAfterDays,
+      noProRateType,
+      joinsOnOrBefore,
+      joinsOnOrBeforeDays,
+      joinsOnOrBeforeMonth,
+      elseCalcFrom,
+      disbursal,
+      carryForward,
+      carryType,
+      minHoursPerDay,
+      leaveHours,
+      approval,
+
+      // ── ADVANCED LEAVE CONFIG  (s4) ─────────────────────────────
+      leaveName4,             // ✅ ADDED
+
+      allocation,
+      annualDays,
+      gender,
+      empType,
+      marital,
+
+      // s4 calculation fields
+      calcType4,              // ✅ ADDED
+      prorateFrom4,           // ✅ ADDED
+      joinCalc4,              // ✅ ADDED
+      joinAfterDays4,         // ✅ ADDED
+      extProbation4,          // ✅ ADDED
+      probCalc4,              // ✅ ADDED
+      probAfterDays4,         // ✅ ADDED
+      noProRate4,             // ✅ ADDED
+      joinsOnOrBefore4,       // ✅ ADDED
+      joinsOnOrBeforeDays4,   // ✅ ADDED
+      joinsMonth4,            // ✅ ADDED
+      elseCalcFrom4,          // ✅ ADDED
+      disbursal4,             // ✅ ADDED
+
+      // s4 probation credit
+      limitProbationCredit,   // ✅ ADDED
+      creditUntilProbationSel,// ✅ ADDED
+      creditUntilProbationDays,// ✅ ADDED
+
+      // attachments
+      attachments,
+      attachmentDays,
+      attachmentNote,
+
+      // during probation
+      maxProbationDays,       // ✅ ADDED
+      accumProbation,         // ✅ ADDED
+      applyDuringProbation1,  // ✅ ADDED
+      applyDuringProbation2,  // ✅ ADDED
+
+      // after confirmation
+      afterConfirmPeriod,     // ✅ ADDED
+      afterConfirmMax,        // ✅ ADDED
+
+      // s4 usage policy fields
+      maxConsecutive4,        // ✅ ADDED
+      halfDay4,               // ✅ ADDED
+      limitFuture4,           // ✅ ADDED
+      futureDuration4,        // ✅ ADDED
+      futureApplyAtLeast4,    // ✅ ADDED
+      futureNotEarlier4,      // ✅ ADDED
+      allowPast4,             // ✅ ADDED
+      pastDays4,              // ✅ ADDED
+
+      // s4 sandwich
+      sandwiched4,            // ✅ ADDED
+      sandwichTypes4,         // ✅ ADDED
+      sandwichSubTypes4,      // ✅ ADDED
+
+      // s4 clubbing
+      clubbing4,              // ✅ ADDED
+      clubbingTypes4,         // ✅ ADDED
+
+      // overutilization
+      overutil,
+      overutilType,
+      deductFrom,
+
+      // carry forward & encashment
+      carryForwardEnabled,
+      carryFwdLimit,
+      carryFwdUnused,
+      encashEnabled,
+      encashLimit,
+      encashUnused,
+
+      // gift a leave
+      giftLeave,
+      giftLeavesPerYear,
+      giftReceive,
+
+      // system
+      companyOfficeId,
+      status,
+    } = req.body;
+
+    // ── REQUIRED CHECK ──────────────────────────────────────────────
+    if (!policyName) {
+      return res.status(400).json({
+        success: false,
+        message: "policyName is required",
+      });
+    }
+
+    // ── RESOLVE OFFICE IDs ──────────────────────────────────────────
+    let officeIds = [];
+    if (companyOfficeId) {
+      officeIds = Array.isArray(companyOfficeId)
+        ? companyOfficeId
+        : [companyOfficeId];
+    }
+
+    // ── CREATE DOCUMENT ─────────────────────────────────────────────
+    const newPolicy = await LeavePolicy.create({
       // BASIC INFO
       policyName,
       description,
       selectedTypes,
 
-      // USAGE POLICY
+      // USAGE POLICY (s2)
       leaveName,
       usageLimitType,
       maxDaysLeave,
@@ -26,9 +177,10 @@ exports.createLeavePolicy = async (req, res) => {
       futureNotEarlier,
       pastDays,
       sandwichTypes,
+      sandwichSubTypes,       // ✅ ADDED
       clubbingTypes,
 
-      // HOURLY LEAVE
+      // HOURLY LEAVE (s3)
       hourlyName,
       maxHours,
       employmentType,
@@ -51,106 +203,72 @@ exports.createLeavePolicy = async (req, res) => {
       leaveHours,
       approval,
 
-      // ADVANCED CONFIG
-      allocation,
-      annualDays,
-      gender,
-      empType,
-      marital,
-      attachments,
-      attachmentDays,
-      attachmentNote,
-      overutil,
-      overutilType,
-      deductFrom,
-      carryForwardEnabled,
-      carryFwdLimit,
-      carryFwdUnused,
-      encashEnabled,
-      encashLimit,
-      encashUnused,
-      giftLeave,
-      giftLeavesPerYear,
-      giftReceive,
-companyOfficeId,
-      // SYSTEM
-      status
-
-    } = req.body;
-
-    // REQUIRED CHECK
-    if (!policyName) {
-      return res.status(400).json({
-        success: false,
-        message: "policyName are required",
-      });
-    }
-     if (companyOfficeId) {
-            officeIds = Array.isArray(companyOfficeId)
-                ? companyOfficeId
-                : [companyOfficeId];
-        }
-
-    const newPolicy = await LeavePolicy.create({
-      policyName,
-      description,
-      selectedTypes,
-
-      leaveName,
-      usageLimitType,
-      maxDaysLeave,
-      maxConsecutive,
-      halfDay,
-      limitFuture,
-      allowPast,
-      sandwiched,
-      clubbing,
-      futureDuration,
-      futureApplyAtLeast,
-      futureNotEarlier,
-      pastDays,
-      sandwichTypes,
-      clubbingTypes,
-
-      hourlyName,
-      maxHours,
-      employmentType,
-      calcType,
-      prorateFrom,
-      joinMonthCalc,
-      joinAfterDays,
-      includeExtendedProbation,
-      probationMonthCalc,
-      probationAfterDays,
-      noProRateType,
-      joinsOnOrBefore,
-      joinsOnOrBeforeDays,
-      joinsOnOrBeforeMonth,
-      elseCalcFrom,
-      disbursal,
-      carryForward,
-      carryType,
-      minHoursPerDay,
-      leaveHours,
-      approval,
+      // ADVANCED LEAVE CONFIG (s4)
+      leaveName4,             // ✅ ADDED
 
       allocation,
       annualDays,
       gender,
       empType,
       marital,
+
+      calcType4,              // ✅ ADDED
+      prorateFrom4,           // ✅ ADDED
+      joinCalc4,              // ✅ ADDED
+      joinAfterDays4,         // ✅ ADDED
+      extProbation4,          // ✅ ADDED
+      probCalc4,              // ✅ ADDED
+      probAfterDays4,         // ✅ ADDED
+      noProRate4,             // ✅ ADDED
+      joinsOnOrBefore4,       // ✅ ADDED
+      joinsOnOrBeforeDays4,   // ✅ ADDED
+      joinsMonth4,            // ✅ ADDED
+      elseCalcFrom4,          // ✅ ADDED
+      disbursal4,             // ✅ ADDED
+
+      limitProbationCredit,   // ✅ ADDED
+      creditUntilProbationSel,// ✅ ADDED
+      creditUntilProbationDays,// ✅ ADDED
+
       attachments,
       attachmentDays,
       attachmentNote,
+
+      maxProbationDays,       // ✅ ADDED
+      accumProbation,         // ✅ ADDED
+      applyDuringProbation1,  // ✅ ADDED
+      applyDuringProbation2,  // ✅ ADDED
+
+      afterConfirmPeriod,     // ✅ ADDED
+      afterConfirmMax,        // ✅ ADDED
+
+      maxConsecutive4,        // ✅ ADDED
+      halfDay4,               // ✅ ADDED
+      limitFuture4,           // ✅ ADDED
+      futureDuration4,        // ✅ ADDED
+      futureApplyAtLeast4,    // ✅ ADDED
+      futureNotEarlier4,      // ✅ ADDED
+      allowPast4,             // ✅ ADDED
+      pastDays4,              // ✅ ADDED
+
+      sandwiched4,            // ✅ ADDED
+      sandwichTypes4,         // ✅ ADDED
+      sandwichSubTypes4,      // ✅ ADDED
+
+      clubbing4,              // ✅ ADDED
+      clubbingTypes4,         // ✅ ADDED
+
       overutil,
       overutilType,
       deductFrom,
+
       carryForwardEnabled,
       carryFwdLimit,
       carryFwdUnused,
       encashEnabled,
       encashLimit,
       encashUnused,
+
       giftLeave,
       giftLeavesPerYear,
       giftReceive,
