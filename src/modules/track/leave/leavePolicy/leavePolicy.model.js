@@ -35,178 +35,653 @@ const LeavePolicySchema = new Schema(
         // ===============================
         policyName: { type: String, required: true, trim: true },
         description: { type: String, default: "", trim: true },
-        selectedTypes: [{ type: String, trim: true }],
 
-        // ===============================
-        // USAGE POLICY  (s2 — Unpaid Leave)
-        // ===============================
-        leaveName: { type: String, default: "" },
-        usageLimitType: { type: String, default: "" },
-        maxDaysLeave: { type: Number, default: 0 },
-        maxConsecutive: { type: Number, default: 0 },
-
-        halfDay: { type: Boolean, default: true },
-        limitFuture: { type: Boolean, default: true },
-        allowPast: { type: Boolean, default: true },
-        sandwiched: { type: Boolean, default: true },
-        clubbing: { type: Boolean, default: true },
-
-        futureDuration: { type: Number, default: 0 },
-        futureApplyAtLeast: { type: Number, default: 0 },
-        futureNotEarlier: { type: Number, default: 0 },
-        pastDays: { type: Number, default: 0 },
-
-        sandwichTypes: [{ type: String }],
-
-        // ✅ ADDED: sandwichSubTypes — frontend stores per-key arrays
-        // (mandatory / optional / weeklyoff → each holds sub-type strings)
-        sandwichSubTypes: {
-            type: Schema.Types.Mixed,  // { mandatory: [], optional: [], weeklyoff: [] }
-            default: { mandatory: [], optional: [], weeklyoff: [] },
+        // Unpaidleavessss
+        unpaidLeaveName: { type: String, default: "" },
+        //                 Usage Policy
+        // Let's configure the leave usage limits
+        leaveUsageLimit: {
+            type: String,
+            default: ""
+        },
+        leaveMaximumDays: {
+            type: Number,
+            default: 0
+        },
+        maximumLeaves: {
+            type: Number,
+            default: 0
         },
 
-        clubbingTypes: { type: String, default: "" },
+        // Would you like to allow half-day leave applications?
+        halfDayLeave: {
+            type: Boolean, default: false
+        },
+        //    Do you want to limit leave applications for future dates?
+
+        leaveApplications: {
+            type: Boolean,
+            default: false
+        },
+        leaveduration: {
+            type: Number,
+            default: 0,
+        },
+        Employee: {
+            type: Number,
+            default: 0,
+        },
+        earlier: {
+            type: Number,
+            default: 0,
+        },
+        // Do you want to allow leave application for past dates?
+        leaveApplication: {
+            type: Boolean,
+            default: false
+        },
+        leaveApplicationDays: {
+            type: Number,
+            default: 0,
+        },
+        //                 Sandwiched/Intervening Leaves
+        // If leaves are applied next to or in-between holidays/weekly-offs, should there be additional leave deductions?
+        deductLeave: {
+            type: Boolean,
+            default: false
+        },
+        // if yes. the this fiods. required 
+        deductMandatory: {
+            BetweenLeaves: {
+                type: Boolean,
+                default: false
+            },
+            beforeLeaves: {
+                type: Boolean,
+                default: false
+            },
+            afterLeaves: {
+                type: Boolean,
+                default: false
+            }
+        },
+        deductOptional: {
+            BetweenLeaves: {
+                type: Boolean,
+                default: false
+            },
+            beforeLeaves: {
+                type: Boolean,
+                default: false
+            },
+            afterLeaves: {
+                type: Boolean,
+                default: false
+            },
+
+        },
+        deductWeekly: {
+            BetweenLeaves: {
+                type: Boolean,
+                default: false
+            },
+            beforeLeaves: {
+                type: Boolean,
+                default: false
+            },
+            afterLeaves: {
+                type: Boolean,
+                default: false
+            },
+        },
+
+        //                 Leave Clubbing
+        // Allow employees to apply for different types of leaves, adjacent to each other
+        LeavesClubbing: {
+            type: Boolean,
+            default: false
+        },
+        typeleaves: {
+            type: Number,
+            default: 0
+        },
 
         // ===============================
         // HOURLY LEAVE  (s3)
-        // ===============================
-        hourlyName: { type: String, default: "" },
-        maxHours: { type: Number, default: 0 },
-        employmentType: { type: String, default: "" },
 
-        calcType: {
-            type: String,
-            enum: ["monthly", "fixed"],   // normalised from prorate/noprorate
-            default: "monthly",
-        },
+        hourlyLeave: [
+            {
+                hourlyleaveName: { type: String, default: "" },
+                // hourlyName: { type: String, default: "" },
+                maxHours: { type: Number, default: 0 },
+                employmentType: { type: String, default: "" },
 
-        prorateFrom: { type: String, default: "" },
-        joinMonthCalc: { type: Boolean, default: true },   // true = irrespective
-        joinAfterDays: { type: Number, default: 0 },
 
-        includeExtendedProbation: { type: Boolean, default: false },
-        probationMonthCalc: { type: Boolean, default: true },   // true = full month
-        probationAfterDays: { type: Number, default: 0 },
+                //How will the leave balance be calculated?
+                prorateFromJoiningDate: { type: Boolean, default: false },
+                joinMonthCalc: { type: Boolean, default: true },
+                halfMonthCalc: { type: Boolean, default: true },
+                joinAfterDays: { type: Number, default: 0 },
+                proratefromPrabationEndDate: { type: Boolean, default: false },
+                includeExtend: { type: Boolean, default: false },
+                calcLeaveEndMonth: { type: Boolean, default: false },
+                calcHalfLeaves: { type: Boolean, default: false },
+                endMonthDays: { type: Number, default: 0 },
+                doNotprobationRate: { type: Boolean, default: false },
 
-        noProRateType: { type: String, default: "" },
-        joinsOnOrBefore: { type: Boolean, default: false },
-        joinsOnOrBeforeDays: { type: Number, default: 0 },
-        joinsOnOrBeforeMonth: { type: Number, default: 0 },
-        elseCalcFrom: { type: String, default: "" },
+                donotProRate: {
+                    donotSelectRate: { type: Number, default: 0 },
+                    donotDays: { type: Number, default: 0 },
+                    donotMonths: { type: String, default: "" },
+                    elseEmployee: {
+                        type: String, default: ""
+                    },
+                },
 
-        disbursal: { type: String, default: "" },  // "monthly" | "annual"
+                //When will the leave balance be available?
+                leaveBalanceStartMonth: { type: Boolean, default: false },
+                leaveBalanceCred: { type: Boolean, default: false },  // "monthly" | "annual"
+                //  Carry Forward
+                carryUnsendLeaves: { type: Boolean, default: false },
+                carryForward: { type: Boolean, default: false },  // true = carry
+                minHoursPerDay: { type: Number, default: 0 },
+                leaveHours: { type: Number, default: 0 },
 
-        carryForward: { type: Boolean, default: false },  // true = carry
-        carryType: { type: String, default: "" },
-        minHoursPerDay: { type: Number, default: 0 },
-        leaveHours: { type: Number, default: 0 },
+                // Approval Workflow. 
+                //How do you want to process an application of Hourly Leave?
+                leaveApproval: { type: Boolean, default: false },  // false = bypass
+                leaveBypass: { type: Boolean, default: false },
+                AutoApprove: { type: Boolean, default: false },
+            }
+        ],
+        ////////////
+        // MEdical leave 
 
-        approval: { type: Boolean, default: false },  // false = bypass
+        medicalLeave: [
+            {
+                MedicalleaveName: { type: String, default: "" },
 
-        // ===============================
-        // ADVANCED LEAVE CONFIG  (s4)
-        // ===============================
+                // Leave Allocation
+                // How do you want to define annual allotment of leave balance?
+                automaticallyLeaveBalance: {
+                    type: Boolean, default: false
+                },
+                Days: {
+                    type: Number
+                },
+                manuallyLeaveBalance: {
+                    type: Boolean, default: false
+                },
 
-        // — Leave name for this config —
-        // ✅ ADDED: leaveName4 sent as a separate named field
-        leaveName4: { type: String, default: "" },
+                // Who, How & When (Calculations & Disbursal)
+                // Who can avail this leave balance?
+                gender: {
+                    type: String,
+                    default: ""
+                },
+                employmentType: {
+                    type: String,
+                    default: ""
+                },
+                maritalStatus: {
+                    type: String,
+                    default: ""
+                },
+                //How will the leave balance be calculated?
+                prorateFromJoiningDate: { type: Boolean, default: false },
+                joinMonthCalc: { type: Boolean, default: true },
+                halfMonthCalc: { type: Boolean, default: true },
+                joinAfterDays: { type: Number, default: 0 },
+                proratefromPrabationEndDate: { type: Boolean, default: false },
+                includeExtend: { type: Boolean, default: false },
+                calcLeaveEndMonth: { type: Boolean, default: false },
+                calcHalfLeaves: { type: Boolean, default: false },
+                endMonthDays: { type: Number, default: 0 },
+                doNotprobationRate: { type: Boolean, default: false },
 
-        allocation: { type: String, default: "" },   // "annual" | "manual"
-        annualDays: { type: Number, default: 0 },
+                donotProRate: {
+                    donotSelectRate: { type: Number, default: 0 },
+                    donotDays: { type: Number, default: 0 },
+                    donotMonths: { type: String, default: "" },
+                    elseEmployee: {
+                        type: String, default: ""
+                    },
+                },
+                // When will the leave balance be available?
+                leaveBalanceAccured: {
+                    type: Boolean,
+                    default: false
+                },
+                leaveBalanceCredit: {
+                    type: Boolean,
+                    default: false
+                },
 
-        gender: { type: String, default: "all" },
-        empType: { type: String, default: "all" },
-        marital: { type: String, default: "all" },
+                // Do you want to limit credit during probation?
+                creditDuring: {
+                    type: Boolean,
+                    default: false
+                },
+                creditDays: {
+                    type: Number,
+                    default: 0
+                },
 
-        // — s4 calculation fields (parallel to s3 but for leave config) —
-        // ✅ ADDED: all four s4-specific calc fields missing from original schema
-        calcType4: {
-            type: String,
-            enum: ["monthly", "fixed"],
-            default: "monthly",
-        },
-        prorateFrom4: { type: String, default: "" },
-        joinCalc4: { type: String, default: "" },           // "irrespective" | "half"
-        joinAfterDays4: { type: Number, default: 0 },
-        extProbation4: { type: Boolean, default: false },
-        probCalc4: { type: String, default: "" },           // "full" | "half"
-        probAfterDays4: { type: Number, default: 0 },
-        noProRate4: { type: String, default: "" },
-        joinsOnOrBefore4: { type: String, default: "" },
-        joinsOnOrBeforeDays4: { type: Number, default: 0 },
-        joinsMonth4: { type: String, default: "" },
-        elseCalcFrom4: { type: String, default: "" },
-        disbursal4: { type: String, default: "" },
+                // Usage Policy
+                // Do you want to keep attachments compulsory for this leave?
 
-        // — Probation credit limits (s4) —
-        // ✅ ADDED: all three probation-credit fields missing
-        limitProbationCredit: { type: String, default: "yes" },
-        creditUntilProbationSel: { type: String, default: "" },
-        creditUntilProbationDays: { type: Number, default: 0 },
+                compulsoryLeave: {
+                    type: Boolean,
+                    default: false
+                },
+                documentRequiredLeaveDays: {
+                    type: Number,
+                    default: 0,
+                },
+                descriptionEmployee: {
+                    type: String,
+                    default: ""
+                },
 
-        // — Attachments —
-        attachments: { type: String, default: "yes" },
-        attachmentDays: { type: Number, default: 0 },
-        attachmentNote: { type: String, default: "" },
+                //                 During Probation
 
-        // — During Probation —
-        // ✅ ADDED: maxProbationDays, accumProbation, applyDuringProbation1/2 all missing
-        maxProbationDays: { type: Number, default: 0 },
-        accumProbation: { type: String, default: "yes" },
-        applyDuringProbation1: { type: String, default: "yes" },
-        applyDuringProbation2: { type: String, default: "yes" },
+                // Allow only a maximum of days leave in a probation month
+                MaximumDays: {
+                    type: Number,
+                    default: 0,
+                },
 
-        // — After Confirmation —
-        // ✅ ADDED: afterConfirmPeriod and afterConfirmMax missing
-        afterConfirmPeriod: { type: String, default: "" },
-        afterConfirmMax: { type: String, default: "" },
+                // Allow accumulation of balance in probation period
+                accumaltionBalance: {
+                    type: Boolean,
+                    default: false
+                },
+                // Do you want to allow employees to apply this leave during probation?
+                employeesProbation: {
+                    type: Boolean,
+                    default: false
+                },
+                // After Confirmation
+                period: {
+                    type: String,
+                    default: ""
+                },
+                maximumLeaves: {
+                    type: Number,
+                    default: 0,
+                },
+                consecutiveLeaves: {
+                    type: Number,
+                    default: 0,
+                },
+                // Would you like to allow half-day leave applications?
+                halfDay: {
+                    type: Boolean,
+                    default: false
+                },
+                // Do you want to limit leave applications for future dates?/
+                leaveApplications: {
+                    type: Boolean,
+                    default: false
+                },
+                leaveduration: {
+                    type: Number,
+                    default: 0,
+                },
+                Employee: {
+                    type: Number,
+                    default: 0,
+                },
+                earlier: {
+                    type: Number,
+                    default: 0,
+                },
+                // Do you want to allow leave application for past dates?
+                leaveApplication: {
+                    type: Boolean,
+                    default: false
+                },
+                leaveApplicationDays: {
+                    type: Number,
+                    default: 0,
+                },
+                //                 Sandwiched/Intervening Leaves
+                // If leaves are applied next to or in-between holidays/weekly-offs, should there be additional leave deductions?
+                deductLeave: {
+                    type: Boolean,
+                    default: false
+                },
+                // if yes. the this fiods. required 
+                deductMandatory: {
+                    BetweenLeaves: {
+                        type: Boolean,
+                        default: false
+                    },
+                    beforeLeaves: {
+                        type: Boolean,
+                        default: false
+                    },
+                    afterLeaves: {
+                        type: Boolean,
+                        default: false
+                    }
+                },
+                deductOptional: {
+                    BetweenLeaves: {
+                        type: Boolean,
+                        default: false
+                    },
+                    beforeLeaves: {
+                        type: Boolean,
+                        default: false
+                    },
+                    afterLeaves: {
+                        type: Boolean,
+                        default: false
+                    },
 
-        // — s4 Usage fields (parallel to s2) —
-        // ✅ ADDED: maxConsecutive4, halfDay4, limitFuture4, futureDuration4,
-        //           futureApplyAtLeast4, futureNotEarlier4, allowPast4, pastDays4 all missing
-        maxConsecutive4: { type: Number, default: 0 },
-        halfDay4: { type: Boolean, default: true },
-        limitFuture4: { type: Boolean, default: true },
-        futureDuration4: { type: Number, default: 0 },
-        futureApplyAtLeast4: { type: Number, default: 0 },
-        futureNotEarlier4: { type: Number, default: 0 },
-        allowPast4: { type: Boolean, default: true },
-        pastDays4: { type: Number, default: 0 },
+                },
+                deductWeekly: {
+                    BetweenLeaves: {
+                        type: Boolean,
+                        default: false
+                    },
+                    beforeLeaves: {
+                        type: Boolean,
+                        default: false
+                    },
+                    afterLeaves: {
+                        type: Boolean,
+                        default: false
+                    },
+                },
 
-        // — s4 Sandwich —
-        // ✅ ADDED: sandwiched4, sandwichTypes4, sandwichSubTypes4 all missing
-        sandwiched4: { type: Boolean, default: true },
-        sandwichTypes4: [{ type: String }],
-        sandwichSubTypes4: {
-            type: Schema.Types.Mixed,
-            default: { mandatory: [], optional: [], weeklyoff: [] },
-        },
+                //                 Carry Forward & Encashment
+                // What do we do about unused leave balance, at the end of a leave cycle/year?
+                balanceLapse: {
+                    type: Boolean,
+                    default: false
+                },
+                carryForward: {
+                    carrySelect: {
+                        type: String,
+                        default: ""
+                    },
+                    UnusedLeaves: {
+                        type: Number,
+                        default: 0
+                    }
+                },
+                enCash: {
+                    carrySelect: {
+                        type: String,
+                        default: ""
+                    },
+                    UnusedLeaves: {
+                        type: Number,
+                        default: 0
+                    }
+                },
+                //                 Gift A Leave
+                // How about allowing employees to "Gift" their leave balance to colleagues?
+                employeeGift: {
+                    type: Boolean,
+                    default: false
+                },
+                giftPerYear: {
+                    type: Number,
+                    default: 0
+                },
+                receivedGiftLeaves: {
+                    type: Boolean,
+                    default: false
+                }
 
-        // — s4 Clubbing —
-        // ✅ ADDED: clubbing4, clubbingTypes4 missing
-        clubbing4: { type: Boolean, default: true },
-        clubbingTypes4: { type: String, default: "" },
+            }
+        ],
 
-        // — Overutilization —
-        overutil: { type: Boolean, default: false },
-        overutilType: { type: String, default: "" },
-        deductFrom: { type: String, default: "" },
+        customLeave: [
+             {
+                customleaveName: { type: String, default: "" },
 
-        // — Carry Forward —
-        carryForwardEnabled: { type: Boolean, default: false },
-        carryFwdLimit: { type: String, default: "" },
-        carryFwdUnused: { type: Number, default: 0 },
+                // Leave Allocation
+                // How do you want to define annual allotment of leave balance?
+                automaticallyLeaveBalance: {
+                    type: Boolean, default: false
+                },
+                Days: {
+                    type: Number
+                },
+                manuallyLeaveBalance: {
+                    type: Boolean, default: false
+                },
 
-        // — Encashment —
-        encashEnabled: { type: Boolean, default: false },
-        encashLimit: { type: String, default: "" },
-        encashUnused: { type: Number, default: 0 },
+                // Who, How & When (Calculations & Disbursal)
+                // Who can avail this leave balance?
+                gender: {
+                    type: String,
+                    default: ""
+                },
+                employmentType: {
+                    type: String,
+                    default: ""
+                },
+                maritalStatus: {
+                    type: String,
+                    default: ""
+                },
+                //How will the leave balance be calculated?
+                prorateFromJoiningDate: { type: Boolean, default: false },
+                joinMonthCalc: { type: Boolean, default: true },
+                halfMonthCalc: { type: Boolean, default: true },
+                joinAfterDays: { type: Number, default: 0 },
+                proratefromPrabationEndDate: { type: Boolean, default: false },
+                includeExtend: { type: Boolean, default: false },
+                calcLeaveEndMonth: { type: Boolean, default: false },
+                calcHalfLeaves: { type: Boolean, default: false },
+                endMonthDays: { type: Number, default: 0 },
+                doNotprobationRate: { type: Boolean, default: false },
 
-        // — Gift A Leave —
-        giftLeave: { type: Boolean, default: false },
-        giftLeavesPerYear: { type: Number, default: 0 },
-        giftReceive: { type: String, default: "" },
+                donotProRate: {
+                    donotSelectRate: { type: Number, default: 0 },
+                    donotDays: { type: Number, default: 0 },
+                    donotMonths: { type: String, default: "" },
+                    elseEmployee: {
+                        type: String, default: ""
+                    },
+                },
+                // When will the leave balance be available?
+                leaveBalanceAccured: {
+                    type: Boolean,
+                    default: false
+                },
+                leaveBalanceCredit: {
+                    type: Boolean,
+                    default: false
+                },
 
+                // Do you want to limit credit during probation?
+                creditDuring: {
+                    type: Boolean,
+                    default: false
+                },
+                creditDays: {
+                    type: Number,
+                    default: 0
+                },
+
+                // Usage Policy
+                // Do you want to keep attachments compulsory for this leave?
+
+                compulsoryLeave: {
+                    type: Boolean,
+                    default: false
+                },
+                documentRequiredLeaveDays: {
+                    type: Number,
+                    default: 0,
+                },
+                descriptionEmployee: {
+                    type: String,
+                    default: ""
+                },
+
+                //                 During Probation
+
+                // Allow only a maximum of days leave in a probation month
+                MaximumDays: {
+                    type: Number,
+                    default: 0,
+                },
+
+                // Allow accumulation of balance in probation period
+                accumaltionBalance: {
+                    type: Boolean,
+                    default: false
+                },
+                // Do you want to allow employees to apply this leave during probation?
+                employeesProbation: {
+                    type: Boolean,
+                    default: false
+                },
+                // After Confirmation
+                period: {
+                    type: String,
+                    default: ""
+                },
+                maximumLeaves: {
+                    type: Number,
+                    default: 0,
+                },
+                consecutiveLeaves: {
+                    type: Number,
+                    default: 0,
+                },
+                // Would you like to allow half-day leave applications?
+                halfDay: {
+                    type: Boolean,
+                    default: false
+                },
+                // Do you want to limit leave applications for future dates?/
+                leaveApplications: {
+                    type: Boolean,
+                    default: false
+                },
+                leaveduration: {
+                    type: Number,
+                    default: 0,
+                },
+                Employee: {
+                    type: Number,
+                    default: 0,
+                },
+                earlier: {
+                    type: Number,
+                    default: 0,
+                },
+                // Do you want to allow leave application for past dates?
+                leaveApplication: {
+                    type: Boolean,
+                    default: false
+                },
+                leaveApplicationDays: {
+                    type: Number,
+                    default: 0,
+                },
+                //                 Sandwiched/Intervening Leaves
+                // If leaves are applied next to or in-between holidays/weekly-offs, should there be additional leave deductions?
+                deductLeave: {
+                    type: Boolean,
+                    default: false
+                },
+                // if yes. the this fiods. required 
+                deductMandatory: {
+                    BetweenLeaves: {
+                        type: Boolean,
+                        default: false
+                    },
+                    beforeLeaves: {
+                        type: Boolean,
+                        default: false
+                    },
+                    afterLeaves: {
+                        type: Boolean,
+                        default: false
+                    }
+                },
+                deductOptional: {
+                    BetweenLeaves: {
+                        type: Boolean,
+                        default: false
+                    },
+                    beforeLeaves: {
+                        type: Boolean,
+                        default: false
+                    },
+                    afterLeaves: {
+                        type: Boolean,
+                        default: false
+                    },
+
+                },
+                deductWeekly: {
+                    BetweenLeaves: {
+                        type: Boolean,
+                        default: false
+                    },
+                    beforeLeaves: {
+                        type: Boolean,
+                        default: false
+                    },
+                    afterLeaves: {
+                        type: Boolean,
+                        default: false
+                    },
+                },
+
+                //                 Carry Forward & Encashment
+                // What do we do about unused leave balance, at the end of a leave cycle/year?
+                balanceLapse: {
+                    type: Boolean,
+                    default: false
+                },
+                carryForward: {
+                    carrySelect: {
+                        type: String,
+                        default: ""
+                    },
+                    UnusedLeaves: {
+                        type: Number,
+                        default: 0
+                    }
+                },
+                enCash: {
+                    carrySelect: {
+                        type: String,
+                        default: ""
+                    },
+                    UnusedLeaves: {
+                        type: Number,
+                        default: 0
+                    }
+                },
+                //                 Gift A Leave
+                // How about allowing employees to "Gift" their leave balance to colleagues?
+                employeeGift: {
+                    type: Boolean,
+                    default: false
+                },
+                giftPerYear: {
+                    type: Number,
+                    default: 0
+                },
+                receivedGiftLeaves: {
+                    type: Boolean,
+                    default: false
+                }
+
+            }
+        ],
         // ===============================
         // ASSIGNED EMPLOYEES
         // ===============================
@@ -242,6 +717,14 @@ const LeavePolicySchema = new Schema(
             type: String,
             enum: ["draft", "active"],
             default: "draft",
+        },
+        isDeleted:{
+            type:Boolean,
+            default:false
+        },
+          deletedAt: {
+            type: Date,
+            default: null,
         },
     },
     { timestamps: true }

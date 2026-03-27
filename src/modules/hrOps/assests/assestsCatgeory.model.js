@@ -1,96 +1,88 @@
 const mongoose = require("mongoose");
 
 const attributeSchema = new mongoose.Schema({
-    fieldName: {
-        type: String,
-        default: ""
-    },
+  fieldName: {
+    type: String,
+    default: "",
+  },
 
-    type: {
-        type: String,
-        enum: ["text", "number", "date", "dropdown"],
-        default: ""
-    },
+  type: {
+    type: String,
+    enum: ["text", "number", "date", "dropdown"],
+    default: "text",
+  },
 
-    required: {
-        type: Boolean,
-        default: false,
-    },
+  required: {
+    type: Boolean,
+    default: false,
+  },
 
-    multiple: {
-        type: Boolean,
-        default: false,
-    },
+  multiple: {
+    type: Boolean,
+    default: false,
+  },
 
-    options: [
-        {
-            type: String,
-            default: ""
-        }
-    ]
-
+  options: {
+    type: [String],
+    default: [],
+  },
 });
 
 const assetCategorySchema = new mongoose.Schema(
-    {
-        categoryName: {
-            type: String,
-            default: "",
-
-        },
-
-        assetName: {
-            type: String,
-            default: "",
-        },
-
-        brand: {
-            type: String,
-        },
-
-        condition: {
-            type: String,
-            enum: ["new", "used", "refurbished"],
-            default: "",
-        },
-
-        description: {
-            type: String,
-        },
-
-        assetType: {
-            phisycal: {
-                type: Boolean,
-                default: false,
-            },
-            digital: {
-                type: Boolean,
-                default: false,
-            },
-        },
-
-        acknowledgement: {
-            type: Boolean,
-            default: false,
-        },
-
-        warranty: {
-            type: Boolean,
-            default: false,
-        },
-        attributes: [attributeSchema],
-        companyOfficeId: {
-            type: [
-                {
-                    type: mongoose.Schema.Types.ObjectId,
-                    ref: "CompanyOffice"
-                }
-            ],
-            default: []
-        },
-
+  {
+    categoryName: {
+      type: String,
+      default: "",
     },
-    { timestamps: true }
+
+    assetName: {
+      type: String,
+      default: "",
+    },
+
+    brand: {
+      type: String,
+      default: "",
+    },
+
+    condition: {
+      type: String,
+      enum: ["new", "used", "refurbished"],
+      default: "",
+    },
+
+    description: {
+      type: String,
+      default: "",
+    },
+
+    // ✅ FIXED
+    assetType: {
+      type: String,
+      enum: ["physical", "digital"],
+      default: "physical",
+    },
+
+    acknowledgement: {
+      type: Boolean,
+      default: false,
+    },
+
+    warranty: {
+      type: Boolean,
+      default: false,
+    },
+
+    attributes: [attributeSchema],
+
+    companyOfficeId: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "CompanyOffice",
+      },
+    ],
+  },
+  { timestamps: true }
 );
 
 module.exports = mongoose.model("AssetCategory", assetCategorySchema);
