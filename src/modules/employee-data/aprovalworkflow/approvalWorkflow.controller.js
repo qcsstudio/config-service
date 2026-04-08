@@ -1,9 +1,9 @@
 const ApprovalWorkflow = require("./approvalWorkflow.model");
 const populateEmployeeDetails = require("../../company-data/populateEmployees");
 const mongoose = require("mongoose")
-
 exports.createWorkflow = async (req, res) => {
   try {
+    
     const { tabName } = req.query;
     let workflowData = req.body;
 
@@ -55,25 +55,25 @@ exports.createWorkflow = async (req, res) => {
         [tabName]: workflowData
       }
     });
-
+console.log("workflowDoc,",workflowDoc)
     await workflowDoc.save();
 
-    const populatedData = await ApprovalWorkflow.findById(workflowDoc._id)
-      .populate("tabs.hrisWorkflow.allHandsEmployee")
-      .populate("tabs.attendanceWorkflow.allHandsEmployee")
-      .populate("tabs.leaveWorkflow.allHandsEmployee")
-      .populate("tabs.expenseWorkflow.allHandsEmployee")
-      .populate("tabs.exitWorkflow.allHandsEmployee")
-      .populate("tabs.leaveWorkflow.levelApprovers.approverEmployeeId")
-      .populate("tabs.leaveWorkflow.levelApprovers.additionalEmployees")
-      .populate("tabs.hrisWorkflow.backupEmployeeId")
-      .populate("tabs.leaveWorkflow.backupEmployeeId")
-      .populate("assignedEmployeeList.employeeId")
-      .populate("assignedEmployeeList.departmentId");
+    // const populatedData = await ApprovalWorkflow.findById(workflowDoc._id)
+    //   .populate("tabs.hrisWorkflow.allHandsEmployee")
+    //   .populate("tabs.attendanceWorkflow.allHandsEmployee")
+    //   .populate("tabs.leaveWorkflow.allHandsEmployee")
+    //   .populate("tabs.expenseWorkflow.allHandsEmployee")
+    //   .populate("tabs.exitWorkflow.allHandsEmployee")
+    //   .populate("tabs.leaveWorkflow.levelApprovers.approverEmployeeId")
+    //   .populate("tabs.leaveWorkflow.levelApprovers.additionalEmployees")
+    //   .populate("tabs.hrisWorkflow.backupEmployeeId")
+    //   .populate("tabs.leaveWorkflow.backupEmployeeId")
+    //   .populate("assignedEmployeeList.employeeId")
+    //   .populate("assignedEmployeeList.departmentId");
 
     return res.status(201).json({
       message: "Workflow created successfully",
-      data: populatedData
+      data: workflowDoc
     });
 
   } catch (error) {
@@ -84,6 +84,7 @@ exports.createWorkflow = async (req, res) => {
     });
   }
 };
+
 exports.updateWorkflow = async (req, res) => {
   try {
     const { tabName, workflowId } = req.query;

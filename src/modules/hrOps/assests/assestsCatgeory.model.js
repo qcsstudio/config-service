@@ -3,13 +3,13 @@ const mongoose = require("mongoose");
 const attributeSchema = new mongoose.Schema({
     fieldName: {
         type: String,
-        default: ""
+        default: "",
     },
 
     type: {
         type: String,
         enum: ["text", "number", "date", "dropdown"],
-        default: ""
+        default: "text",
     },
 
     required: {
@@ -22,13 +22,10 @@ const attributeSchema = new mongoose.Schema({
         default: false,
     },
 
-    options: [
-        {
-            type: String,
-            default: ""
-        }
-    ]
-
+    options: {
+        type: [String],
+        default: [],
+    },
 });
 
 const assetCategorySchema = new mongoose.Schema(
@@ -36,7 +33,6 @@ const assetCategorySchema = new mongoose.Schema(
         categoryName: {
             type: String,
             default: "",
-
         },
 
         assetName: {
@@ -46,6 +42,7 @@ const assetCategorySchema = new mongoose.Schema(
 
         brand: {
             type: String,
+            default: "",
         },
 
         condition: {
@@ -56,17 +53,14 @@ const assetCategorySchema = new mongoose.Schema(
 
         description: {
             type: String,
+            default: "",
         },
 
+        // ✅ FIXED
         assetType: {
-            phisycal: {
-                type: Boolean,
-                default: false,
-            },
-            digital: {
-                type: Boolean,
-                default: false,
-            },
+            type: String,
+            enum: ["physical", "digital"],
+            default: "physical",
         },
 
         acknowledgement: {
@@ -78,17 +72,25 @@ const assetCategorySchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
-        attributes: [attributeSchema],
-        companyOfficeId: {
-            type: [
-                {
-                    type: mongoose.Schema.Types.ObjectId,
-                    ref: "CompanyOffice"
-                }
-            ],
-            default: []
-        },
 
+        attributes: [attributeSchema],
+
+        adminId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            default: null,
+        },
+        companyId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Company",
+            default: null,
+        },
+        companyOfficeId: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "CompanyOffice",
+            },
+        ],
     },
     { timestamps: true }
 );

@@ -29,5 +29,9 @@ router.put(
     "/update-asset-category/:id",
     assetCategoryController.updateAssetCategory
 );
+router.delete(
+    "/delete-asset-category/:id",
+    assetCategoryController.deleteAssetCategory
+);
 
 module.exports = router;
