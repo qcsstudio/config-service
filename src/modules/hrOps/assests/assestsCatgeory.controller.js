@@ -2,6 +2,8 @@ const AssetCategory = require("./assestsCatgeory.model");
 const mongoose = require("mongoose")
 exports.createAssetCategory = async (req, res) => {
   try {
+    const adminId = req.user?.userId
+    const companyId = req.user?.companyId
     const {
       categoryName,
       assetName,
@@ -44,6 +46,8 @@ exports.createAssetCategory = async (req, res) => {
 
     // ✅ CREATE DATA
     const assetCategory = new AssetCategory({
+        adminId,
+        companyId,
       categoryName,
       assetName,
       brand,
@@ -84,7 +88,7 @@ exports.getAllAssetCategories = async (req, res) => {
     try {
 
         const companyId = req.user?.companyId;
-        const categories = await AssetCategory.find({companyId:companyId}).sort({ createdAt: -1 });
+        const categories = await AssetCategory.find({companyId}).sort({ createdAt: -1 });
 
         res.status(200).json({
             success: true,
